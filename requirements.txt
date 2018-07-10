@@ -1,0 +1,4 @@
+pygame
+numpy
+Cython
+gmpy2
