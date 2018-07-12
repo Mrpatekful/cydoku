@@ -102,7 +102,7 @@ Will generate a 16 x 16 sudoku grid from an empty state, and tries to find a max
 
 ### Requirements
 
--Python3.x
--Cython
--gmpy2
--NumPy
+    -Python3.x
+    -Cython
+    -gmpy2
+    -NumPy
