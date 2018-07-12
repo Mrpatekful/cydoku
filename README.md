@@ -7,6 +7,9 @@ efficiency and speed of multi-threaded implementations.
 
 ### Benchmarks
 
+CPU: Intel(R) Core(TM) i7-4710HQ CPU @ 2.50GHz
+RAM: 8GB
+
 As I have mentioned the code is written in Python, however to evade the overhead of the language, I have used Cython
 as the core of the project. This way, the algorithm runs at considerable speed and efficiency.
 
