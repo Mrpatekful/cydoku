@@ -79,14 +79,14 @@ Solution will be generated to the location given by -o, --output, which is solut
 Will read the content of the provided file, that is a 9 x 9 sudoku field.
 The format of the file must be the following.
 
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 8 5
-0 0 1 0 0 0 0 0 0
-0 0 0 5 0 7 0 0 0
-0 0 0 0 0 0 0 0 0
-0 9 0 0 0 0 0 0 0
-5 0 0 0 0 0 0 7 3
-0 0 2 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0<br/>
+0 0 0 0 0 0 0 8 5<br/>
+0 0 1 0 0 0 0 0 0<br/>
+0 0 0 5 0 7 0 0 0<br/>
+0 0 0 0 0 0 0 0 0<br/>
+0 9 0 0 0 0 0 0 0<br/>
+5 0 0 0 0 0 0 7 3<br/>
+0 0 2 0 0 0 0 0 0<br/>
 0 0 0 0 4 0 0 0 9
 
 
