@@ -1,5 +1,5 @@
 
-from gmpy2 import bit_scan1, popcount
+from gmpy2 import bit_scan1
 
 import _sudokugen
 
@@ -21,14 +21,17 @@ def timed(func):
 class Solver:
     """Base generator class"""
 
-    def __init__(self, n: int):
+    def __init__(self, n: int, m: int):
         """Abstract generator instance
 
         Args:
             :param n: size of the subgrid, e.g. with
                       n = 3 the grid will be standard 9 x 9
+
+            :param m: maximum number of solutions to look for
         """
         self.n = n
+        self.m = m
         self.size = n ** 4 + 1
 
         self._value_indices = \
@@ -69,6 +72,19 @@ class Solver:
         return converter(grid).reshape(n ** 2, n ** 2)
 
     @staticmethod
+    def candidates(candidates: numpy.ndarray, n: int) -> list:
+        """Converts the array of possible candidates in bits to
+        :param candidates:
+        :param n:
+        :return:
+        """
+        def bits(x):
+            return [number + 1 for number in
+                    range(0, n ** 2) if x & (1 << number)]
+        return [[bits(candidates[i * n ** 2 + j])
+                 for j in range(n ** 2)] for i in range(n ** 2)]
+
+    @staticmethod
     def encode(grid: numpy.ndarray) -> numpy.ndarray:
         """Encodes the given 2D grid to a 1D binary numpy array
         with coded numbers.
@@ -84,6 +100,22 @@ class Solver:
             otypes=[numpy.ulonglong])
 
         return converter(grid).reshape(-1)
+
+    @staticmethod
+    def load(path: str):
+        """
+        Loads a field from a file.
+
+        :param path: Path of the file
+        """
+        with open(path, 'r') as file:
+            field = numpy.array(
+                [[int(num) for num in
+                  line.strip().split()]
+                 for line in file],
+                dtype=numpy.ulonglong)
+
+            return field
 
     def _init(self, grid=None):
         """Initializes the generator with a grid"""
@@ -110,15 +142,18 @@ class BruteForceSearch(Solver):
     """Generator that implements a more sophisticated way
     of choosing the next fill index."""
 
-    def __init__(self, n: int):
+    def __init__(self, n: int, m: int):
         """A best fit generator instance."""
-        super(BruteForceSearch, self).__init__(n)
+        super(BruteForceSearch, self).__init__(n, m)
 
         self._candidate_values = numpy.empty(
             (self.size, self.n ** 4), dtype=numpy.ulonglong)
 
         self._candidate_nums = numpy.empty(
-            (self.size, self.n ** 4), dtype=numpy.ulonglong)
+            (self.size, self.n ** 4), dtype=numpy.uint)
+
+    def __str__(self):
+        return 'brute force search'
 
     def _init(self, grid=None):
         """This class accepts grids with already filled, values.
@@ -128,19 +163,17 @@ class BruteForceSearch(Solver):
         self._filled = 0
         self._state_index = 0
 
+        self._grid = grid
+
         if grid is None:
             self._grid = numpy.zeros((self.n ** 4), dtype=numpy.ulonglong)
 
-            self._value_indices[0] = 0
-                # int(numpy.random.random_integers(0, self.n ** 4 - 1, 1))
+            self._value_indices[0] = int(
+                numpy.random.random_integers(0, self.n ** 4 - 1, 1))
 
-            self._candidate_values[0, :] = numpy.ulonglong((2 ** 64) - 1)
-            self._candidate_nums[0, :] = numpy.uint(self.n ** 2)
-            self._available[0, :] = numpy.short(1)
-
-        else:
-            # TODO initialize filed state
-            pass
+        self._candidate_values[0, :] = numpy.ulonglong((2 ** 64) - 1)
+        self._candidate_nums[0, :] = numpy.uint(self.n ** 2)
+        self._available[0, :] = numpy.short(1)
 
     @timed
     def fill(self, grid=None):
@@ -149,29 +182,27 @@ class BruteForceSearch(Solver):
 
         self._init(grid)
 
-        _sudokugen.brute_force_search(
+        start = time.time()
+
+        solutions = _sudokugen.brute_force_search(
             self._grid, self._candidate_values, self._candidate_nums,
-            self._group_indices, self._value_indices, self._available,
-            self._filled)
-        print(self._grid.reshape(9, 9))
-        print(self._candidate_values[11].reshape(9, 9))
-        print(self._candidate_nums[11].reshape(9, 9))
+            self._group_indices, self._value_indices, self._available, self.m)
+
+        return solutions, time.time() - start
 
 
-class DebugBestFitGenerator(BruteForceSearch):
+class DebugBruteForceSearch(BruteForceSearch):
     """A class that implements the same logic as the best fit
-    generator class, with additional functionality of visualizing
+    generator class, with additional functionality of visualizing3
     the current state of the method."""
 
-    def __init__(self, n: int, display):
-        super(DebugBestFitGenerator, self).__init__(n)
-        self._display = display(n)
+    def __init__(self, n: int, m: int, debugger):
+        super(DebugBruteForceSearch, self).__init__(n, m)
 
-    def _candidates(self, index):
-        candidates = \
-            ~numpy.bitwise_or.reduce(self._grid[self._group_indices[index]])
-        candidates = int(candidates) & (2 ** (self.n ** 2 + 1) - 1)
-        return candidates, popcount(candidates)
+        self._debugger = debugger(n, (Solver.decode, Solver.candidates))
+
+    def __str__(self):
+        return '{} (debug)'.format(super().__str__())
 
     @timed
     def fill(self, grid=None):
@@ -180,135 +211,20 @@ class DebugBestFitGenerator(BruteForceSearch):
 
         self._init(grid)
 
-        size = self.n ** 4
-        iteration = 0
+        start = time.time()
 
-        self._display.update(
-            self.decode(self._grid, self.n),
-            self._candidate_values[self._state_index + 1],
-            iteration
-        )
+        solutions = _sudokugen.brute_force_search_debug(
+            self._grid, self._candidate_values, self._candidate_nums,
+            self._group_indices, self._value_indices,
+            self._available, self.m, self._debugger)
 
-        while True:
+        end = time.time() - start
 
-            print(self._state_index)
+        try:
 
-            if iteration % 1000000 == 0:
-                iteration = 0
+            self._debugger.close()
 
-            iteration += 1
+        except AttributeError:
+            pass
 
-            # The best fit index, that was chosen for this state.
-
-            value_index = self._value_indices[self._state_index]
-
-            # If there are candidates, which haven't been
-            # tried yet, proceed, else revert to the previous state.
-
-            if self._candidate_nums[self._state_index, value_index] == 0:
-                self._grid[value_index] = 0
-                self._state_index -= 1
-                self._filled -= 1
-                continue
-
-            # Choosing value from the candidates for the best fit index.
-
-            value = int(2 ** bit_scan1(
-                int(self._candidate_values[self._state_index, value_index])))
-            self._grid[value_index] = value
-
-            # By setting the value, we reduce the untried
-            # candidates for this state by the set value,
-            # and reduce the number of candidates by 1.
-
-            self._candidate_values[self._state_index, value_index] &= \
-                numpy.ulonglong(~value)
-            self._candidate_nums[self._state_index, value_index] -= 1
-
-            # By choosing a value, we can calculate the next
-            # state of the board, by building upon
-            # the previous state.
-
-            # Preparing the next state
-
-            self._candidate_values[self._state_index + 1, :] = \
-                self._candidate_values[self._state_index, :]
-            self._candidate_nums[self._state_index + 1, :] = \
-                self._candidate_nums[self._state_index, :]
-            self._available[self._state_index + 1, :] \
-                = self._available[self._state_index, :]
-
-            # By setting the value at this state, the location
-            #  will be unavailable at the next state
-
-            self._candidate_values[self._state_index + 1, value_index] = value
-            self._available[self._state_index + 1, value_index] = False
-
-            # By setting the value at this state we can calculate
-            # the candidates for the effected indices, at the next state.
-
-            effected_indices = self._group_indices[value_index]
-
-            terminate = 0
-            for i in range(len(effected_indices)):
-                j = effected_indices[i]
-
-                if self._available[self._state_index + 1, j] \
-                        and self._candidate_values[self._state_index + 1, j] & numpy.ulonglong(value) != 0:
-                    self._candidate_values[self._state_index + 1, j] &= numpy.ulonglong(~value)
-                    self._candidate_nums[self._state_index + 1, j] -= 1
-
-                    if self._candidate_nums[self._state_index + 1, j] == 0:
-                        terminate = 1
-                        break
-
-            if terminate == 1:
-                continue
-
-            # effected_data = numpy.array(
-            #     list(map(self._candidates, effected_indices)),
-            #     dtype=numpy.ulonglong)
-            #
-            # # Effected data contains the calculated candidates
-            # # and number of candidates for the effected locations
-            #
-            # candidate_nums = effected_data[:, 1]
-            #
-            # # If there is inconsistency, revert
-            #
-            # if 0 in candidate_nums:
-            #     continue
-            #
-            # self._candidate_values[self._state_index + 1, effected_indices] = \
-            #     effected_data[:, 0]
-            #
-            # self._candidate_nums[self._state_index + 1, effected_indices] = \
-            #     candidate_nums
-
-            self._candidate_values[self._state_index + 1, value_index] = value
-            self._available[self._state_index + 1, value_index] = False
-
-            # If the set value passes the consistency check, it can be filled
-
-            self._filled += 1
-
-            self._display.update(
-                self.decode(self._grid, self.n),
-                self._candidate_values[self._state_index + 1],
-                iteration
-            )
-
-            if self._filled == size:
-                break
-
-            # Looking at the next state, we calculate the next best fit index
-            # (the location with the least candidates)
-            # (Availability has not changed )
-
-            self._state_index += 1
-
-            self._value_indices[self._state_index] = numpy.argmin(numpy.where(
-                self._available[self._state_index],
-                self._candidate_nums[self._state_index],
-                self._unavailable
-            ))
+        return solutions, end

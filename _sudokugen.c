@@ -878,17 +878,17 @@ typedef volatile __pyx_atomic_int_type __pyx_atomic_int;
             __pyx_sub_acquisition_count_locked(__pyx_get_slice_count_pointer(memview), memview->lock)
 #endif
 
+/* ForceInitThreads.proto */
+#ifndef __PYX_FORCE_INIT_THREADS
+  #define __PYX_FORCE_INIT_THREADS 0
+#endif
+
 /* NoFastGil.proto */
 #define __Pyx_PyGILState_Ensure PyGILState_Ensure
 #define __Pyx_PyGILState_Release PyGILState_Release
 #define __Pyx_FastGIL_Remember()
 #define __Pyx_FastGIL_Forget()
 #define __Pyx_FastGilFuncInit()
-
-/* ForceInitThreads.proto */
-#ifndef __PYX_FORCE_INIT_THREADS
-  #define __PYX_FORCE_INIT_THREADS 0
-#endif
 
 /* BufferFormatStructs.proto */
 #define IS_UNSIGNED(type) (((type) -1) > 0)
@@ -1381,33 +1381,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_GetAttrStr(PyObject* obj, PyObject
 /* GetBuiltinName.proto */
 static PyObject *__Pyx_GetBuiltinName(PyObject *name);
 
-/* GetModuleGlobalName.proto */
-static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name);
-
-/* PyObjectCall.proto */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
-#else
-#define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
-#endif
-
-/* None.proto */
-static CYTHON_INLINE Py_ssize_t __Pyx_div_Py_ssize_t(Py_ssize_t, Py_ssize_t);
-
-/* UnaryNegOverflows.proto */
-#define UNARY_NEG_WOULD_OVERFLOW(x)\
-        (((x) < 0) & ((unsigned long)(x) == 0-(unsigned long)(x)))
-
-/* SetItemInt.proto */
-#define __Pyx_SetItemInt(o, i, v, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
-    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
-    __Pyx_SetItemInt_Fast(o, (Py_ssize_t)i, v, is_list, wraparound, boundscheck) :\
-    (is_list ? (PyErr_SetString(PyExc_IndexError, "list assignment index out of range"), -1) :\
-               __Pyx_SetItemInt_Generic(o, to_py_func(i), v)))
-static int __Pyx_SetItemInt_Generic(PyObject *o, PyObject *j, PyObject *v);
-static CYTHON_INLINE int __Pyx_SetItemInt_Fast(PyObject *o, Py_ssize_t i, PyObject *v,
-                                               int is_list, int wraparound, int boundscheck);
-
 /* MemviewSliceInit.proto */
 #define __Pyx_BUF_MAX_NDIMS %(BUF_MAX_NDIMS)d
 #define __Pyx_MEMVIEW_DIRECT   1
@@ -1433,66 +1406,6 @@ static CYTHON_INLINE int __pyx_sub_acquisition_count_locked(
 #define __PYX_XDEC_MEMVIEW(slice, have_gil) __Pyx_XDEC_MEMVIEW(slice, have_gil, __LINE__)
 static CYTHON_INLINE void __Pyx_INC_MEMVIEW(__Pyx_memviewslice *, int, int);
 static CYTHON_INLINE void __Pyx_XDEC_MEMVIEW(__Pyx_memviewslice *, int, int);
-
-/* RaiseArgTupleInvalid.proto */
-static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
-    Py_ssize_t num_min, Py_ssize_t num_max, Py_ssize_t num_found);
-
-/* RaiseDoubleKeywords.proto */
-static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
-
-/* ParseKeywords.proto */
-static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
-    PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args,\
-    const char* function_name);
-
-/* GetItemInt.proto */
-#define __Pyx_GetItemInt(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
-    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
-    __Pyx_GetItemInt_Fast(o, (Py_ssize_t)i, is_list, wraparound, boundscheck) :\
-    (is_list ? (PyErr_SetString(PyExc_IndexError, "list index out of range"), (PyObject*)NULL) :\
-               __Pyx_GetItemInt_Generic(o, to_py_func(i))))
-#define __Pyx_GetItemInt_List(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
-    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
-    __Pyx_GetItemInt_List_Fast(o, (Py_ssize_t)i, wraparound, boundscheck) :\
-    (PyErr_SetString(PyExc_IndexError, "list index out of range"), (PyObject*)NULL))
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_List_Fast(PyObject *o, Py_ssize_t i,
-                                                              int wraparound, int boundscheck);
-#define __Pyx_GetItemInt_Tuple(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
-    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
-    __Pyx_GetItemInt_Tuple_Fast(o, (Py_ssize_t)i, wraparound, boundscheck) :\
-    (PyErr_SetString(PyExc_IndexError, "tuple index out of range"), (PyObject*)NULL))
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Tuple_Fast(PyObject *o, Py_ssize_t i,
-                                                              int wraparound, int boundscheck);
-static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j);
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i,
-                                                     int is_list, int wraparound, int boundscheck);
-
-/* PyCFunctionFastCall.proto */
-#if CYTHON_FAST_PYCCALL
-static CYTHON_INLINE PyObject *__Pyx_PyCFunction_FastCall(PyObject *func, PyObject **args, Py_ssize_t nargs);
-#else
-#define __Pyx_PyCFunction_FastCall(func, args, nargs)  (assert(0), NULL)
-#endif
-
-/* PyFunctionFastCall.proto */
-#if CYTHON_FAST_PYCALL
-#define __Pyx_PyFunction_FastCall(func, args, nargs)\
-    __Pyx_PyFunction_FastCallDict((func), (args), (nargs), NULL)
-#if 1 || PY_VERSION_HEX < 0x030600B1
-static PyObject *__Pyx_PyFunction_FastCallDict(PyObject *func, PyObject **args, int nargs, PyObject *kwargs);
-#else
-#define __Pyx_PyFunction_FastCallDict(func, args, nargs, kwargs) _PyFunction_FastCallDict(func, args, nargs, kwargs)
-#endif
-#endif
-
-/* PyObjectCallMethO.proto */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg);
-#endif
-
-/* PyObjectCallOneArg.proto */
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
 
 /* PyThreadStateGet.proto */
 #if CYTHON_FAST_THREAD_STATE
@@ -1535,8 +1448,95 @@ static void __Pyx_WriteUnraisable(const char *name, int clineno,
                                   int lineno, const char *filename,
                                   int full_traceback, int nogil);
 
+/* RaiseArgTupleInvalid.proto */
+static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
+    Py_ssize_t num_min, Py_ssize_t num_max, Py_ssize_t num_found);
+
+/* RaiseDoubleKeywords.proto */
+static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
+
+/* ParseKeywords.proto */
+static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
+    PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args,\
+    const char* function_name);
+
 /* None.proto */
 static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname);
+
+/* PyFunctionFastCall.proto */
+#if CYTHON_FAST_PYCALL
+#define __Pyx_PyFunction_FastCall(func, args, nargs)\
+    __Pyx_PyFunction_FastCallDict((func), (args), (nargs), NULL)
+#if 1 || PY_VERSION_HEX < 0x030600B1
+static PyObject *__Pyx_PyFunction_FastCallDict(PyObject *func, PyObject **args, int nargs, PyObject *kwargs);
+#else
+#define __Pyx_PyFunction_FastCallDict(func, args, nargs, kwargs) _PyFunction_FastCallDict(func, args, nargs, kwargs)
+#endif
+#endif
+
+/* PyCFunctionFastCall.proto */
+#if CYTHON_FAST_PYCCALL
+static CYTHON_INLINE PyObject *__Pyx_PyCFunction_FastCall(PyObject *func, PyObject **args, Py_ssize_t nargs);
+#else
+#define __Pyx_PyCFunction_FastCall(func, args, nargs)  (assert(0), NULL)
+#endif
+
+/* PyObjectCall.proto */
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
+#else
+#define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
+#endif
+
+/* GetModuleGlobalName.proto */
+static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name);
+
+/* None.proto */
+static CYTHON_INLINE Py_ssize_t __Pyx_div_Py_ssize_t(Py_ssize_t, Py_ssize_t);
+
+/* UnaryNegOverflows.proto */
+#define UNARY_NEG_WOULD_OVERFLOW(x)\
+        (((x) < 0) & ((unsigned long)(x) == 0-(unsigned long)(x)))
+
+/* SetItemInt.proto */
+#define __Pyx_SetItemInt(o, i, v, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
+    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
+    __Pyx_SetItemInt_Fast(o, (Py_ssize_t)i, v, is_list, wraparound, boundscheck) :\
+    (is_list ? (PyErr_SetString(PyExc_IndexError, "list assignment index out of range"), -1) :\
+               __Pyx_SetItemInt_Generic(o, to_py_func(i), v)))
+static int __Pyx_SetItemInt_Generic(PyObject *o, PyObject *j, PyObject *v);
+static CYTHON_INLINE int __Pyx_SetItemInt_Fast(PyObject *o, Py_ssize_t i, PyObject *v,
+                                               int is_list, int wraparound, int boundscheck);
+
+/* GetItemInt.proto */
+#define __Pyx_GetItemInt(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
+    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
+    __Pyx_GetItemInt_Fast(o, (Py_ssize_t)i, is_list, wraparound, boundscheck) :\
+    (is_list ? (PyErr_SetString(PyExc_IndexError, "list index out of range"), (PyObject*)NULL) :\
+               __Pyx_GetItemInt_Generic(o, to_py_func(i))))
+#define __Pyx_GetItemInt_List(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
+    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
+    __Pyx_GetItemInt_List_Fast(o, (Py_ssize_t)i, wraparound, boundscheck) :\
+    (PyErr_SetString(PyExc_IndexError, "list index out of range"), (PyObject*)NULL))
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_List_Fast(PyObject *o, Py_ssize_t i,
+                                                              int wraparound, int boundscheck);
+#define __Pyx_GetItemInt_Tuple(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
+    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
+    __Pyx_GetItemInt_Tuple_Fast(o, (Py_ssize_t)i, wraparound, boundscheck) :\
+    (PyErr_SetString(PyExc_IndexError, "tuple index out of range"), (PyObject*)NULL))
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Tuple_Fast(PyObject *o, Py_ssize_t i,
+                                                              int wraparound, int boundscheck);
+static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j);
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i,
+                                                     int is_list, int wraparound, int boundscheck);
+
+/* PyObjectCallMethO.proto */
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg);
+#endif
+
+/* PyObjectCallOneArg.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
 
 /* RaiseException.proto */
 static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause);
@@ -1847,6 +1847,9 @@ static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dc_uns
 static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_d_dc_unsigned_PY_LONG_LONG(PyObject *, int writable_flag);
 
 /* ObjectToMemviewSlice.proto */
+static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_d_dc_unsigned_long(PyObject *, int writable_flag);
+
+/* ObjectToMemviewSlice.proto */
 static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_d_dc_Py_ssize_t__const__(PyObject *, int writable_flag);
 
 /* ObjectToMemviewSlice.proto */
@@ -1855,23 +1858,34 @@ static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dc_Py_
 /* ObjectToMemviewSlice.proto */
 static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_d_dc_short(PyObject *, int writable_flag);
 
-/* ObjectToMemviewSlice.proto */
-static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_PY_LONG_LONG__const__(PyObject *, int writable_flag);
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
-/* ObjectToMemviewSlice.proto */
-static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_PY_LONG_LONG(PyObject *, int writable_flag);
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_unsigned_PY_LONG_LONG(unsigned PY_LONG_LONG value);
 
-/* ObjectToMemviewSlice.proto */
-static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsds_Py_ssize_t__const__(PyObject *, int writable_flag);
+/* MemviewDtypeToObject.proto */
+static CYTHON_INLINE PyObject *__pyx_memview_get_unsigned_PY_LONG_LONG(const char *itemp);
+static CYTHON_INLINE int __pyx_memview_set_unsigned_PY_LONG_LONG(const char *itemp, PyObject *obj);
 
-/* None.proto */
-static CYTHON_INLINE long __Pyx_pow_long(long, long);
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_unsigned_long(unsigned long value);
+
+/* MemviewDtypeToObject.proto */
+static CYTHON_INLINE PyObject *__pyx_memview_get_unsigned_long(const char *itemp);
+static CYTHON_INLINE int __pyx_memview_set_unsigned_long(const char *itemp, PyObject *obj);
 
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_unsigned_int(unsigned int value);
+
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_short(short value);
+
+/* None.proto */
+static CYTHON_INLINE long __Pyx_pow_long(long, long);
 
 /* MemviewDtypeToObject.proto */
 static CYTHON_INLINE PyObject *__pyx_memview_get_Py_ssize_t(const char *itemp);
@@ -1976,9 +1990,6 @@ static CYTHON_INLINE int __pyx_memview_set_Py_ssize_t(const char *itemp, PyObjec
 #endif
 
 /* CIntToPy.proto */
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
-
-/* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_enum__NPY_TYPES(enum NPY_TYPES value);
 
 /* MemviewSliceCopyTemplate.proto */
@@ -1993,6 +2004,12 @@ static CYTHON_INLINE unsigned int __Pyx_PyInt_As_unsigned_int(PyObject *);
 
 /* CIntFromPy.proto */
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
+
+/* CIntFromPy.proto */
+static CYTHON_INLINE unsigned PY_LONG_LONG __Pyx_PyInt_As_unsigned_PY_LONG_LONG(PyObject *);
+
+/* CIntFromPy.proto */
+static CYTHON_INLINE unsigned long __Pyx_PyInt_As_unsigned_long(PyObject *);
 
 /* CIntFromPy.proto */
 static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
@@ -2081,13 +2098,15 @@ static PyObject *indirect_contiguous = 0;
 static int __pyx_memoryview_thread_locks_used;
 static PyThread_type_lock __pyx_memoryview_thread_locks[8];
 __PYX_EXTERN_C DL_IMPORT(int) __builtin_ffsll(unsigned PY_LONG_LONG); /*proto*/
+static int __pyx_f_10_sudokugen_brute_force_search(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, unsigned int, int __pyx_skip_dispatch); /*proto*/
+static int __pyx_f_10_sudokugen_brute_force_search_debug(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, int, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static CYTHON_INLINE Py_ssize_t __pyx_f_10_sudokugen_argmin(__Pyx_memviewslice, __Pyx_memviewslice, unsigned int); /*proto*/
+static CYTHON_INLINE int __pyx_f_10_sudokugen_initialize(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
+static CYTHON_INLINE short __pyx_f_10_sudokugen_update_effected(unsigned PY_LONG_LONG const , __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
 static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_subgrid_indices(Py_ssize_t, Py_ssize_t, unsigned int, int __pyx_skip_dispatch); /*proto*/
 static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_col_indices(Py_ssize_t, Py_ssize_t, unsigned int); /*proto*/
 static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_row_indices(Py_ssize_t, Py_ssize_t, unsigned int); /*proto*/
 static __Pyx_memviewslice __pyx_f_10_sudokugen_generate_group_indices(unsigned int, int __pyx_skip_dispatch); /*proto*/
-static void __pyx_f_10_sudokugen_brute_force_search(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, unsigned int, int __pyx_skip_dispatch); /*proto*/
-static CYTHON_INLINE Py_ssize_t __pyx_f_10_sudokugen_argmin(__Pyx_memviewslice, __Pyx_memviewslice, unsigned int); /*proto*/
-static CYTHON_INLINE short __pyx_f_10_sudokugen_update_effected(unsigned PY_LONG_LONG const , __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char *, char *); /*proto*/
 static void *__pyx_align_pointer(void *, size_t); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo *); /*proto*/
@@ -2122,10 +2141,10 @@ static void __pyx_memoryview_slice_assign_scalar(__Pyx_memviewslice *, int, size
 static void __pyx_memoryview__slice_assign_scalar(char *, Py_ssize_t *, Py_ssize_t *, int, size_t, void *); /*proto*/
 static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *, PyObject *); /*proto*/
 static __Pyx_TypeInfo __Pyx_TypeInfo_unsigned_PY_LONG_LONG = { "unsigned long long", NULL, sizeof(unsigned PY_LONG_LONG), { 0 }, 0, IS_UNSIGNED(unsigned PY_LONG_LONG) ? 'U' : 'I', IS_UNSIGNED(unsigned PY_LONG_LONG), 0 };
+static __Pyx_TypeInfo __Pyx_TypeInfo_unsigned_long = { "unsigned long", NULL, sizeof(unsigned long), { 0 }, 0, IS_UNSIGNED(unsigned long) ? 'U' : 'I', IS_UNSIGNED(unsigned long), 0 };
 static __Pyx_TypeInfo __Pyx_TypeInfo_Py_ssize_t__const__ = { "const Py_ssize_t", NULL, sizeof(Py_ssize_t const ), { 0 }, 0, IS_UNSIGNED(Py_ssize_t const ) ? 'U' : 'I', IS_UNSIGNED(Py_ssize_t const ), 0 };
 static __Pyx_TypeInfo __Pyx_TypeInfo_Py_ssize_t = { "Py_ssize_t", NULL, sizeof(Py_ssize_t), { 0 }, 0, IS_UNSIGNED(Py_ssize_t) ? 'U' : 'I', IS_UNSIGNED(Py_ssize_t), 0 };
 static __Pyx_TypeInfo __Pyx_TypeInfo_short = { "short", NULL, sizeof(short), { 0 }, 0, IS_UNSIGNED(short) ? 'U' : 'I', IS_UNSIGNED(short), 0 };
-static __Pyx_TypeInfo __Pyx_TypeInfo_unsigned_PY_LONG_LONG__const__ = { "const unsigned long long", NULL, sizeof(unsigned PY_LONG_LONG const ), { 0 }, 0, IS_UNSIGNED(unsigned PY_LONG_LONG const ) ? 'U' : 'I', IS_UNSIGNED(unsigned PY_LONG_LONG const ), 0 };
 #define __Pyx_MODULE_NAME "_sudokugen"
 extern int __pyx_module_is_main__sudokugen;
 int __pyx_module_is_main__sudokugen = 0;
@@ -2143,8 +2162,6 @@ static PyObject *__pyx_builtin_id;
 static PyObject *__pyx_builtin_IndexError;
 static const char __pyx_k_O[] = "O";
 static const char __pyx_k_c[] = "c";
-static const char __pyx_k_i[] = "i";
-static const char __pyx_k_j[] = "j";
 static const char __pyx_k_n[] = "n";
 static const char __pyx_k_id[] = "id";
 static const char __pyx_k_np[] = "np";
@@ -2174,7 +2191,6 @@ static const char __pyx_k_range[] = "range";
 static const char __pyx_k_shape[] = "shape";
 static const char __pyx_k_start[] = "start";
 static const char __pyx_k_encode[] = "encode";
-static const char __pyx_k_filled[] = "filled";
 static const char __pyx_k_format[] = "format";
 static const char __pyx_k_hstack[] = "hstack";
 static const char __pyx_k_import[] = "__import__";
@@ -2187,6 +2203,7 @@ static const char __pyx_k_update[] = "update";
 static const char __pyx_k_fortran[] = "fortran";
 static const char __pyx_k_memview[] = "memview";
 static const char __pyx_k_Ellipsis[] = "Ellipsis";
+static const char __pyx_k_debugger[] = "debugger";
 static const char __pyx_k_getstate[] = "__getstate__";
 static const char __pyx_k_itemsize[] = "itemsize";
 static const char __pyx_k_pyx_type[] = "__pyx_type";
@@ -2195,15 +2212,11 @@ static const char __pyx_k_TypeError[] = "TypeError";
 static const char __pyx_k_available[] = "available";
 static const char __pyx_k_col_index[] = "col_index";
 static const char __pyx_k_enumerate[] = "enumerate";
-static const char __pyx_k_grid_size[] = "grid_size";
 static const char __pyx_k_pyx_state[] = "__pyx_state";
 static const char __pyx_k_reduce_ex[] = "__reduce_ex__";
 static const char __pyx_k_row_index[] = "row_index";
-static const char __pyx_k_sudokugen[] = "_sudokugen";
 static const char __pyx_k_IndexError[] = "IndexError";
 static const char __pyx_k_ValueError[] = "ValueError";
-static const char __pyx_k_candidates[] = "candidates";
-static const char __pyx_k_group_size[] = "group_size";
 static const char __pyx_k_pyx_result[] = "__pyx_result";
 static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
 static const char __pyx_k_ImportError[] = "ImportError";
@@ -2213,9 +2226,9 @@ static const char __pyx_k_RuntimeError[] = "RuntimeError";
 static const char __pyx_k_pyx_checksum[] = "__pyx_checksum";
 static const char __pyx_k_stringsource[] = "stringsource";
 static const char __pyx_k_group_indices[] = "group_indices";
+static const char __pyx_k_max_solutions[] = "max_solutions";
 static const char __pyx_k_pyx_getbuffer[] = "__pyx_getbuffer";
 static const char __pyx_k_reduce_cython[] = "__reduce_cython__";
-static const char __pyx_k_sudokugen_pyx[] = "_sudokugen.pyx";
 static const char __pyx_k_value_indices[] = "value_indices";
 static const char __pyx_k_candidate_nums[] = "candidate_nums";
 static const char __pyx_k_View_MemoryView[] = "View.MemoryView";
@@ -2225,7 +2238,6 @@ static const char __pyx_k_pyx_PickleError[] = "__pyx_PickleError";
 static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
 static const char __pyx_k_candidate_values[] = "candidate_values";
 static const char __pyx_k_pyx_unpickle_Enum[] = "__pyx_unpickle_Enum";
-static const char __pyx_k_reduce_candidates[] = "reduce_candidates";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_strided_and_direct[] = "<strided and direct>";
 static const char __pyx_k_strided_and_indirect[] = "<strided and indirect>";
@@ -2235,7 +2247,6 @@ static const char __pyx_k_MemoryView_of_r_at_0x_x[] = "<MemoryView of %r at 0x%x
 static const char __pyx_k_contiguous_and_indirect[] = "<contiguous and indirect>";
 static const char __pyx_k_Cannot_index_with_type_s[] = "Cannot index with type '%s'";
 static const char __pyx_k_Invalid_shape_in_axis_d_d[] = "Invalid shape in axis %d: %d.";
-static const char __pyx_k_reduce_candidates_parallel[] = "reduce_candidates_parallel";
 static const char __pyx_k_itemsize_0_for_cython_array[] = "itemsize <= 0 for cython.array";
 static const char __pyx_k_ndarray_is_not_C_contiguous[] = "ndarray is not C contiguous";
 static const char __pyx_k_unable_to_allocate_array_data[] = "unable to allocate array data.";
@@ -2295,12 +2306,12 @@ static PyObject *__pyx_n_s_c;
 static PyObject *__pyx_n_u_c;
 static PyObject *__pyx_n_s_candidate_nums;
 static PyObject *__pyx_n_s_candidate_values;
-static PyObject *__pyx_n_s_candidates;
 static PyObject *__pyx_n_s_class;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_col_index;
 static PyObject *__pyx_kp_s_contiguous_and_direct;
 static PyObject *__pyx_kp_s_contiguous_and_indirect;
+static PyObject *__pyx_n_s_debugger;
 static PyObject *__pyx_n_s_dict;
 static PyObject *__pyx_n_s_dtype;
 static PyObject *__pyx_n_s_dtype_is_object;
@@ -2308,7 +2319,6 @@ static PyObject *__pyx_n_s_empty;
 static PyObject *__pyx_n_s_encode;
 static PyObject *__pyx_n_s_enumerate;
 static PyObject *__pyx_n_s_error;
-static PyObject *__pyx_n_s_filled;
 static PyObject *__pyx_n_s_flags;
 static PyObject *__pyx_n_s_format;
 static PyObject *__pyx_n_s_fortran;
@@ -2316,18 +2326,15 @@ static PyObject *__pyx_n_u_fortran;
 static PyObject *__pyx_n_s_getstate;
 static PyObject *__pyx_kp_s_got_differing_extents_in_dimensi;
 static PyObject *__pyx_n_s_grid;
-static PyObject *__pyx_n_s_grid_size;
 static PyObject *__pyx_n_s_group_indices;
-static PyObject *__pyx_n_s_group_size;
 static PyObject *__pyx_n_s_hstack;
-static PyObject *__pyx_n_s_i;
 static PyObject *__pyx_n_s_id;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_intp;
 static PyObject *__pyx_n_s_itemsize;
 static PyObject *__pyx_kp_s_itemsize_0_for_cython_array;
-static PyObject *__pyx_n_s_j;
 static PyObject *__pyx_n_s_main;
+static PyObject *__pyx_n_s_max_solutions;
 static PyObject *__pyx_n_s_memview;
 static PyObject *__pyx_n_s_mode;
 static PyObject *__pyx_n_s_n;
@@ -2355,8 +2362,6 @@ static PyObject *__pyx_n_s_pyx_unpickle_Enum;
 static PyObject *__pyx_n_s_pyx_vtable;
 static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_s_reduce;
-static PyObject *__pyx_n_s_reduce_candidates;
-static PyObject *__pyx_n_s_reduce_candidates_parallel;
 static PyObject *__pyx_n_s_reduce_cython;
 static PyObject *__pyx_n_s_reduce_ex;
 static PyObject *__pyx_n_s_row_index;
@@ -2372,8 +2377,6 @@ static PyObject *__pyx_kp_s_strided_and_direct_or_indirect;
 static PyObject *__pyx_kp_s_strided_and_indirect;
 static PyObject *__pyx_kp_s_stringsource;
 static PyObject *__pyx_n_s_struct;
-static PyObject *__pyx_n_s_sudokugen;
-static PyObject *__pyx_kp_s_sudokugen_pyx;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_kp_s_unable_to_allocate_array_data;
 static PyObject *__pyx_kp_s_unable_to_allocate_shape_and_str;
@@ -2381,11 +2384,10 @@ static PyObject *__pyx_kp_u_unknown_dtype_code_in_numpy_pxd;
 static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_n_s_update;
 static PyObject *__pyx_n_s_value_indices;
-static PyObject *__pyx_pf_10_sudokugen__generate_subgrid_indices(CYTHON_UNUSED PyObject *__pyx_self, Py_ssize_t __pyx_v_row_index, Py_ssize_t __pyx_v_col_index, unsigned int __pyx_v_n); /* proto */
-static PyObject *__pyx_pf_10_sudokugen_2generate_group_indices(CYTHON_UNUSED PyObject *__pyx_self, unsigned int __pyx_v_n); /* proto */
-static PyObject *__pyx_pf_10_sudokugen_4brute_force_search(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_candidate_values, __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_group_indices, __Pyx_memviewslice __pyx_v_value_indices, __Pyx_memviewslice __pyx_v_available, unsigned int __pyx_v_filled); /* proto */
-static PyObject *__pyx_pf_10_sudokugen_6reduce_candidates_parallel(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_candidate_values, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_group_indices); /* proto */
-static PyObject *__pyx_pf_10_sudokugen_8reduce_candidates(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_candidates, __Pyx_memviewslice __pyx_v_group_indices); /* proto */
+static PyObject *__pyx_pf_10_sudokugen_brute_force_search(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_candidate_values, __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_group_indices, __Pyx_memviewslice __pyx_v_value_indices, __Pyx_memviewslice __pyx_v_available, unsigned int __pyx_v_max_solutions); /* proto */
+static PyObject *__pyx_pf_10_sudokugen_2brute_force_search_debug(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_candidate_values, __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_group_indices, __Pyx_memviewslice __pyx_v_value_indices, __Pyx_memviewslice __pyx_v_available, int __pyx_v_max_solutions, PyObject *__pyx_v_debugger); /* proto */
+static PyObject *__pyx_pf_10_sudokugen_4_generate_subgrid_indices(CYTHON_UNUSED PyObject *__pyx_self, Py_ssize_t __pyx_v_row_index, Py_ssize_t __pyx_v_col_index, unsigned int __pyx_v_n); /* proto */
+static PyObject *__pyx_pf_10_sudokugen_6generate_group_indices(CYTHON_UNUSED PyObject *__pyx_self, unsigned int __pyx_v_n); /* proto */
 static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
@@ -2470,19 +2472,3536 @@ static PyObject *__pyx_tuple__29;
 static PyObject *__pyx_tuple__30;
 static PyObject *__pyx_tuple__31;
 static PyObject *__pyx_tuple__32;
+static PyObject *__pyx_tuple__33;
 static PyObject *__pyx_tuple__34;
+static PyObject *__pyx_tuple__35;
 static PyObject *__pyx_tuple__36;
 static PyObject *__pyx_tuple__37;
-static PyObject *__pyx_tuple__38;
-static PyObject *__pyx_tuple__39;
-static PyObject *__pyx_tuple__40;
-static PyObject *__pyx_tuple__41;
-static PyObject *__pyx_codeobj__33;
-static PyObject *__pyx_codeobj__35;
-static PyObject *__pyx_codeobj__42;
+static PyObject *__pyx_codeobj__38;
 /* Late includes */
 
-/* "_sudokugen.pyx":17
+/* "_sudokugen.pyx":15
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * cpdef int brute_force_search(unsigned long long[::1] grid,             # <<<<<<<<<<<<<<
+ *                              unsigned long long[:, ::1] candidate_values,
+ *                              unsigned long[:, ::1] candidate_nums,
+ */
+
+static PyObject *__pyx_pw_10_sudokugen_1brute_force_search(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static int __pyx_f_10_sudokugen_brute_force_search(__Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_candidate_values, __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_group_indices, __Pyx_memviewslice __pyx_v_value_indices, __Pyx_memviewslice __pyx_v_available, unsigned int __pyx_v_max_solutions, CYTHON_UNUSED int __pyx_skip_dispatch) {
+  unsigned PY_LONG_LONG __pyx_v_value;
+  unsigned int __pyx_v_size;
+  CYTHON_UNUSED unsigned int __pyx_v_group_size;
+  int __pyx_v_found;
+  __Pyx_memviewslice __pyx_v_effected_indices = { 0, 0, { 0 }, { 0 }, { 0 } };
+  Py_ssize_t __pyx_v_value_index;
+  Py_ssize_t __pyx_v_state;
+  int __pyx_v_filled;
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_memviewslice __pyx_t_1 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_t_2 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_t_3 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_t_4;
+  Py_ssize_t __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
+  Py_ssize_t __pyx_t_7;
+  Py_ssize_t __pyx_t_8;
+  Py_ssize_t __pyx_t_9;
+  Py_ssize_t __pyx_t_10;
+  Py_ssize_t __pyx_t_11;
+  Py_ssize_t __pyx_t_12;
+  Py_ssize_t __pyx_t_13;
+  Py_ssize_t __pyx_t_14;
+  Py_ssize_t __pyx_t_15;
+  Py_ssize_t __pyx_t_16;
+  __Pyx_memviewslice __pyx_t_17 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_t_18 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_t_19 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  Py_ssize_t __pyx_t_20;
+  Py_ssize_t __pyx_t_21;
+  Py_ssize_t __pyx_t_22;
+  Py_ssize_t __pyx_t_23;
+  __Pyx_memviewslice __pyx_t_24 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  Py_ssize_t __pyx_t_25;
+  __Pyx_RefNannySetupContext("brute_force_search", 0);
+
+  /* "_sudokugen.pyx":26
+ * 
+ *     cdef unsigned long long value
+ *     cdef unsigned int size = grid.shape[0]             # <<<<<<<<<<<<<<
+ *     cdef unsigned int group_size = group_indices.shape[1]
+ * 
+ */
+  __pyx_v_size = (__pyx_v_grid.shape[0]);
+
+  /* "_sudokugen.pyx":27
+ *     cdef unsigned long long value
+ *     cdef unsigned int size = grid.shape[0]
+ *     cdef unsigned int group_size = group_indices.shape[1]             # <<<<<<<<<<<<<<
+ * 
+ *     cdef int found = 0
+ */
+  __pyx_v_group_size = (__pyx_v_group_indices.shape[1]);
+
+  /* "_sudokugen.pyx":29
+ *     cdef unsigned int group_size = group_indices.shape[1]
+ * 
+ *     cdef int found = 0             # <<<<<<<<<<<<<<
+ * 
+ *     cdef const Py_ssize_t[::1] effected_indices
+ */
+  __pyx_v_found = 0;
+
+  /* "_sudokugen.pyx":34
+ * 
+ *     cdef Py_ssize_t i, j
+ *     cdef Py_ssize_t value_index, state = 0             # <<<<<<<<<<<<<<
+ * 
+ *     cdef int filled = initialize(grid, candidate_values[0],
+ */
+  __pyx_v_state = 0;
+
+  /* "_sudokugen.pyx":36
+ *     cdef Py_ssize_t value_index, state = 0
+ * 
+ *     cdef int filled = initialize(grid, candidate_values[0],             # <<<<<<<<<<<<<<
+ *                                  candidate_nums[0], group_indices,
+ *                                  available[0])
+ */
+  __pyx_t_1.data = __pyx_v_candidate_values.data;
+  __pyx_t_1.memview = __pyx_v_candidate_values.memview;
+  __PYX_INC_MEMVIEW(&__pyx_t_1, 0);
+  {
+    Py_ssize_t __pyx_tmp_idx = 0;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_values.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_values.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 36, __pyx_L1_error)
+    }
+        __pyx_t_1.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_1.shape[0] = __pyx_v_candidate_values.shape[1];
+__pyx_t_1.strides[0] = __pyx_v_candidate_values.strides[1];
+    __pyx_t_1.suboffsets[0] = -1;
+
+__pyx_t_2.data = __pyx_v_candidate_nums.data;
+
+  /* "_sudokugen.pyx":37
+ * 
+ *     cdef int filled = initialize(grid, candidate_values[0],
+ *                                  candidate_nums[0], group_indices,             # <<<<<<<<<<<<<<
+ *                                  available[0])
+ * 
+ */
+  __pyx_t_2.memview = __pyx_v_candidate_nums.memview;
+  __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
+  {
+    Py_ssize_t __pyx_tmp_idx = 0;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 37, __pyx_L1_error)
+    }
+        __pyx_t_2.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_2.shape[0] = __pyx_v_candidate_nums.shape[1];
+__pyx_t_2.strides[0] = __pyx_v_candidate_nums.strides[1];
+    __pyx_t_2.suboffsets[0] = -1;
+
+__pyx_t_3.data = __pyx_v_available.data;
+
+  /* "_sudokugen.pyx":38
+ *     cdef int filled = initialize(grid, candidate_values[0],
+ *                                  candidate_nums[0], group_indices,
+ *                                  available[0])             # <<<<<<<<<<<<<<
+ * 
+ *     if filled == -1:
+ */
+  __pyx_t_3.memview = __pyx_v_available.memview;
+  __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
+  {
+    Py_ssize_t __pyx_tmp_idx = 0;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 38, __pyx_L1_error)
+    }
+        __pyx_t_3.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_3.shape[0] = __pyx_v_available.shape[1];
+__pyx_t_3.strides[0] = __pyx_v_available.strides[1];
+    __pyx_t_3.suboffsets[0] = -1;
+
+__pyx_v_filled = __pyx_f_10_sudokugen_initialize(__pyx_v_grid, __pyx_t_1, __pyx_t_2, __pyx_v_group_indices, __pyx_t_3);
+
+  /* "_sudokugen.pyx":36
+ *     cdef Py_ssize_t value_index, state = 0
+ * 
+ *     cdef int filled = initialize(grid, candidate_values[0],             # <<<<<<<<<<<<<<
+ *                                  candidate_nums[0], group_indices,
+ *                                  available[0])
+ */
+  __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+  __pyx_t_1.memview = NULL;
+  __pyx_t_1.data = NULL;
+  __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+  __pyx_t_2.memview = NULL;
+  __pyx_t_2.data = NULL;
+  __PYX_XDEC_MEMVIEW(&__pyx_t_3, 1);
+  __pyx_t_3.memview = NULL;
+  __pyx_t_3.data = NULL;
+
+  /* "_sudokugen.pyx":40
+ *                                  available[0])
+ * 
+ *     if filled == -1:             # <<<<<<<<<<<<<<
+ *         return -1
+ * 
+ */
+  __pyx_t_4 = ((__pyx_v_filled == -1L) != 0);
+  if (__pyx_t_4) {
+
+    /* "_sudokugen.pyx":41
+ * 
+ *     if filled == -1:
+ *         return -1             # <<<<<<<<<<<<<<
+ * 
+ *     elif filled > 0:
+ */
+    __pyx_r = -1;
+    goto __pyx_L0;
+
+    /* "_sudokugen.pyx":40
+ *                                  available[0])
+ * 
+ *     if filled == -1:             # <<<<<<<<<<<<<<
+ *         return -1
+ * 
+ */
+  }
+
+  /* "_sudokugen.pyx":43
+ *         return -1
+ * 
+ *     elif filled > 0:             # <<<<<<<<<<<<<<
+ *         value_indices[0] = argmin(candidate_nums[0], available[0], size)
+ * 
+ */
+  __pyx_t_4 = ((__pyx_v_filled > 0) != 0);
+  if (__pyx_t_4) {
+
+    /* "_sudokugen.pyx":44
+ * 
+ *     elif filled > 0:
+ *         value_indices[0] = argmin(candidate_nums[0], available[0], size)             # <<<<<<<<<<<<<<
+ * 
+ *     while True:
+ */
+    __pyx_t_2.data = __pyx_v_candidate_nums.data;
+    __pyx_t_2.memview = __pyx_v_candidate_nums.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = 0;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 44, __pyx_L1_error)
+    }
+        __pyx_t_2.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_2.shape[0] = __pyx_v_candidate_nums.shape[1];
+__pyx_t_2.strides[0] = __pyx_v_candidate_nums.strides[1];
+    __pyx_t_2.suboffsets[0] = -1;
+
+__pyx_t_3.data = __pyx_v_available.data;
+    __pyx_t_3.memview = __pyx_v_available.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = 0;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 44, __pyx_L1_error)
+    }
+        __pyx_t_3.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_3.shape[0] = __pyx_v_available.shape[1];
+__pyx_t_3.strides[0] = __pyx_v_available.strides[1];
+    __pyx_t_3.suboffsets[0] = -1;
+
+__pyx_t_5 = 0;
+    *((Py_ssize_t *) ( /* dim=0 */ ((char *) (((Py_ssize_t *) __pyx_v_value_indices.data) + __pyx_t_5)) )) = __pyx_f_10_sudokugen_argmin(__pyx_t_2, __pyx_t_3, __pyx_v_size);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+    __pyx_t_2.memview = NULL;
+    __pyx_t_2.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_3, 1);
+    __pyx_t_3.memview = NULL;
+    __pyx_t_3.data = NULL;
+
+    /* "_sudokugen.pyx":43
+ *         return -1
+ * 
+ *     elif filled > 0:             # <<<<<<<<<<<<<<
+ *         value_indices[0] = argmin(candidate_nums[0], available[0], size)
+ * 
+ */
+  }
+
+  /* "_sudokugen.pyx":46
+ *         value_indices[0] = argmin(candidate_nums[0], available[0], size)
+ * 
+ *     while True:             # <<<<<<<<<<<<<<
+ * 
+ *         value_index = value_indices[state]
+ */
+  while (1) {
+
+    /* "_sudokugen.pyx":48
+ *     while True:
+ * 
+ *         value_index = value_indices[state]             # <<<<<<<<<<<<<<
+ * 
+ *         # If no candidates left -> backtrack
+ */
+    __pyx_t_6 = __pyx_v_state;
+    __pyx_v_value_index = (*((Py_ssize_t *) ( /* dim=0 */ ((char *) (((Py_ssize_t *) __pyx_v_value_indices.data) + __pyx_t_6)) )));
+
+    /* "_sudokugen.pyx":52
+ *         # If no candidates left -> backtrack
+ * 
+ *         if candidate_nums[state, value_index] == 0:             # <<<<<<<<<<<<<<
+ *             grid[value_index] = 0
+ *             state -= 1
+ */
+    __pyx_t_7 = __pyx_v_state;
+    __pyx_t_8 = __pyx_v_value_index;
+    __pyx_t_4 = (((*((unsigned long *) ( /* dim=1 */ ((char *) (((unsigned long *) ( /* dim=0 */ (__pyx_v_candidate_nums.data + __pyx_t_7 * __pyx_v_candidate_nums.strides[0]) )) + __pyx_t_8)) ))) == 0) != 0);
+    if (__pyx_t_4) {
+
+      /* "_sudokugen.pyx":53
+ * 
+ *         if candidate_nums[state, value_index] == 0:
+ *             grid[value_index] = 0             # <<<<<<<<<<<<<<
+ *             state -= 1
+ *             filled -= 1
+ */
+      __pyx_t_9 = __pyx_v_value_index;
+      *((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_grid.data) + __pyx_t_9)) )) = 0;
+
+      /* "_sudokugen.pyx":54
+ *         if candidate_nums[state, value_index] == 0:
+ *             grid[value_index] = 0
+ *             state -= 1             # <<<<<<<<<<<<<<
+ *             filled -= 1
+ * 
+ */
+      __pyx_v_state = (__pyx_v_state - 1);
+
+      /* "_sudokugen.pyx":55
+ *             grid[value_index] = 0
+ *             state -= 1
+ *             filled -= 1             # <<<<<<<<<<<<<<
+ * 
+ *             if state < 0:
+ */
+      __pyx_v_filled = (__pyx_v_filled - 1);
+
+      /* "_sudokugen.pyx":57
+ *             filled -= 1
+ * 
+ *             if state < 0:             # <<<<<<<<<<<<<<
+ *                 return found
+ * 
+ */
+      __pyx_t_4 = ((__pyx_v_state < 0) != 0);
+      if (__pyx_t_4) {
+
+        /* "_sudokugen.pyx":58
+ * 
+ *             if state < 0:
+ *                 return found             # <<<<<<<<<<<<<<
+ * 
+ *             continue
+ */
+        __pyx_r = __pyx_v_found;
+        goto __pyx_L0;
+
+        /* "_sudokugen.pyx":57
+ *             filled -= 1
+ * 
+ *             if state < 0:             # <<<<<<<<<<<<<<
+ *                 return found
+ * 
+ */
+      }
+
+      /* "_sudokugen.pyx":60
+ *                 return found
+ * 
+ *             continue             # <<<<<<<<<<<<<<
+ * 
+ *         # The next value will be the first set bit from the candidates
+ */
+      goto __pyx_L4_continue;
+
+      /* "_sudokugen.pyx":52
+ *         # If no candidates left -> backtrack
+ * 
+ *         if candidate_nums[state, value_index] == 0:             # <<<<<<<<<<<<<<
+ *             grid[value_index] = 0
+ *             state -= 1
+ */
+    }
+
+    /* "_sudokugen.pyx":65
+ * 
+ *         value = 1 << (__builtin_ffsll(
+ *             candidate_values[state, value_index]) - 1)             # <<<<<<<<<<<<<<
+ * 
+ *         grid[value_index] = value
+ */
+    __pyx_t_10 = __pyx_v_state;
+    __pyx_t_11 = __pyx_v_value_index;
+
+    /* "_sudokugen.pyx":64
+ *         # The next value will be the first set bit from the candidates
+ * 
+ *         value = 1 << (__builtin_ffsll(             # <<<<<<<<<<<<<<
+ *             candidate_values[state, value_index]) - 1)
+ * 
+ */
+    __pyx_v_value = (1 << (__builtin_ffsll((*((unsigned PY_LONG_LONG *) ( /* dim=1 */ ((char *) (((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_values.data + __pyx_t_10 * __pyx_v_candidate_values.strides[0]) )) + __pyx_t_11)) )))) - 1));
+
+    /* "_sudokugen.pyx":67
+ *             candidate_values[state, value_index]) - 1)
+ * 
+ *         grid[value_index] = value             # <<<<<<<<<<<<<<
+ * 
+ *         # Chosen value is removed from the candidates
+ */
+    __pyx_t_12 = __pyx_v_value_index;
+    *((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_grid.data) + __pyx_t_12)) )) = __pyx_v_value;
+
+    /* "_sudokugen.pyx":71
+ *         # Chosen value is removed from the candidates
+ * 
+ *         candidate_values[state, value_index] &= ~value             # <<<<<<<<<<<<<<
+ *         candidate_nums[state, value_index] -= 1
+ * 
+ */
+    __pyx_t_13 = __pyx_v_state;
+    __pyx_t_14 = __pyx_v_value_index;
+    *((unsigned PY_LONG_LONG *) ( /* dim=1 */ ((char *) (((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_values.data + __pyx_t_13 * __pyx_v_candidate_values.strides[0]) )) + __pyx_t_14)) )) &= (~__pyx_v_value);
+
+    /* "_sudokugen.pyx":72
+ * 
+ *         candidate_values[state, value_index] &= ~value
+ *         candidate_nums[state, value_index] -= 1             # <<<<<<<<<<<<<<
+ * 
+ *         # Preparing the next state, by continuing the previous state
+ */
+    __pyx_t_15 = __pyx_v_state;
+    __pyx_t_16 = __pyx_v_value_index;
+    *((unsigned long *) ( /* dim=1 */ ((char *) (((unsigned long *) ( /* dim=0 */ (__pyx_v_candidate_nums.data + __pyx_t_15 * __pyx_v_candidate_nums.strides[0]) )) + __pyx_t_16)) )) -= 1;
+
+    /* "_sudokugen.pyx":76
+ *         # Preparing the next state, by continuing the previous state
+ * 
+ *         candidate_values[state + 1, :] = candidate_values[state, :]             # <<<<<<<<<<<<<<
+ *         candidate_nums[state + 1, :] = candidate_nums[state, :]
+ *         available[state + 1, :] = available[state, :]
+ */
+    __pyx_t_1.data = __pyx_v_candidate_values.data;
+    __pyx_t_1.memview = __pyx_v_candidate_values.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_1, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_values.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_values.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 76, __pyx_L1_error)
+    }
+        __pyx_t_1.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_1.shape[0] = __pyx_v_candidate_values.shape[1];
+__pyx_t_1.strides[0] = __pyx_v_candidate_values.strides[1];
+    __pyx_t_1.suboffsets[0] = -1;
+
+__pyx_t_17.data = __pyx_v_candidate_values.data;
+    __pyx_t_17.memview = __pyx_v_candidate_values.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_17, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_state + 1);
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_values.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_values.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 76, __pyx_L1_error)
+    }
+        __pyx_t_17.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_17.shape[0] = __pyx_v_candidate_values.shape[1];
+__pyx_t_17.strides[0] = __pyx_v_candidate_values.strides[1];
+    __pyx_t_17.suboffsets[0] = -1;
+
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_1, __pyx_t_17, 1, 1, 0) < 0)) __PYX_ERR(0, 76, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
+    __pyx_t_17.memview = NULL;
+    __pyx_t_17.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+    __pyx_t_1.memview = NULL;
+    __pyx_t_1.data = NULL;
+
+    /* "_sudokugen.pyx":77
+ * 
+ *         candidate_values[state + 1, :] = candidate_values[state, :]
+ *         candidate_nums[state + 1, :] = candidate_nums[state, :]             # <<<<<<<<<<<<<<
+ *         available[state + 1, :] = available[state, :]
+ * 
+ */
+    __pyx_t_2.data = __pyx_v_candidate_nums.data;
+    __pyx_t_2.memview = __pyx_v_candidate_nums.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 77, __pyx_L1_error)
+    }
+        __pyx_t_2.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_2.shape[0] = __pyx_v_candidate_nums.shape[1];
+__pyx_t_2.strides[0] = __pyx_v_candidate_nums.strides[1];
+    __pyx_t_2.suboffsets[0] = -1;
+
+__pyx_t_18.data = __pyx_v_candidate_nums.data;
+    __pyx_t_18.memview = __pyx_v_candidate_nums.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_18, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_state + 1);
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 77, __pyx_L1_error)
+    }
+        __pyx_t_18.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_18.shape[0] = __pyx_v_candidate_nums.shape[1];
+__pyx_t_18.strides[0] = __pyx_v_candidate_nums.strides[1];
+    __pyx_t_18.suboffsets[0] = -1;
+
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_2, __pyx_t_18, 1, 1, 0) < 0)) __PYX_ERR(0, 77, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_18, 1);
+    __pyx_t_18.memview = NULL;
+    __pyx_t_18.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+    __pyx_t_2.memview = NULL;
+    __pyx_t_2.data = NULL;
+
+    /* "_sudokugen.pyx":78
+ *         candidate_values[state + 1, :] = candidate_values[state, :]
+ *         candidate_nums[state + 1, :] = candidate_nums[state, :]
+ *         available[state + 1, :] = available[state, :]             # <<<<<<<<<<<<<<
+ * 
+ *         # Candidate values may contain other values, besides the filled one.
+ */
+    __pyx_t_3.data = __pyx_v_available.data;
+    __pyx_t_3.memview = __pyx_v_available.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 78, __pyx_L1_error)
+    }
+        __pyx_t_3.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_3.shape[0] = __pyx_v_available.shape[1];
+__pyx_t_3.strides[0] = __pyx_v_available.strides[1];
+    __pyx_t_3.suboffsets[0] = -1;
+
+__pyx_t_19.data = __pyx_v_available.data;
+    __pyx_t_19.memview = __pyx_v_available.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_19, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_state + 1);
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 78, __pyx_L1_error)
+    }
+        __pyx_t_19.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_19.shape[0] = __pyx_v_available.shape[1];
+__pyx_t_19.strides[0] = __pyx_v_available.strides[1];
+    __pyx_t_19.suboffsets[0] = -1;
+
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_3, __pyx_t_19, 1, 1, 0) < 0)) __PYX_ERR(0, 78, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_19, 1);
+    __pyx_t_19.memview = NULL;
+    __pyx_t_19.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_3, 1);
+    __pyx_t_3.memview = NULL;
+    __pyx_t_3.data = NULL;
+
+    /* "_sudokugen.pyx":84
+ *         # the correct behaviour of several candidate reduction mechanisms
+ * 
+ *         candidate_values[state + 1, value_index] = value             # <<<<<<<<<<<<<<
+ *         available[state + 1, value_index] = 0
+ * 
+ */
+    __pyx_t_20 = (__pyx_v_state + 1);
+    __pyx_t_21 = __pyx_v_value_index;
+    *((unsigned PY_LONG_LONG *) ( /* dim=1 */ ((char *) (((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_values.data + __pyx_t_20 * __pyx_v_candidate_values.strides[0]) )) + __pyx_t_21)) )) = __pyx_v_value;
+
+    /* "_sudokugen.pyx":85
+ * 
+ *         candidate_values[state + 1, value_index] = value
+ *         available[state + 1, value_index] = 0             # <<<<<<<<<<<<<<
+ * 
+ *         effected_indices = group_indices[value_index]
+ */
+    __pyx_t_22 = (__pyx_v_state + 1);
+    __pyx_t_23 = __pyx_v_value_index;
+    *((short *) ( /* dim=1 */ ((char *) (((short *) ( /* dim=0 */ (__pyx_v_available.data + __pyx_t_22 * __pyx_v_available.strides[0]) )) + __pyx_t_23)) )) = 0;
+
+    /* "_sudokugen.pyx":87
+ *         available[state + 1, value_index] = 0
+ * 
+ *         effected_indices = group_indices[value_index]             # <<<<<<<<<<<<<<
+ * 
+ *         # Update effected indices
+ */
+    __pyx_t_24.data = __pyx_v_group_indices.data;
+    __pyx_t_24.memview = __pyx_v_group_indices.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_24, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_value_index;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_group_indices.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_group_indices.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 87, __pyx_L1_error)
+    }
+        __pyx_t_24.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_24.shape[0] = __pyx_v_group_indices.shape[1];
+__pyx_t_24.strides[0] = __pyx_v_group_indices.strides[1];
+    __pyx_t_24.suboffsets[0] = -1;
+
+__PYX_XDEC_MEMVIEW(&__pyx_v_effected_indices, 1);
+    __pyx_v_effected_indices = __pyx_t_24;
+    __pyx_t_24.memview = NULL;
+    __pyx_t_24.data = NULL;
+
+    /* "_sudokugen.pyx":92
+ * 
+ *         if not update_effected(value,
+ *                                candidate_values[state + 1],             # <<<<<<<<<<<<<<
+ *                                candidate_nums[state + 1],
+ *                                effected_indices,
+ */
+    __pyx_t_1.data = __pyx_v_candidate_values.data;
+    __pyx_t_1.memview = __pyx_v_candidate_values.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_1, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_state + 1);
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_values.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_values.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 92, __pyx_L1_error)
+    }
+        __pyx_t_1.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_1.shape[0] = __pyx_v_candidate_values.shape[1];
+__pyx_t_1.strides[0] = __pyx_v_candidate_values.strides[1];
+    __pyx_t_1.suboffsets[0] = -1;
+
+__pyx_t_2.data = __pyx_v_candidate_nums.data;
+
+    /* "_sudokugen.pyx":93
+ *         if not update_effected(value,
+ *                                candidate_values[state + 1],
+ *                                candidate_nums[state + 1],             # <<<<<<<<<<<<<<
+ *                                effected_indices,
+ *                                available[state + 1]):
+ */
+    __pyx_t_2.memview = __pyx_v_candidate_nums.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_state + 1);
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 93, __pyx_L1_error)
+    }
+        __pyx_t_2.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_2.shape[0] = __pyx_v_candidate_nums.shape[1];
+__pyx_t_2.strides[0] = __pyx_v_candidate_nums.strides[1];
+    __pyx_t_2.suboffsets[0] = -1;
+
+__pyx_t_3.data = __pyx_v_available.data;
+
+    /* "_sudokugen.pyx":95
+ *                                candidate_nums[state + 1],
+ *                                effected_indices,
+ *                                available[state + 1]):             # <<<<<<<<<<<<<<
+ *             continue
+ * 
+ */
+    __pyx_t_3.memview = __pyx_v_available.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_state + 1);
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 95, __pyx_L1_error)
+    }
+        __pyx_t_3.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_3.shape[0] = __pyx_v_available.shape[1];
+__pyx_t_3.strides[0] = __pyx_v_available.strides[1];
+    __pyx_t_3.suboffsets[0] = -1;
+
+__pyx_t_4 = ((!(__pyx_f_10_sudokugen_update_effected(__pyx_v_value, __pyx_t_1, __pyx_t_2, __pyx_v_effected_indices, __pyx_t_3) != 0)) != 0);
+
+    /* "_sudokugen.pyx":91
+ *         # Update effected indices
+ * 
+ *         if not update_effected(value,             # <<<<<<<<<<<<<<
+ *                                candidate_values[state + 1],
+ *                                candidate_nums[state + 1],
+ */
+    __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+    __pyx_t_1.memview = NULL;
+    __pyx_t_1.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+    __pyx_t_2.memview = NULL;
+    __pyx_t_2.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_3, 1);
+    __pyx_t_3.memview = NULL;
+    __pyx_t_3.data = NULL;
+    if (__pyx_t_4) {
+
+      /* "_sudokugen.pyx":96
+ *                                effected_indices,
+ *                                available[state + 1]):
+ *             continue             # <<<<<<<<<<<<<<
+ * 
+ *         # TODO update candidates (and getting the least candidate index)
+ */
+      goto __pyx_L4_continue;
+
+      /* "_sudokugen.pyx":91
+ *         # Update effected indices
+ * 
+ *         if not update_effected(value,             # <<<<<<<<<<<<<<
+ *                                candidate_values[state + 1],
+ *                                candidate_nums[state + 1],
+ */
+    }
+
+    /* "_sudokugen.pyx":102
+ *         # Termination upon all cells are filled
+ * 
+ *         if filled + 1 == size:             # <<<<<<<<<<<<<<
+ *             found += 1
+ * 
+ */
+    __pyx_t_4 = (((__pyx_v_filled + 1) == __pyx_v_size) != 0);
+    if (__pyx_t_4) {
+
+      /* "_sudokugen.pyx":103
+ * 
+ *         if filled + 1 == size:
+ *             found += 1             # <<<<<<<<<<<<<<
+ * 
+ *             if found == max_solutions:
+ */
+      __pyx_v_found = (__pyx_v_found + 1);
+
+      /* "_sudokugen.pyx":105
+ *             found += 1
+ * 
+ *             if found == max_solutions:             # <<<<<<<<<<<<<<
+ *                 return found
+ * 
+ */
+      __pyx_t_4 = ((__pyx_v_found == __pyx_v_max_solutions) != 0);
+      if (__pyx_t_4) {
+
+        /* "_sudokugen.pyx":106
+ * 
+ *             if found == max_solutions:
+ *                 return found             # <<<<<<<<<<<<<<
+ * 
+ *             continue
+ */
+        __pyx_r = __pyx_v_found;
+        goto __pyx_L0;
+
+        /* "_sudokugen.pyx":105
+ *             found += 1
+ * 
+ *             if found == max_solutions:             # <<<<<<<<<<<<<<
+ *                 return found
+ * 
+ */
+      }
+
+      /* "_sudokugen.pyx":108
+ *                 return found
+ * 
+ *             continue             # <<<<<<<<<<<<<<
+ * 
+ *         filled += 1
+ */
+      goto __pyx_L4_continue;
+
+      /* "_sudokugen.pyx":102
+ *         # Termination upon all cells are filled
+ * 
+ *         if filled + 1 == size:             # <<<<<<<<<<<<<<
+ *             found += 1
+ * 
+ */
+    }
+
+    /* "_sudokugen.pyx":110
+ *             continue
+ * 
+ *         filled += 1             # <<<<<<<<<<<<<<
+ *         state += 1
+ * 
+ */
+    __pyx_v_filled = (__pyx_v_filled + 1);
+
+    /* "_sudokugen.pyx":111
+ * 
+ *         filled += 1
+ *         state += 1             # <<<<<<<<<<<<<<
+ * 
+ *         value_indices[state] = argmin(
+ */
+    __pyx_v_state = (__pyx_v_state + 1);
+
+    /* "_sudokugen.pyx":114
+ * 
+ *         value_indices[state] = argmin(
+ *             candidate_nums[state], available[state], size)             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+    __pyx_t_2.data = __pyx_v_candidate_nums.data;
+    __pyx_t_2.memview = __pyx_v_candidate_nums.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 114, __pyx_L1_error)
+    }
+        __pyx_t_2.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_2.shape[0] = __pyx_v_candidate_nums.shape[1];
+__pyx_t_2.strides[0] = __pyx_v_candidate_nums.strides[1];
+    __pyx_t_2.suboffsets[0] = -1;
+
+__pyx_t_3.data = __pyx_v_available.data;
+    __pyx_t_3.memview = __pyx_v_available.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 114, __pyx_L1_error)
+    }
+        __pyx_t_3.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_3.shape[0] = __pyx_v_available.shape[1];
+__pyx_t_3.strides[0] = __pyx_v_available.strides[1];
+    __pyx_t_3.suboffsets[0] = -1;
+
+__pyx_t_25 = __pyx_v_state;
+
+    /* "_sudokugen.pyx":113
+ *         state += 1
+ * 
+ *         value_indices[state] = argmin(             # <<<<<<<<<<<<<<
+ *             candidate_nums[state], available[state], size)
+ * 
+ */
+    *((Py_ssize_t *) ( /* dim=0 */ ((char *) (((Py_ssize_t *) __pyx_v_value_indices.data) + __pyx_t_25)) )) = __pyx_f_10_sudokugen_argmin(__pyx_t_2, __pyx_t_3, __pyx_v_size);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+    __pyx_t_2.memview = NULL;
+    __pyx_t_2.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_3, 1);
+    __pyx_t_3.memview = NULL;
+    __pyx_t_3.data = NULL;
+    __pyx_L4_continue:;
+  }
+
+  /* "_sudokugen.pyx":15
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * cpdef int brute_force_search(unsigned long long[::1] grid,             # <<<<<<<<<<<<<<
+ *                              unsigned long long[:, ::1] candidate_values,
+ *                              unsigned long[:, ::1] candidate_nums,
+ */
+
+  /* function exit code */
+  __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_3, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_18, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_19, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_24, 1);
+  __Pyx_WriteUnraisable("_sudokugen.brute_force_search", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __PYX_XDEC_MEMVIEW(&__pyx_v_effected_indices, 1);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_10_sudokugen_1brute_force_search(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_10_sudokugen_brute_force_search[] = "Implementation of a brute force backtracking search, with\n    deductive candidate reduction.";
+static PyObject *__pyx_pw_10_sudokugen_1brute_force_search(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  __Pyx_memviewslice __pyx_v_grid = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_candidate_values = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_candidate_nums = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_group_indices = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_value_indices = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_available = { 0, 0, { 0 }, { 0 }, { 0 } };
+  unsigned int __pyx_v_max_solutions;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("brute_force_search (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_grid,&__pyx_n_s_candidate_values,&__pyx_n_s_candidate_nums,&__pyx_n_s_group_indices,&__pyx_n_s_value_indices,&__pyx_n_s_available,&__pyx_n_s_max_solutions,0};
+    PyObject* values[7] = {0,0,0,0,0,0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  7: values[6] = PyTuple_GET_ITEM(__pyx_args, 6);
+        CYTHON_FALLTHROUGH;
+        case  6: values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
+        CYTHON_FALLTHROUGH;
+        case  5: values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
+        CYTHON_FALLTHROUGH;
+        case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+        CYTHON_FALLTHROUGH;
+        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+        CYTHON_FALLTHROUGH;
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        CYTHON_FALLTHROUGH;
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_grid)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        CYTHON_FALLTHROUGH;
+        case  1:
+        if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_candidate_values)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("brute_force_search", 1, 7, 7, 1); __PYX_ERR(0, 15, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  2:
+        if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_candidate_nums)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("brute_force_search", 1, 7, 7, 2); __PYX_ERR(0, 15, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  3:
+        if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_group_indices)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("brute_force_search", 1, 7, 7, 3); __PYX_ERR(0, 15, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  4:
+        if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_value_indices)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("brute_force_search", 1, 7, 7, 4); __PYX_ERR(0, 15, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  5:
+        if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_available)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("brute_force_search", 1, 7, 7, 5); __PYX_ERR(0, 15, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  6:
+        if (likely((values[6] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_max_solutions)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("brute_force_search", 1, 7, 7, 6); __PYX_ERR(0, 15, __pyx_L3_error)
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "brute_force_search") < 0)) __PYX_ERR(0, 15, __pyx_L3_error)
+      }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 7) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+      values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+      values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
+      values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
+      values[6] = PyTuple_GET_ITEM(__pyx_args, 6);
+    }
+    __pyx_v_grid = __Pyx_PyObject_to_MemoryviewSlice_dc_unsigned_PY_LONG_LONG(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_grid.memview)) __PYX_ERR(0, 15, __pyx_L3_error)
+    __pyx_v_candidate_values = __Pyx_PyObject_to_MemoryviewSlice_d_dc_unsigned_PY_LONG_LONG(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_candidate_values.memview)) __PYX_ERR(0, 16, __pyx_L3_error)
+    __pyx_v_candidate_nums = __Pyx_PyObject_to_MemoryviewSlice_d_dc_unsigned_long(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_candidate_nums.memview)) __PYX_ERR(0, 17, __pyx_L3_error)
+    __pyx_v_group_indices = __Pyx_PyObject_to_MemoryviewSlice_d_dc_Py_ssize_t__const__(values[3], 0); if (unlikely(!__pyx_v_group_indices.memview)) __PYX_ERR(0, 18, __pyx_L3_error)
+    __pyx_v_value_indices = __Pyx_PyObject_to_MemoryviewSlice_dc_Py_ssize_t(values[4], PyBUF_WRITABLE); if (unlikely(!__pyx_v_value_indices.memview)) __PYX_ERR(0, 19, __pyx_L3_error)
+    __pyx_v_available = __Pyx_PyObject_to_MemoryviewSlice_d_dc_short(values[5], PyBUF_WRITABLE); if (unlikely(!__pyx_v_available.memview)) __PYX_ERR(0, 20, __pyx_L3_error)
+    __pyx_v_max_solutions = __Pyx_PyInt_As_unsigned_int(values[6]); if (unlikely((__pyx_v_max_solutions == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 21, __pyx_L3_error)
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("brute_force_search", 1, 7, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 15, __pyx_L3_error)
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("_sudokugen.brute_force_search", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_10_sudokugen_brute_force_search(__pyx_self, __pyx_v_grid, __pyx_v_candidate_values, __pyx_v_candidate_nums, __pyx_v_group_indices, __pyx_v_value_indices, __pyx_v_available, __pyx_v_max_solutions);
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_10_sudokugen_brute_force_search(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_candidate_values, __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_group_indices, __Pyx_memviewslice __pyx_v_value_indices, __Pyx_memviewslice __pyx_v_available, unsigned int __pyx_v_max_solutions) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("brute_force_search", 0);
+  __Pyx_XDECREF(__pyx_r);
+  if (unlikely(!__pyx_v_grid.memview)) { __Pyx_RaiseUnboundLocalError("grid"); __PYX_ERR(0, 15, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_candidate_values.memview)) { __Pyx_RaiseUnboundLocalError("candidate_values"); __PYX_ERR(0, 15, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_candidate_nums.memview)) { __Pyx_RaiseUnboundLocalError("candidate_nums"); __PYX_ERR(0, 15, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_group_indices.memview)) { __Pyx_RaiseUnboundLocalError("group_indices"); __PYX_ERR(0, 15, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_value_indices.memview)) { __Pyx_RaiseUnboundLocalError("value_indices"); __PYX_ERR(0, 15, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_available.memview)) { __Pyx_RaiseUnboundLocalError("available"); __PYX_ERR(0, 15, __pyx_L1_error) }
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_f_10_sudokugen_brute_force_search(__pyx_v_grid, __pyx_v_candidate_values, __pyx_v_candidate_nums, __pyx_v_group_indices, __pyx_v_value_indices, __pyx_v_available, __pyx_v_max_solutions, 0)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 15, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("_sudokugen.brute_force_search", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __PYX_XDEC_MEMVIEW(&__pyx_v_grid, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_candidate_values, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_candidate_nums, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_group_indices, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_value_indices, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_available, 1);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "_sudokugen.pyx":120
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * cpdef int brute_force_search_debug(unsigned long long[::1] grid,             # <<<<<<<<<<<<<<
+ *                                    unsigned long long[:, ::1] candidate_values,
+ *                                    unsigned long[:, ::1] candidate_nums,
+ */
+
+static PyObject *__pyx_pw_10_sudokugen_3brute_force_search_debug(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static int __pyx_f_10_sudokugen_brute_force_search_debug(__Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_candidate_values, __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_group_indices, __Pyx_memviewslice __pyx_v_value_indices, __Pyx_memviewslice __pyx_v_available, int __pyx_v_max_solutions, PyObject *__pyx_v_debugger, CYTHON_UNUSED int __pyx_skip_dispatch) {
+  unsigned PY_LONG_LONG __pyx_v_value;
+  unsigned int __pyx_v_size;
+  CYTHON_UNUSED unsigned int __pyx_v_group_size;
+  int __pyx_v_found;
+  __Pyx_memviewslice __pyx_v_effected_indices = { 0, 0, { 0 }, { 0 }, { 0 } };
+  Py_ssize_t __pyx_v_value_index;
+  Py_ssize_t __pyx_v_state;
+  int __pyx_v_filled;
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_memviewslice __pyx_t_1 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_t_2 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_t_3 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_t_4;
+  Py_ssize_t __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
+  PyObject *__pyx_t_7 = NULL;
+  PyObject *__pyx_t_8 = NULL;
+  PyObject *__pyx_t_9 = NULL;
+  PyObject *__pyx_t_10 = NULL;
+  PyObject *__pyx_t_11 = NULL;
+  Py_ssize_t __pyx_t_12;
+  PyObject *__pyx_t_13 = NULL;
+  PyObject *__pyx_t_14 = NULL;
+  PyObject *__pyx_t_15 = NULL;
+  PyObject *__pyx_t_16 = NULL;
+  PyObject *__pyx_t_17 = NULL;
+  int __pyx_t_18;
+  PyObject *__pyx_t_19 = NULL;
+  Py_ssize_t __pyx_t_20;
+  Py_ssize_t __pyx_t_21;
+  Py_ssize_t __pyx_t_22;
+  Py_ssize_t __pyx_t_23;
+  Py_ssize_t __pyx_t_24;
+  Py_ssize_t __pyx_t_25;
+  Py_ssize_t __pyx_t_26;
+  Py_ssize_t __pyx_t_27;
+  Py_ssize_t __pyx_t_28;
+  Py_ssize_t __pyx_t_29;
+  __Pyx_memviewslice __pyx_t_30 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_t_31 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_t_32 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  Py_ssize_t __pyx_t_33;
+  Py_ssize_t __pyx_t_34;
+  Py_ssize_t __pyx_t_35;
+  Py_ssize_t __pyx_t_36;
+  Py_ssize_t __pyx_t_37;
+  Py_ssize_t __pyx_t_38;
+  __Pyx_memviewslice __pyx_t_39 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  Py_ssize_t __pyx_t_40;
+  Py_ssize_t __pyx_t_41;
+  __Pyx_RefNannySetupContext("brute_force_search_debug", 0);
+
+  /* "_sudokugen.pyx":131
+ * 
+ *     cdef unsigned long long value
+ *     cdef unsigned int size = grid.shape[0]             # <<<<<<<<<<<<<<
+ *     cdef unsigned int group_size = group_indices.shape[1]
+ * 
+ */
+  __pyx_v_size = (__pyx_v_grid.shape[0]);
+
+  /* "_sudokugen.pyx":132
+ *     cdef unsigned long long value
+ *     cdef unsigned int size = grid.shape[0]
+ *     cdef unsigned int group_size = group_indices.shape[1]             # <<<<<<<<<<<<<<
+ * 
+ *     cdef int found = 0
+ */
+  __pyx_v_group_size = (__pyx_v_group_indices.shape[1]);
+
+  /* "_sudokugen.pyx":134
+ *     cdef unsigned int group_size = group_indices.shape[1]
+ * 
+ *     cdef int found = 0             # <<<<<<<<<<<<<<
+ * 
+ *     cdef const Py_ssize_t[::1] effected_indices
+ */
+  __pyx_v_found = 0;
+
+  /* "_sudokugen.pyx":139
+ * 
+ *     cdef Py_ssize_t i, j
+ *     cdef Py_ssize_t value_index, state = 0             # <<<<<<<<<<<<<<
+ * 
+ *     cdef int filled = initialize(grid, candidate_values[0],
+ */
+  __pyx_v_state = 0;
+
+  /* "_sudokugen.pyx":141
+ *     cdef Py_ssize_t value_index, state = 0
+ * 
+ *     cdef int filled = initialize(grid, candidate_values[0],             # <<<<<<<<<<<<<<
+ *                                  candidate_nums[0], group_indices,
+ *                                  available[0])
+ */
+  __pyx_t_1.data = __pyx_v_candidate_values.data;
+  __pyx_t_1.memview = __pyx_v_candidate_values.memview;
+  __PYX_INC_MEMVIEW(&__pyx_t_1, 0);
+  {
+    Py_ssize_t __pyx_tmp_idx = 0;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_values.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_values.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 141, __pyx_L1_error)
+    }
+        __pyx_t_1.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_1.shape[0] = __pyx_v_candidate_values.shape[1];
+__pyx_t_1.strides[0] = __pyx_v_candidate_values.strides[1];
+    __pyx_t_1.suboffsets[0] = -1;
+
+__pyx_t_2.data = __pyx_v_candidate_nums.data;
+
+  /* "_sudokugen.pyx":142
+ * 
+ *     cdef int filled = initialize(grid, candidate_values[0],
+ *                                  candidate_nums[0], group_indices,             # <<<<<<<<<<<<<<
+ *                                  available[0])
+ * 
+ */
+  __pyx_t_2.memview = __pyx_v_candidate_nums.memview;
+  __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
+  {
+    Py_ssize_t __pyx_tmp_idx = 0;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 142, __pyx_L1_error)
+    }
+        __pyx_t_2.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_2.shape[0] = __pyx_v_candidate_nums.shape[1];
+__pyx_t_2.strides[0] = __pyx_v_candidate_nums.strides[1];
+    __pyx_t_2.suboffsets[0] = -1;
+
+__pyx_t_3.data = __pyx_v_available.data;
+
+  /* "_sudokugen.pyx":143
+ *     cdef int filled = initialize(grid, candidate_values[0],
+ *                                  candidate_nums[0], group_indices,
+ *                                  available[0])             # <<<<<<<<<<<<<<
+ * 
+ *     if filled == -1:
+ */
+  __pyx_t_3.memview = __pyx_v_available.memview;
+  __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
+  {
+    Py_ssize_t __pyx_tmp_idx = 0;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 143, __pyx_L1_error)
+    }
+        __pyx_t_3.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_3.shape[0] = __pyx_v_available.shape[1];
+__pyx_t_3.strides[0] = __pyx_v_available.strides[1];
+    __pyx_t_3.suboffsets[0] = -1;
+
+__pyx_v_filled = __pyx_f_10_sudokugen_initialize(__pyx_v_grid, __pyx_t_1, __pyx_t_2, __pyx_v_group_indices, __pyx_t_3);
+
+  /* "_sudokugen.pyx":141
+ *     cdef Py_ssize_t value_index, state = 0
+ * 
+ *     cdef int filled = initialize(grid, candidate_values[0],             # <<<<<<<<<<<<<<
+ *                                  candidate_nums[0], group_indices,
+ *                                  available[0])
+ */
+  __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+  __pyx_t_1.memview = NULL;
+  __pyx_t_1.data = NULL;
+  __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+  __pyx_t_2.memview = NULL;
+  __pyx_t_2.data = NULL;
+  __PYX_XDEC_MEMVIEW(&__pyx_t_3, 1);
+  __pyx_t_3.memview = NULL;
+  __pyx_t_3.data = NULL;
+
+  /* "_sudokugen.pyx":145
+ *                                  available[0])
+ * 
+ *     if filled == -1:             # <<<<<<<<<<<<<<
+ *         return -1
+ * 
+ */
+  __pyx_t_4 = ((__pyx_v_filled == -1L) != 0);
+  if (__pyx_t_4) {
+
+    /* "_sudokugen.pyx":146
+ * 
+ *     if filled == -1:
+ *         return -1             # <<<<<<<<<<<<<<
+ * 
+ *     elif filled > 0:
+ */
+    __pyx_r = -1;
+    goto __pyx_L0;
+
+    /* "_sudokugen.pyx":145
+ *                                  available[0])
+ * 
+ *     if filled == -1:             # <<<<<<<<<<<<<<
+ *         return -1
+ * 
+ */
+  }
+
+  /* "_sudokugen.pyx":148
+ *         return -1
+ * 
+ *     elif filled > 0:             # <<<<<<<<<<<<<<
+ *         value_indices[0] = argmin(candidate_nums[0], available[0], size)
+ * 
+ */
+  __pyx_t_4 = ((__pyx_v_filled > 0) != 0);
+  if (__pyx_t_4) {
+
+    /* "_sudokugen.pyx":149
+ * 
+ *     elif filled > 0:
+ *         value_indices[0] = argmin(candidate_nums[0], available[0], size)             # <<<<<<<<<<<<<<
+ * 
+ *     while True:
+ */
+    __pyx_t_2.data = __pyx_v_candidate_nums.data;
+    __pyx_t_2.memview = __pyx_v_candidate_nums.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = 0;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 149, __pyx_L1_error)
+    }
+        __pyx_t_2.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_2.shape[0] = __pyx_v_candidate_nums.shape[1];
+__pyx_t_2.strides[0] = __pyx_v_candidate_nums.strides[1];
+    __pyx_t_2.suboffsets[0] = -1;
+
+__pyx_t_3.data = __pyx_v_available.data;
+    __pyx_t_3.memview = __pyx_v_available.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = 0;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 149, __pyx_L1_error)
+    }
+        __pyx_t_3.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_3.shape[0] = __pyx_v_available.shape[1];
+__pyx_t_3.strides[0] = __pyx_v_available.strides[1];
+    __pyx_t_3.suboffsets[0] = -1;
+
+__pyx_t_5 = 0;
+    *((Py_ssize_t *) ( /* dim=0 */ ((char *) (((Py_ssize_t *) __pyx_v_value_indices.data) + __pyx_t_5)) )) = __pyx_f_10_sudokugen_argmin(__pyx_t_2, __pyx_t_3, __pyx_v_size);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+    __pyx_t_2.memview = NULL;
+    __pyx_t_2.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_3, 1);
+    __pyx_t_3.memview = NULL;
+    __pyx_t_3.data = NULL;
+
+    /* "_sudokugen.pyx":148
+ *         return -1
+ * 
+ *     elif filled > 0:             # <<<<<<<<<<<<<<
+ *         value_indices[0] = argmin(candidate_nums[0], available[0], size)
+ * 
+ */
+  }
+
+  /* "_sudokugen.pyx":151
+ *         value_indices[0] = argmin(candidate_nums[0], available[0], size)
+ * 
+ *     while True:             # <<<<<<<<<<<<<<
+ * 
+ *         value_index = value_indices[state]
+ */
+  while (1) {
+
+    /* "_sudokugen.pyx":153
+ *     while True:
+ * 
+ *         value_index = value_indices[state]             # <<<<<<<<<<<<<<
+ * 
+ *         debugger.update(
+ */
+    __pyx_t_6 = __pyx_v_state;
+    __pyx_v_value_index = (*((Py_ssize_t *) ( /* dim=0 */ ((char *) (((Py_ssize_t *) __pyx_v_value_indices.data) + __pyx_t_6)) )));
+
+    /* "_sudokugen.pyx":155
+ *         value_index = value_indices[state]
+ * 
+ *         debugger.update(             # <<<<<<<<<<<<<<
+ *             grid,
+ *             candidate_values[state],
+ */
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_debugger, __pyx_n_s_update); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 155, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
+
+    /* "_sudokugen.pyx":156
+ * 
+ *         debugger.update(
+ *             grid,             # <<<<<<<<<<<<<<
+ *             candidate_values[state],
+ *             candidate_nums[state],
+ */
+    __pyx_t_9 = __pyx_memoryview_fromslice(__pyx_v_grid, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_PY_LONG_LONG, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_PY_LONG_LONG, 0);; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 156, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_9);
+
+    /* "_sudokugen.pyx":157
+ *         debugger.update(
+ *             grid,
+ *             candidate_values[state],             # <<<<<<<<<<<<<<
+ *             candidate_nums[state],
+ *             value_indices[state],
+ */
+    __pyx_t_1.data = __pyx_v_candidate_values.data;
+    __pyx_t_1.memview = __pyx_v_candidate_values.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_1, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_values.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_values.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 157, __pyx_L1_error)
+    }
+        __pyx_t_1.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_1.shape[0] = __pyx_v_candidate_values.shape[1];
+__pyx_t_1.strides[0] = __pyx_v_candidate_values.strides[1];
+    __pyx_t_1.suboffsets[0] = -1;
+
+__pyx_t_10 = __pyx_memoryview_fromslice(__pyx_t_1, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_PY_LONG_LONG, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_PY_LONG_LONG, 0);; if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 157, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_10);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+    __pyx_t_1.memview = NULL;
+    __pyx_t_1.data = NULL;
+
+    /* "_sudokugen.pyx":158
+ *             grid,
+ *             candidate_values[state],
+ *             candidate_nums[state],             # <<<<<<<<<<<<<<
+ *             value_indices[state],
+ *             state,
+ */
+    __pyx_t_2.data = __pyx_v_candidate_nums.data;
+    __pyx_t_2.memview = __pyx_v_candidate_nums.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 158, __pyx_L1_error)
+    }
+        __pyx_t_2.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_2.shape[0] = __pyx_v_candidate_nums.shape[1];
+__pyx_t_2.strides[0] = __pyx_v_candidate_nums.strides[1];
+    __pyx_t_2.suboffsets[0] = -1;
+
+__pyx_t_11 = __pyx_memoryview_fromslice(__pyx_t_2, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_long, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_long, 0);; if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 158, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_11);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+    __pyx_t_2.memview = NULL;
+    __pyx_t_2.data = NULL;
+
+    /* "_sudokugen.pyx":159
+ *             candidate_values[state],
+ *             candidate_nums[state],
+ *             value_indices[state],             # <<<<<<<<<<<<<<
+ *             state,
+ *             filled,
+ */
+    __pyx_t_12 = __pyx_v_state;
+    __pyx_t_13 = PyInt_FromSsize_t((*((Py_ssize_t *) ( /* dim=0 */ ((char *) (((Py_ssize_t *) __pyx_v_value_indices.data) + __pyx_t_12)) )))); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 159, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_13);
+
+    /* "_sudokugen.pyx":160
+ *             candidate_nums[state],
+ *             value_indices[state],
+ *             state,             # <<<<<<<<<<<<<<
+ *             filled,
+ *             found)
+ */
+    __pyx_t_14 = PyInt_FromSsize_t(__pyx_v_state); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 160, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_14);
+
+    /* "_sudokugen.pyx":161
+ *             value_indices[state],
+ *             state,
+ *             filled,             # <<<<<<<<<<<<<<
+ *             found)
+ * 
+ */
+    __pyx_t_15 = __Pyx_PyInt_From_int(__pyx_v_filled); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 161, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_15);
+
+    /* "_sudokugen.pyx":162
+ *             state,
+ *             filled,
+ *             found)             # <<<<<<<<<<<<<<
+ * 
+ *         if candidate_nums[state, value_index] == 0:
+ */
+    __pyx_t_16 = __Pyx_PyInt_From_int(__pyx_v_found); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 162, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_16);
+    __pyx_t_17 = NULL;
+    __pyx_t_18 = 0;
+    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_8))) {
+      __pyx_t_17 = PyMethod_GET_SELF(__pyx_t_8);
+      if (likely(__pyx_t_17)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
+        __Pyx_INCREF(__pyx_t_17);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_8, function);
+        __pyx_t_18 = 1;
+      }
+    }
+    #if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(__pyx_t_8)) {
+      PyObject *__pyx_temp[8] = {__pyx_t_17, __pyx_t_9, __pyx_t_10, __pyx_t_11, __pyx_t_13, __pyx_t_14, __pyx_t_15, __pyx_t_16};
+      __pyx_t_7 = __Pyx_PyFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_18, 7+__pyx_t_18); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 155, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_17); __pyx_t_17 = 0;
+      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+      __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
+      __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+      __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
+      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+      __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
+    } else
+    #endif
+    #if CYTHON_FAST_PYCCALL
+    if (__Pyx_PyFastCFunction_Check(__pyx_t_8)) {
+      PyObject *__pyx_temp[8] = {__pyx_t_17, __pyx_t_9, __pyx_t_10, __pyx_t_11, __pyx_t_13, __pyx_t_14, __pyx_t_15, __pyx_t_16};
+      __pyx_t_7 = __Pyx_PyCFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_18, 7+__pyx_t_18); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 155, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_17); __pyx_t_17 = 0;
+      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+      __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+      __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
+      __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+      __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
+      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+      __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
+    } else
+    #endif
+    {
+      __pyx_t_19 = PyTuple_New(7+__pyx_t_18); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 155, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_19);
+      if (__pyx_t_17) {
+        __Pyx_GIVEREF(__pyx_t_17); PyTuple_SET_ITEM(__pyx_t_19, 0, __pyx_t_17); __pyx_t_17 = NULL;
+      }
+      __Pyx_GIVEREF(__pyx_t_9);
+      PyTuple_SET_ITEM(__pyx_t_19, 0+__pyx_t_18, __pyx_t_9);
+      __Pyx_GIVEREF(__pyx_t_10);
+      PyTuple_SET_ITEM(__pyx_t_19, 1+__pyx_t_18, __pyx_t_10);
+      __Pyx_GIVEREF(__pyx_t_11);
+      PyTuple_SET_ITEM(__pyx_t_19, 2+__pyx_t_18, __pyx_t_11);
+      __Pyx_GIVEREF(__pyx_t_13);
+      PyTuple_SET_ITEM(__pyx_t_19, 3+__pyx_t_18, __pyx_t_13);
+      __Pyx_GIVEREF(__pyx_t_14);
+      PyTuple_SET_ITEM(__pyx_t_19, 4+__pyx_t_18, __pyx_t_14);
+      __Pyx_GIVEREF(__pyx_t_15);
+      PyTuple_SET_ITEM(__pyx_t_19, 5+__pyx_t_18, __pyx_t_15);
+      __Pyx_GIVEREF(__pyx_t_16);
+      PyTuple_SET_ITEM(__pyx_t_19, 6+__pyx_t_18, __pyx_t_16);
+      __pyx_t_9 = 0;
+      __pyx_t_10 = 0;
+      __pyx_t_11 = 0;
+      __pyx_t_13 = 0;
+      __pyx_t_14 = 0;
+      __pyx_t_15 = 0;
+      __pyx_t_16 = 0;
+      __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_19, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 155, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+
+    /* "_sudokugen.pyx":164
+ *             found)
+ * 
+ *         if candidate_nums[state, value_index] == 0:             # <<<<<<<<<<<<<<
+ *             grid[value_index] = 0
+ *             state -= 1
+ */
+    __pyx_t_20 = __pyx_v_state;
+    __pyx_t_21 = __pyx_v_value_index;
+    __pyx_t_4 = (((*((unsigned long *) ( /* dim=1 */ ((char *) (((unsigned long *) ( /* dim=0 */ (__pyx_v_candidate_nums.data + __pyx_t_20 * __pyx_v_candidate_nums.strides[0]) )) + __pyx_t_21)) ))) == 0) != 0);
+    if (__pyx_t_4) {
+
+      /* "_sudokugen.pyx":165
+ * 
+ *         if candidate_nums[state, value_index] == 0:
+ *             grid[value_index] = 0             # <<<<<<<<<<<<<<
+ *             state -= 1
+ *             filled -= 1
+ */
+      __pyx_t_22 = __pyx_v_value_index;
+      *((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_grid.data) + __pyx_t_22)) )) = 0;
+
+      /* "_sudokugen.pyx":166
+ *         if candidate_nums[state, value_index] == 0:
+ *             grid[value_index] = 0
+ *             state -= 1             # <<<<<<<<<<<<<<
+ *             filled -= 1
+ * 
+ */
+      __pyx_v_state = (__pyx_v_state - 1);
+
+      /* "_sudokugen.pyx":167
+ *             grid[value_index] = 0
+ *             state -= 1
+ *             filled -= 1             # <<<<<<<<<<<<<<
+ * 
+ *             if state < 0:
+ */
+      __pyx_v_filled = (__pyx_v_filled - 1);
+
+      /* "_sudokugen.pyx":169
+ *             filled -= 1
+ * 
+ *             if state < 0:             # <<<<<<<<<<<<<<
+ *                 return found
+ * 
+ */
+      __pyx_t_4 = ((__pyx_v_state < 0) != 0);
+      if (__pyx_t_4) {
+
+        /* "_sudokugen.pyx":170
+ * 
+ *             if state < 0:
+ *                 return found             # <<<<<<<<<<<<<<
+ * 
+ *             continue
+ */
+        __pyx_r = __pyx_v_found;
+        goto __pyx_L0;
+
+        /* "_sudokugen.pyx":169
+ *             filled -= 1
+ * 
+ *             if state < 0:             # <<<<<<<<<<<<<<
+ *                 return found
+ * 
+ */
+      }
+
+      /* "_sudokugen.pyx":172
+ *                 return found
+ * 
+ *             continue             # <<<<<<<<<<<<<<
+ * 
+ *         # The next value will be the first set bit from the candidates
+ */
+      goto __pyx_L4_continue;
+
+      /* "_sudokugen.pyx":164
+ *             found)
+ * 
+ *         if candidate_nums[state, value_index] == 0:             # <<<<<<<<<<<<<<
+ *             grid[value_index] = 0
+ *             state -= 1
+ */
+    }
+
+    /* "_sudokugen.pyx":177
+ * 
+ *         value = 1 << (__builtin_ffsll(
+ *             candidate_values[state, value_index]) - 1)             # <<<<<<<<<<<<<<
+ * 
+ *         grid[value_index] = value
+ */
+    __pyx_t_23 = __pyx_v_state;
+    __pyx_t_24 = __pyx_v_value_index;
+
+    /* "_sudokugen.pyx":176
+ *         # The next value will be the first set bit from the candidates
+ * 
+ *         value = 1 << (__builtin_ffsll(             # <<<<<<<<<<<<<<
+ *             candidate_values[state, value_index]) - 1)
+ * 
+ */
+    __pyx_v_value = (1 << (__builtin_ffsll((*((unsigned PY_LONG_LONG *) ( /* dim=1 */ ((char *) (((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_values.data + __pyx_t_23 * __pyx_v_candidate_values.strides[0]) )) + __pyx_t_24)) )))) - 1));
+
+    /* "_sudokugen.pyx":179
+ *             candidate_values[state, value_index]) - 1)
+ * 
+ *         grid[value_index] = value             # <<<<<<<<<<<<<<
+ * 
+ *         # Chosen value is removed from the candidates
+ */
+    __pyx_t_25 = __pyx_v_value_index;
+    *((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_grid.data) + __pyx_t_25)) )) = __pyx_v_value;
+
+    /* "_sudokugen.pyx":183
+ *         # Chosen value is removed from the candidates
+ * 
+ *         candidate_values[state, value_index] &= ~value             # <<<<<<<<<<<<<<
+ *         candidate_nums[state, value_index] -= 1
+ * 
+ */
+    __pyx_t_26 = __pyx_v_state;
+    __pyx_t_27 = __pyx_v_value_index;
+    *((unsigned PY_LONG_LONG *) ( /* dim=1 */ ((char *) (((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_values.data + __pyx_t_26 * __pyx_v_candidate_values.strides[0]) )) + __pyx_t_27)) )) &= (~__pyx_v_value);
+
+    /* "_sudokugen.pyx":184
+ * 
+ *         candidate_values[state, value_index] &= ~value
+ *         candidate_nums[state, value_index] -= 1             # <<<<<<<<<<<<<<
+ * 
+ *         # Preparing the next state, by continuing the previous state
+ */
+    __pyx_t_28 = __pyx_v_state;
+    __pyx_t_29 = __pyx_v_value_index;
+    *((unsigned long *) ( /* dim=1 */ ((char *) (((unsigned long *) ( /* dim=0 */ (__pyx_v_candidate_nums.data + __pyx_t_28 * __pyx_v_candidate_nums.strides[0]) )) + __pyx_t_29)) )) -= 1;
+
+    /* "_sudokugen.pyx":188
+ *         # Preparing the next state, by continuing the previous state
+ * 
+ *         candidate_values[state + 1, :] = candidate_values[state, :]             # <<<<<<<<<<<<<<
+ *         candidate_nums[state + 1, :] = candidate_nums[state, :]
+ *         available[state + 1, :] = available[state, :]
+ */
+    __pyx_t_1.data = __pyx_v_candidate_values.data;
+    __pyx_t_1.memview = __pyx_v_candidate_values.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_1, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_values.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_values.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 188, __pyx_L1_error)
+    }
+        __pyx_t_1.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_1.shape[0] = __pyx_v_candidate_values.shape[1];
+__pyx_t_1.strides[0] = __pyx_v_candidate_values.strides[1];
+    __pyx_t_1.suboffsets[0] = -1;
+
+__pyx_t_30.data = __pyx_v_candidate_values.data;
+    __pyx_t_30.memview = __pyx_v_candidate_values.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_30, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_state + 1);
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_values.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_values.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 188, __pyx_L1_error)
+    }
+        __pyx_t_30.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_30.shape[0] = __pyx_v_candidate_values.shape[1];
+__pyx_t_30.strides[0] = __pyx_v_candidate_values.strides[1];
+    __pyx_t_30.suboffsets[0] = -1;
+
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_1, __pyx_t_30, 1, 1, 0) < 0)) __PYX_ERR(0, 188, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_30, 1);
+    __pyx_t_30.memview = NULL;
+    __pyx_t_30.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+    __pyx_t_1.memview = NULL;
+    __pyx_t_1.data = NULL;
+
+    /* "_sudokugen.pyx":189
+ * 
+ *         candidate_values[state + 1, :] = candidate_values[state, :]
+ *         candidate_nums[state + 1, :] = candidate_nums[state, :]             # <<<<<<<<<<<<<<
+ *         available[state + 1, :] = available[state, :]
+ * 
+ */
+    __pyx_t_2.data = __pyx_v_candidate_nums.data;
+    __pyx_t_2.memview = __pyx_v_candidate_nums.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 189, __pyx_L1_error)
+    }
+        __pyx_t_2.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_2.shape[0] = __pyx_v_candidate_nums.shape[1];
+__pyx_t_2.strides[0] = __pyx_v_candidate_nums.strides[1];
+    __pyx_t_2.suboffsets[0] = -1;
+
+__pyx_t_31.data = __pyx_v_candidate_nums.data;
+    __pyx_t_31.memview = __pyx_v_candidate_nums.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_31, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_state + 1);
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 189, __pyx_L1_error)
+    }
+        __pyx_t_31.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_31.shape[0] = __pyx_v_candidate_nums.shape[1];
+__pyx_t_31.strides[0] = __pyx_v_candidate_nums.strides[1];
+    __pyx_t_31.suboffsets[0] = -1;
+
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_2, __pyx_t_31, 1, 1, 0) < 0)) __PYX_ERR(0, 189, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_31, 1);
+    __pyx_t_31.memview = NULL;
+    __pyx_t_31.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+    __pyx_t_2.memview = NULL;
+    __pyx_t_2.data = NULL;
+
+    /* "_sudokugen.pyx":190
+ *         candidate_values[state + 1, :] = candidate_values[state, :]
+ *         candidate_nums[state + 1, :] = candidate_nums[state, :]
+ *         available[state + 1, :] = available[state, :]             # <<<<<<<<<<<<<<
+ * 
+ *         # Candidate values may contain other values, besides the filled one.
+ */
+    __pyx_t_3.data = __pyx_v_available.data;
+    __pyx_t_3.memview = __pyx_v_available.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 190, __pyx_L1_error)
+    }
+        __pyx_t_3.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_3.shape[0] = __pyx_v_available.shape[1];
+__pyx_t_3.strides[0] = __pyx_v_available.strides[1];
+    __pyx_t_3.suboffsets[0] = -1;
+
+__pyx_t_32.data = __pyx_v_available.data;
+    __pyx_t_32.memview = __pyx_v_available.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_32, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_state + 1);
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 190, __pyx_L1_error)
+    }
+        __pyx_t_32.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_32.shape[0] = __pyx_v_available.shape[1];
+__pyx_t_32.strides[0] = __pyx_v_available.strides[1];
+    __pyx_t_32.suboffsets[0] = -1;
+
+if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_3, __pyx_t_32, 1, 1, 0) < 0)) __PYX_ERR(0, 190, __pyx_L1_error)
+    __PYX_XDEC_MEMVIEW(&__pyx_t_32, 1);
+    __pyx_t_32.memview = NULL;
+    __pyx_t_32.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_3, 1);
+    __pyx_t_3.memview = NULL;
+    __pyx_t_3.data = NULL;
+
+    /* "_sudokugen.pyx":196
+ *         # the correct behaviour of several candidate reduction mechanisms
+ * 
+ *         candidate_values[state + 1, value_index] = value             # <<<<<<<<<<<<<<
+ *         candidate_nums[state + 1, value_index] = 1
+ *         available[state + 1, value_index] = 0
+ */
+    __pyx_t_33 = (__pyx_v_state + 1);
+    __pyx_t_34 = __pyx_v_value_index;
+    *((unsigned PY_LONG_LONG *) ( /* dim=1 */ ((char *) (((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_values.data + __pyx_t_33 * __pyx_v_candidate_values.strides[0]) )) + __pyx_t_34)) )) = __pyx_v_value;
+
+    /* "_sudokugen.pyx":197
+ * 
+ *         candidate_values[state + 1, value_index] = value
+ *         candidate_nums[state + 1, value_index] = 1             # <<<<<<<<<<<<<<
+ *         available[state + 1, value_index] = 0
+ * 
+ */
+    __pyx_t_35 = (__pyx_v_state + 1);
+    __pyx_t_36 = __pyx_v_value_index;
+    *((unsigned long *) ( /* dim=1 */ ((char *) (((unsigned long *) ( /* dim=0 */ (__pyx_v_candidate_nums.data + __pyx_t_35 * __pyx_v_candidate_nums.strides[0]) )) + __pyx_t_36)) )) = 1;
+
+    /* "_sudokugen.pyx":198
+ *         candidate_values[state + 1, value_index] = value
+ *         candidate_nums[state + 1, value_index] = 1
+ *         available[state + 1, value_index] = 0             # <<<<<<<<<<<<<<
+ * 
+ *         effected_indices = group_indices[value_index]
+ */
+    __pyx_t_37 = (__pyx_v_state + 1);
+    __pyx_t_38 = __pyx_v_value_index;
+    *((short *) ( /* dim=1 */ ((char *) (((short *) ( /* dim=0 */ (__pyx_v_available.data + __pyx_t_37 * __pyx_v_available.strides[0]) )) + __pyx_t_38)) )) = 0;
+
+    /* "_sudokugen.pyx":200
+ *         available[state + 1, value_index] = 0
+ * 
+ *         effected_indices = group_indices[value_index]             # <<<<<<<<<<<<<<
+ * 
+ *         # Update effected indices
+ */
+    __pyx_t_39.data = __pyx_v_group_indices.data;
+    __pyx_t_39.memview = __pyx_v_group_indices.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_39, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_value_index;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_group_indices.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_group_indices.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 200, __pyx_L1_error)
+    }
+        __pyx_t_39.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_39.shape[0] = __pyx_v_group_indices.shape[1];
+__pyx_t_39.strides[0] = __pyx_v_group_indices.strides[1];
+    __pyx_t_39.suboffsets[0] = -1;
+
+__PYX_XDEC_MEMVIEW(&__pyx_v_effected_indices, 1);
+    __pyx_v_effected_indices = __pyx_t_39;
+    __pyx_t_39.memview = NULL;
+    __pyx_t_39.data = NULL;
+
+    /* "_sudokugen.pyx":205
+ * 
+ *         if not update_effected(value,
+ *                                candidate_values[state + 1],             # <<<<<<<<<<<<<<
+ *                                candidate_nums[state + 1],
+ *                                effected_indices,
+ */
+    __pyx_t_1.data = __pyx_v_candidate_values.data;
+    __pyx_t_1.memview = __pyx_v_candidate_values.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_1, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_state + 1);
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_values.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_values.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 205, __pyx_L1_error)
+    }
+        __pyx_t_1.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_1.shape[0] = __pyx_v_candidate_values.shape[1];
+__pyx_t_1.strides[0] = __pyx_v_candidate_values.strides[1];
+    __pyx_t_1.suboffsets[0] = -1;
+
+__pyx_t_2.data = __pyx_v_candidate_nums.data;
+
+    /* "_sudokugen.pyx":206
+ *         if not update_effected(value,
+ *                                candidate_values[state + 1],
+ *                                candidate_nums[state + 1],             # <<<<<<<<<<<<<<
+ *                                effected_indices,
+ *                                available[state + 1]):
+ */
+    __pyx_t_2.memview = __pyx_v_candidate_nums.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_state + 1);
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 206, __pyx_L1_error)
+    }
+        __pyx_t_2.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_2.shape[0] = __pyx_v_candidate_nums.shape[1];
+__pyx_t_2.strides[0] = __pyx_v_candidate_nums.strides[1];
+    __pyx_t_2.suboffsets[0] = -1;
+
+__pyx_t_3.data = __pyx_v_available.data;
+
+    /* "_sudokugen.pyx":208
+ *                                candidate_nums[state + 1],
+ *                                effected_indices,
+ *                                available[state + 1]):             # <<<<<<<<<<<<<<
+ *             continue
+ * 
+ */
+    __pyx_t_3.memview = __pyx_v_available.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = (__pyx_v_state + 1);
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 208, __pyx_L1_error)
+    }
+        __pyx_t_3.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_3.shape[0] = __pyx_v_available.shape[1];
+__pyx_t_3.strides[0] = __pyx_v_available.strides[1];
+    __pyx_t_3.suboffsets[0] = -1;
+
+__pyx_t_4 = ((!(__pyx_f_10_sudokugen_update_effected(__pyx_v_value, __pyx_t_1, __pyx_t_2, __pyx_v_effected_indices, __pyx_t_3) != 0)) != 0);
+
+    /* "_sudokugen.pyx":204
+ *         # Update effected indices
+ * 
+ *         if not update_effected(value,             # <<<<<<<<<<<<<<
+ *                                candidate_values[state + 1],
+ *                                candidate_nums[state + 1],
+ */
+    __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+    __pyx_t_1.memview = NULL;
+    __pyx_t_1.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+    __pyx_t_2.memview = NULL;
+    __pyx_t_2.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_3, 1);
+    __pyx_t_3.memview = NULL;
+    __pyx_t_3.data = NULL;
+    if (__pyx_t_4) {
+
+      /* "_sudokugen.pyx":209
+ *                                effected_indices,
+ *                                available[state + 1]):
+ *             continue             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+      goto __pyx_L4_continue;
+
+      /* "_sudokugen.pyx":204
+ *         # Update effected indices
+ * 
+ *         if not update_effected(value,             # <<<<<<<<<<<<<<
+ *                                candidate_values[state + 1],
+ *                                candidate_nums[state + 1],
+ */
+    }
+
+    /* "_sudokugen.pyx":215
+ *         # Termination upon all cells are filled
+ * 
+ *         if filled + 1 == size:             # <<<<<<<<<<<<<<
+ *             found += 1
+ * 
+ */
+    __pyx_t_4 = (((__pyx_v_filled + 1) == __pyx_v_size) != 0);
+    if (__pyx_t_4) {
+
+      /* "_sudokugen.pyx":216
+ * 
+ *         if filled + 1 == size:
+ *             found += 1             # <<<<<<<<<<<<<<
+ * 
+ *             debugger.update(
+ */
+      __pyx_v_found = (__pyx_v_found + 1);
+
+      /* "_sudokugen.pyx":218
+ *             found += 1
+ * 
+ *             debugger.update(             # <<<<<<<<<<<<<<
+ *             grid,
+ *             candidate_values[state],
+ */
+      __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_debugger, __pyx_n_s_update); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 218, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_8);
+
+      /* "_sudokugen.pyx":219
+ * 
+ *             debugger.update(
+ *             grid,             # <<<<<<<<<<<<<<
+ *             candidate_values[state],
+ *             candidate_nums[state],
+ */
+      __pyx_t_19 = __pyx_memoryview_fromslice(__pyx_v_grid, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_PY_LONG_LONG, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_PY_LONG_LONG, 0);; if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 219, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_19);
+
+      /* "_sudokugen.pyx":220
+ *             debugger.update(
+ *             grid,
+ *             candidate_values[state],             # <<<<<<<<<<<<<<
+ *             candidate_nums[state],
+ *             value_indices[state],
+ */
+      __pyx_t_1.data = __pyx_v_candidate_values.data;
+      __pyx_t_1.memview = __pyx_v_candidate_values.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_1, 0);
+      {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_values.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_values.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 220, __pyx_L1_error)
+    }
+        __pyx_t_1.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_1.shape[0] = __pyx_v_candidate_values.shape[1];
+__pyx_t_1.strides[0] = __pyx_v_candidate_values.strides[1];
+    __pyx_t_1.suboffsets[0] = -1;
+
+__pyx_t_16 = __pyx_memoryview_fromslice(__pyx_t_1, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_PY_LONG_LONG, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_PY_LONG_LONG, 0);; if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 220, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_16);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+      __pyx_t_1.memview = NULL;
+      __pyx_t_1.data = NULL;
+
+      /* "_sudokugen.pyx":221
+ *             grid,
+ *             candidate_values[state],
+ *             candidate_nums[state],             # <<<<<<<<<<<<<<
+ *             value_indices[state],
+ *             state,
+ */
+      __pyx_t_2.data = __pyx_v_candidate_nums.data;
+      __pyx_t_2.memview = __pyx_v_candidate_nums.memview;
+      __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
+      {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 221, __pyx_L1_error)
+    }
+        __pyx_t_2.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_2.shape[0] = __pyx_v_candidate_nums.shape[1];
+__pyx_t_2.strides[0] = __pyx_v_candidate_nums.strides[1];
+    __pyx_t_2.suboffsets[0] = -1;
+
+__pyx_t_15 = __pyx_memoryview_fromslice(__pyx_t_2, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_long, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_long, 0);; if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 221, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_15);
+      __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+      __pyx_t_2.memview = NULL;
+      __pyx_t_2.data = NULL;
+
+      /* "_sudokugen.pyx":222
+ *             candidate_values[state],
+ *             candidate_nums[state],
+ *             value_indices[state],             # <<<<<<<<<<<<<<
+ *             state,
+ *             filled + 1,
+ */
+      __pyx_t_40 = __pyx_v_state;
+      __pyx_t_14 = PyInt_FromSsize_t((*((Py_ssize_t *) ( /* dim=0 */ ((char *) (((Py_ssize_t *) __pyx_v_value_indices.data) + __pyx_t_40)) )))); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 222, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_14);
+
+      /* "_sudokugen.pyx":223
+ *             candidate_nums[state],
+ *             value_indices[state],
+ *             state,             # <<<<<<<<<<<<<<
+ *             filled + 1,
+ *             found)
+ */
+      __pyx_t_13 = PyInt_FromSsize_t(__pyx_v_state); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 223, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_13);
+
+      /* "_sudokugen.pyx":224
+ *             value_indices[state],
+ *             state,
+ *             filled + 1,             # <<<<<<<<<<<<<<
+ *             found)
+ * 
+ */
+      __pyx_t_11 = __Pyx_PyInt_From_long((__pyx_v_filled + 1)); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 224, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_11);
+
+      /* "_sudokugen.pyx":225
+ *             state,
+ *             filled + 1,
+ *             found)             # <<<<<<<<<<<<<<
+ * 
+ *             if found == max_solutions:
+ */
+      __pyx_t_10 = __Pyx_PyInt_From_int(__pyx_v_found); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 225, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_10);
+      __pyx_t_9 = NULL;
+      __pyx_t_18 = 0;
+      if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_8))) {
+        __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_8);
+        if (likely(__pyx_t_9)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
+          __Pyx_INCREF(__pyx_t_9);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_8, function);
+          __pyx_t_18 = 1;
+        }
+      }
+      #if CYTHON_FAST_PYCALL
+      if (PyFunction_Check(__pyx_t_8)) {
+        PyObject *__pyx_temp[8] = {__pyx_t_9, __pyx_t_19, __pyx_t_16, __pyx_t_15, __pyx_t_14, __pyx_t_13, __pyx_t_11, __pyx_t_10};
+        __pyx_t_7 = __Pyx_PyFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_18, 7+__pyx_t_18); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 218, __pyx_L1_error)
+        __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+        __Pyx_GOTREF(__pyx_t_7);
+        __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
+        __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
+        __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+        __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
+        __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+        __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
+        __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+      } else
+      #endif
+      #if CYTHON_FAST_PYCCALL
+      if (__Pyx_PyFastCFunction_Check(__pyx_t_8)) {
+        PyObject *__pyx_temp[8] = {__pyx_t_9, __pyx_t_19, __pyx_t_16, __pyx_t_15, __pyx_t_14, __pyx_t_13, __pyx_t_11, __pyx_t_10};
+        __pyx_t_7 = __Pyx_PyCFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_18, 7+__pyx_t_18); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 218, __pyx_L1_error)
+        __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+        __Pyx_GOTREF(__pyx_t_7);
+        __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
+        __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
+        __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+        __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
+        __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+        __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
+        __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
+      } else
+      #endif
+      {
+        __pyx_t_17 = PyTuple_New(7+__pyx_t_18); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 218, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_17);
+        if (__pyx_t_9) {
+          __Pyx_GIVEREF(__pyx_t_9); PyTuple_SET_ITEM(__pyx_t_17, 0, __pyx_t_9); __pyx_t_9 = NULL;
+        }
+        __Pyx_GIVEREF(__pyx_t_19);
+        PyTuple_SET_ITEM(__pyx_t_17, 0+__pyx_t_18, __pyx_t_19);
+        __Pyx_GIVEREF(__pyx_t_16);
+        PyTuple_SET_ITEM(__pyx_t_17, 1+__pyx_t_18, __pyx_t_16);
+        __Pyx_GIVEREF(__pyx_t_15);
+        PyTuple_SET_ITEM(__pyx_t_17, 2+__pyx_t_18, __pyx_t_15);
+        __Pyx_GIVEREF(__pyx_t_14);
+        PyTuple_SET_ITEM(__pyx_t_17, 3+__pyx_t_18, __pyx_t_14);
+        __Pyx_GIVEREF(__pyx_t_13);
+        PyTuple_SET_ITEM(__pyx_t_17, 4+__pyx_t_18, __pyx_t_13);
+        __Pyx_GIVEREF(__pyx_t_11);
+        PyTuple_SET_ITEM(__pyx_t_17, 5+__pyx_t_18, __pyx_t_11);
+        __Pyx_GIVEREF(__pyx_t_10);
+        PyTuple_SET_ITEM(__pyx_t_17, 6+__pyx_t_18, __pyx_t_10);
+        __pyx_t_19 = 0;
+        __pyx_t_16 = 0;
+        __pyx_t_15 = 0;
+        __pyx_t_14 = 0;
+        __pyx_t_13 = 0;
+        __pyx_t_11 = 0;
+        __pyx_t_10 = 0;
+        __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_17, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 218, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_7);
+        __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
+      }
+      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+
+      /* "_sudokugen.pyx":227
+ *             found)
+ * 
+ *             if found == max_solutions:             # <<<<<<<<<<<<<<
+ *                 return found
+ * 
+ */
+      __pyx_t_4 = ((__pyx_v_found == __pyx_v_max_solutions) != 0);
+      if (__pyx_t_4) {
+
+        /* "_sudokugen.pyx":228
+ * 
+ *             if found == max_solutions:
+ *                 return found             # <<<<<<<<<<<<<<
+ * 
+ *             continue
+ */
+        __pyx_r = __pyx_v_found;
+        goto __pyx_L0;
+
+        /* "_sudokugen.pyx":227
+ *             found)
+ * 
+ *             if found == max_solutions:             # <<<<<<<<<<<<<<
+ *                 return found
+ * 
+ */
+      }
+
+      /* "_sudokugen.pyx":230
+ *                 return found
+ * 
+ *             continue             # <<<<<<<<<<<<<<
+ * 
+ *         filled += 1
+ */
+      goto __pyx_L4_continue;
+
+      /* "_sudokugen.pyx":215
+ *         # Termination upon all cells are filled
+ * 
+ *         if filled + 1 == size:             # <<<<<<<<<<<<<<
+ *             found += 1
+ * 
+ */
+    }
+
+    /* "_sudokugen.pyx":232
+ *             continue
+ * 
+ *         filled += 1             # <<<<<<<<<<<<<<
+ *         state += 1
+ * 
+ */
+    __pyx_v_filled = (__pyx_v_filled + 1);
+
+    /* "_sudokugen.pyx":233
+ * 
+ *         filled += 1
+ *         state += 1             # <<<<<<<<<<<<<<
+ * 
+ *         value_indices[state] = argmin(
+ */
+    __pyx_v_state = (__pyx_v_state + 1);
+
+    /* "_sudokugen.pyx":236
+ * 
+ *         value_indices[state] = argmin(
+ *             candidate_nums[state], available[state], size)             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+    __pyx_t_2.data = __pyx_v_candidate_nums.data;
+    __pyx_t_2.memview = __pyx_v_candidate_nums.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_2, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 236, __pyx_L1_error)
+    }
+        __pyx_t_2.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_2.shape[0] = __pyx_v_candidate_nums.shape[1];
+__pyx_t_2.strides[0] = __pyx_v_candidate_nums.strides[1];
+    __pyx_t_2.suboffsets[0] = -1;
+
+__pyx_t_3.data = __pyx_v_available.data;
+    __pyx_t_3.memview = __pyx_v_available.memview;
+    __PYX_INC_MEMVIEW(&__pyx_t_3, 0);
+    {
+    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
+    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
+    if (0 && (__pyx_tmp_idx < 0))
+        __pyx_tmp_idx += __pyx_tmp_shape;
+    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
+        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
+        __PYX_ERR(0, 236, __pyx_L1_error)
+    }
+        __pyx_t_3.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_3.shape[0] = __pyx_v_available.shape[1];
+__pyx_t_3.strides[0] = __pyx_v_available.strides[1];
+    __pyx_t_3.suboffsets[0] = -1;
+
+__pyx_t_41 = __pyx_v_state;
+
+    /* "_sudokugen.pyx":235
+ *         state += 1
+ * 
+ *         value_indices[state] = argmin(             # <<<<<<<<<<<<<<
+ *             candidate_nums[state], available[state], size)
+ * 
+ */
+    *((Py_ssize_t *) ( /* dim=0 */ ((char *) (((Py_ssize_t *) __pyx_v_value_indices.data) + __pyx_t_41)) )) = __pyx_f_10_sudokugen_argmin(__pyx_t_2, __pyx_t_3, __pyx_v_size);
+    __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+    __pyx_t_2.memview = NULL;
+    __pyx_t_2.data = NULL;
+    __PYX_XDEC_MEMVIEW(&__pyx_t_3, 1);
+    __pyx_t_3.memview = NULL;
+    __pyx_t_3.data = NULL;
+    __pyx_L4_continue:;
+  }
+
+  /* "_sudokugen.pyx":120
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * cpdef int brute_force_search_debug(unsigned long long[::1] grid,             # <<<<<<<<<<<<<<
+ *                                    unsigned long long[:, ::1] candidate_values,
+ *                                    unsigned long[:, ::1] candidate_nums,
+ */
+
+  /* function exit code */
+  __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_2, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_3, 1);
+  __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_8);
+  __Pyx_XDECREF(__pyx_t_9);
+  __Pyx_XDECREF(__pyx_t_10);
+  __Pyx_XDECREF(__pyx_t_11);
+  __Pyx_XDECREF(__pyx_t_13);
+  __Pyx_XDECREF(__pyx_t_14);
+  __Pyx_XDECREF(__pyx_t_15);
+  __Pyx_XDECREF(__pyx_t_16);
+  __Pyx_XDECREF(__pyx_t_17);
+  __Pyx_XDECREF(__pyx_t_19);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_30, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_31, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_32, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_39, 1);
+  __Pyx_WriteUnraisable("_sudokugen.brute_force_search_debug", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __PYX_XDEC_MEMVIEW(&__pyx_v_effected_indices, 1);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_10_sudokugen_3brute_force_search_debug(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_10_sudokugen_2brute_force_search_debug[] = "Debug version of the above 'brute_force_search' function";
+static PyObject *__pyx_pw_10_sudokugen_3brute_force_search_debug(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  __Pyx_memviewslice __pyx_v_grid = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_candidate_values = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_candidate_nums = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_group_indices = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_value_indices = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_available = { 0, 0, { 0 }, { 0 }, { 0 } };
+  int __pyx_v_max_solutions;
+  PyObject *__pyx_v_debugger = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("brute_force_search_debug (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_grid,&__pyx_n_s_candidate_values,&__pyx_n_s_candidate_nums,&__pyx_n_s_group_indices,&__pyx_n_s_value_indices,&__pyx_n_s_available,&__pyx_n_s_max_solutions,&__pyx_n_s_debugger,0};
+    PyObject* values[8] = {0,0,0,0,0,0,0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  8: values[7] = PyTuple_GET_ITEM(__pyx_args, 7);
+        CYTHON_FALLTHROUGH;
+        case  7: values[6] = PyTuple_GET_ITEM(__pyx_args, 6);
+        CYTHON_FALLTHROUGH;
+        case  6: values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
+        CYTHON_FALLTHROUGH;
+        case  5: values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
+        CYTHON_FALLTHROUGH;
+        case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+        CYTHON_FALLTHROUGH;
+        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+        CYTHON_FALLTHROUGH;
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        CYTHON_FALLTHROUGH;
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_grid)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        CYTHON_FALLTHROUGH;
+        case  1:
+        if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_candidate_values)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("brute_force_search_debug", 1, 8, 8, 1); __PYX_ERR(0, 120, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  2:
+        if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_candidate_nums)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("brute_force_search_debug", 1, 8, 8, 2); __PYX_ERR(0, 120, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  3:
+        if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_group_indices)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("brute_force_search_debug", 1, 8, 8, 3); __PYX_ERR(0, 120, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  4:
+        if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_value_indices)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("brute_force_search_debug", 1, 8, 8, 4); __PYX_ERR(0, 120, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  5:
+        if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_available)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("brute_force_search_debug", 1, 8, 8, 5); __PYX_ERR(0, 120, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  6:
+        if (likely((values[6] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_max_solutions)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("brute_force_search_debug", 1, 8, 8, 6); __PYX_ERR(0, 120, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  7:
+        if (likely((values[7] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_debugger)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("brute_force_search_debug", 1, 8, 8, 7); __PYX_ERR(0, 120, __pyx_L3_error)
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "brute_force_search_debug") < 0)) __PYX_ERR(0, 120, __pyx_L3_error)
+      }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 8) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+      values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+      values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
+      values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
+      values[6] = PyTuple_GET_ITEM(__pyx_args, 6);
+      values[7] = PyTuple_GET_ITEM(__pyx_args, 7);
+    }
+    __pyx_v_grid = __Pyx_PyObject_to_MemoryviewSlice_dc_unsigned_PY_LONG_LONG(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_grid.memview)) __PYX_ERR(0, 120, __pyx_L3_error)
+    __pyx_v_candidate_values = __Pyx_PyObject_to_MemoryviewSlice_d_dc_unsigned_PY_LONG_LONG(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_candidate_values.memview)) __PYX_ERR(0, 121, __pyx_L3_error)
+    __pyx_v_candidate_nums = __Pyx_PyObject_to_MemoryviewSlice_d_dc_unsigned_long(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_candidate_nums.memview)) __PYX_ERR(0, 122, __pyx_L3_error)
+    __pyx_v_group_indices = __Pyx_PyObject_to_MemoryviewSlice_d_dc_Py_ssize_t__const__(values[3], 0); if (unlikely(!__pyx_v_group_indices.memview)) __PYX_ERR(0, 123, __pyx_L3_error)
+    __pyx_v_value_indices = __Pyx_PyObject_to_MemoryviewSlice_dc_Py_ssize_t(values[4], PyBUF_WRITABLE); if (unlikely(!__pyx_v_value_indices.memview)) __PYX_ERR(0, 124, __pyx_L3_error)
+    __pyx_v_available = __Pyx_PyObject_to_MemoryviewSlice_d_dc_short(values[5], PyBUF_WRITABLE); if (unlikely(!__pyx_v_available.memview)) __PYX_ERR(0, 125, __pyx_L3_error)
+    __pyx_v_max_solutions = __Pyx_PyInt_As_int(values[6]); if (unlikely((__pyx_v_max_solutions == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 126, __pyx_L3_error)
+    __pyx_v_debugger = values[7];
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("brute_force_search_debug", 1, 8, 8, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 120, __pyx_L3_error)
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("_sudokugen.brute_force_search_debug", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_10_sudokugen_2brute_force_search_debug(__pyx_self, __pyx_v_grid, __pyx_v_candidate_values, __pyx_v_candidate_nums, __pyx_v_group_indices, __pyx_v_value_indices, __pyx_v_available, __pyx_v_max_solutions, __pyx_v_debugger);
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_10_sudokugen_2brute_force_search_debug(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_candidate_values, __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_group_indices, __Pyx_memviewslice __pyx_v_value_indices, __Pyx_memviewslice __pyx_v_available, int __pyx_v_max_solutions, PyObject *__pyx_v_debugger) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("brute_force_search_debug", 0);
+  __Pyx_XDECREF(__pyx_r);
+  if (unlikely(!__pyx_v_grid.memview)) { __Pyx_RaiseUnboundLocalError("grid"); __PYX_ERR(0, 120, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_candidate_values.memview)) { __Pyx_RaiseUnboundLocalError("candidate_values"); __PYX_ERR(0, 120, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_candidate_nums.memview)) { __Pyx_RaiseUnboundLocalError("candidate_nums"); __PYX_ERR(0, 120, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_group_indices.memview)) { __Pyx_RaiseUnboundLocalError("group_indices"); __PYX_ERR(0, 120, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_value_indices.memview)) { __Pyx_RaiseUnboundLocalError("value_indices"); __PYX_ERR(0, 120, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_available.memview)) { __Pyx_RaiseUnboundLocalError("available"); __PYX_ERR(0, 120, __pyx_L1_error) }
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_f_10_sudokugen_brute_force_search_debug(__pyx_v_grid, __pyx_v_candidate_values, __pyx_v_candidate_nums, __pyx_v_group_indices, __pyx_v_value_indices, __pyx_v_available, __pyx_v_max_solutions, __pyx_v_debugger, 0)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 120, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("_sudokugen.brute_force_search_debug", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __PYX_XDEC_MEMVIEW(&__pyx_v_grid, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_candidate_values, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_candidate_nums, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_group_indices, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_value_indices, 1);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_available, 1);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "_sudokugen.pyx":242
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * cdef inline Py_ssize_t argmin(const unsigned long[::1] candidate_nums,             # <<<<<<<<<<<<<<
+ *                               const short[::1] available,
+ *                               unsigned int size):
+ */
+
+static CYTHON_INLINE Py_ssize_t __pyx_f_10_sudokugen_argmin(__Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_available, unsigned int __pyx_v_size) {
+  Py_ssize_t __pyx_v_i;
+  Py_ssize_t __pyx_v_m;
+  unsigned int __pyx_v_min;
+  Py_ssize_t __pyx_r;
+  __Pyx_RefNannyDeclarations
+  unsigned int __pyx_t_1;
+  unsigned int __pyx_t_2;
+  Py_ssize_t __pyx_t_3;
+  Py_ssize_t __pyx_t_4;
+  int __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
+  Py_ssize_t __pyx_t_7;
+  Py_ssize_t __pyx_t_8;
+  __Pyx_RefNannySetupContext("argmin", 0);
+
+  /* "_sudokugen.pyx":249
+ * 
+ *     cdef Py_ssize_t i, m
+ *     cdef unsigned int min = size + 1             # <<<<<<<<<<<<<<
+ * 
+ *     for i in range(size):
+ */
+  __pyx_v_min = (__pyx_v_size + 1);
+
+  /* "_sudokugen.pyx":251
+ *     cdef unsigned int min = size + 1
+ * 
+ *     for i in range(size):             # <<<<<<<<<<<<<<
+ *         if available[i]:
+ *             if candidate_nums[i] == 1:
+ */
+  __pyx_t_1 = __pyx_v_size;
+  __pyx_t_2 = __pyx_t_1;
+  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
+    __pyx_v_i = __pyx_t_3;
+
+    /* "_sudokugen.pyx":252
+ * 
+ *     for i in range(size):
+ *         if available[i]:             # <<<<<<<<<<<<<<
+ *             if candidate_nums[i] == 1:
+ *                 return i
+ */
+    __pyx_t_4 = __pyx_v_i;
+    __pyx_t_5 = ((*((short const  *) ( /* dim=0 */ ((char *) (((short const  *) __pyx_v_available.data) + __pyx_t_4)) ))) != 0);
+    if (__pyx_t_5) {
+
+      /* "_sudokugen.pyx":253
+ *     for i in range(size):
+ *         if available[i]:
+ *             if candidate_nums[i] == 1:             # <<<<<<<<<<<<<<
+ *                 return i
+ * 
+ */
+      __pyx_t_6 = __pyx_v_i;
+      __pyx_t_5 = (((*((unsigned long const  *) ( /* dim=0 */ ((char *) (((unsigned long const  *) __pyx_v_candidate_nums.data) + __pyx_t_6)) ))) == 1) != 0);
+      if (__pyx_t_5) {
+
+        /* "_sudokugen.pyx":254
+ *         if available[i]:
+ *             if candidate_nums[i] == 1:
+ *                 return i             # <<<<<<<<<<<<<<
+ * 
+ *             if candidate_nums[i] < min:
+ */
+        __pyx_r = __pyx_v_i;
+        goto __pyx_L0;
+
+        /* "_sudokugen.pyx":253
+ *     for i in range(size):
+ *         if available[i]:
+ *             if candidate_nums[i] == 1:             # <<<<<<<<<<<<<<
+ *                 return i
+ * 
+ */
+      }
+
+      /* "_sudokugen.pyx":256
+ *                 return i
+ * 
+ *             if candidate_nums[i] < min:             # <<<<<<<<<<<<<<
+ *                 m = i
+ *                 min = candidate_nums[i]
+ */
+      __pyx_t_7 = __pyx_v_i;
+      __pyx_t_5 = (((*((unsigned long const  *) ( /* dim=0 */ ((char *) (((unsigned long const  *) __pyx_v_candidate_nums.data) + __pyx_t_7)) ))) < __pyx_v_min) != 0);
+      if (__pyx_t_5) {
+
+        /* "_sudokugen.pyx":257
+ * 
+ *             if candidate_nums[i] < min:
+ *                 m = i             # <<<<<<<<<<<<<<
+ *                 min = candidate_nums[i]
+ * 
+ */
+        __pyx_v_m = __pyx_v_i;
+
+        /* "_sudokugen.pyx":258
+ *             if candidate_nums[i] < min:
+ *                 m = i
+ *                 min = candidate_nums[i]             # <<<<<<<<<<<<<<
+ * 
+ *     return m
+ */
+        __pyx_t_8 = __pyx_v_i;
+        __pyx_v_min = (*((unsigned long const  *) ( /* dim=0 */ ((char *) (((unsigned long const  *) __pyx_v_candidate_nums.data) + __pyx_t_8)) )));
+
+        /* "_sudokugen.pyx":256
+ *                 return i
+ * 
+ *             if candidate_nums[i] < min:             # <<<<<<<<<<<<<<
+ *                 m = i
+ *                 min = candidate_nums[i]
+ */
+      }
+
+      /* "_sudokugen.pyx":252
+ * 
+ *     for i in range(size):
+ *         if available[i]:             # <<<<<<<<<<<<<<
+ *             if candidate_nums[i] == 1:
+ *                 return i
+ */
+    }
+  }
+
+  /* "_sudokugen.pyx":260
+ *                 min = candidate_nums[i]
+ * 
+ *     return m             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = __pyx_v_m;
+  goto __pyx_L0;
+
+  /* "_sudokugen.pyx":242
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * cdef inline Py_ssize_t argmin(const unsigned long[::1] candidate_nums,             # <<<<<<<<<<<<<<
+ *                               const short[::1] available,
+ *                               unsigned int size):
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "_sudokugen.pyx":266
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * cdef inline int initialize(unsigned long long[::1] grid,             # <<<<<<<<<<<<<<
+ *                            unsigned long long[::1] candidate_values,
+ *                            unsigned long[::1] candidate_nums,
+ */
+
+static CYTHON_INLINE int __pyx_f_10_sudokugen_initialize(__Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_candidate_values, __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_group_indices, __Pyx_memviewslice __pyx_v_available) {
+  int __pyx_v_filled;
+  CYTHON_UNUSED int __pyx_v_found;
+  Py_ssize_t __pyx_v_i;
+  Py_ssize_t __pyx_v_j;
+  Py_ssize_t __pyx_v_k;
+  Py_ssize_t __pyx_v_grid_size;
+  Py_ssize_t __pyx_v_group_size;
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  Py_ssize_t __pyx_t_1;
+  Py_ssize_t __pyx_t_2;
+  Py_ssize_t __pyx_t_3;
+  Py_ssize_t __pyx_t_4;
+  int __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
+  Py_ssize_t __pyx_t_7;
+  Py_ssize_t __pyx_t_8;
+  Py_ssize_t __pyx_t_9;
+  Py_ssize_t __pyx_t_10;
+  Py_ssize_t __pyx_t_11;
+  Py_ssize_t __pyx_t_12;
+  Py_ssize_t __pyx_t_13;
+  Py_ssize_t __pyx_t_14;
+  Py_ssize_t __pyx_t_15;
+  int __pyx_t_16;
+  Py_ssize_t __pyx_t_17;
+  Py_ssize_t __pyx_t_18;
+  Py_ssize_t __pyx_t_19;
+  Py_ssize_t __pyx_t_20;
+  Py_ssize_t __pyx_t_21;
+  Py_ssize_t __pyx_t_22;
+  __Pyx_RefNannySetupContext("initialize", 0);
+
+  /* "_sudokugen.pyx":273
+ *     """Initializes the state of the algorithm."""
+ * 
+ *     cdef int filled = 0, found = 1             # <<<<<<<<<<<<<<
+ * 
+ *     cdef Py_ssize_t i, j, k
+ */
+  __pyx_v_filled = 0;
+  __pyx_v_found = 1;
+
+  /* "_sudokugen.pyx":276
+ * 
+ *     cdef Py_ssize_t i, j, k
+ *     cdef Py_ssize_t grid_size = grid.shape[0]             # <<<<<<<<<<<<<<
+ *     cdef Py_ssize_t group_size = group_indices.shape[1]
+ * 
+ */
+  __pyx_v_grid_size = (__pyx_v_grid.shape[0]);
+
+  /* "_sudokugen.pyx":277
+ *     cdef Py_ssize_t i, j, k
+ *     cdef Py_ssize_t grid_size = grid.shape[0]
+ *     cdef Py_ssize_t group_size = group_indices.shape[1]             # <<<<<<<<<<<<<<
+ * 
+ *     for i in range(grid_size):
+ */
+  __pyx_v_group_size = (__pyx_v_group_indices.shape[1]);
+
+  /* "_sudokugen.pyx":279
+ *     cdef Py_ssize_t group_size = group_indices.shape[1]
+ * 
+ *     for i in range(grid_size):             # <<<<<<<<<<<<<<
+ *         if grid[i] != 0:
+ *             filled += 1
+ */
+  __pyx_t_1 = __pyx_v_grid_size;
+  __pyx_t_2 = __pyx_t_1;
+  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
+    __pyx_v_i = __pyx_t_3;
+
+    /* "_sudokugen.pyx":280
+ * 
+ *     for i in range(grid_size):
+ *         if grid[i] != 0:             # <<<<<<<<<<<<<<
+ *             filled += 1
+ *             available[i] = 0
+ */
+    __pyx_t_4 = __pyx_v_i;
+    __pyx_t_5 = (((*((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_grid.data) + __pyx_t_4)) ))) != 0) != 0);
+    if (__pyx_t_5) {
+
+      /* "_sudokugen.pyx":281
+ *     for i in range(grid_size):
+ *         if grid[i] != 0:
+ *             filled += 1             # <<<<<<<<<<<<<<
+ *             available[i] = 0
+ *             candidate_values[i] = grid[i]
+ */
+      __pyx_v_filled = (__pyx_v_filled + 1);
+
+      /* "_sudokugen.pyx":282
+ *         if grid[i] != 0:
+ *             filled += 1
+ *             available[i] = 0             # <<<<<<<<<<<<<<
+ *             candidate_values[i] = grid[i]
+ *             candidate_nums[i] = 1
+ */
+      __pyx_t_6 = __pyx_v_i;
+      *((short *) ( /* dim=0 */ ((char *) (((short *) __pyx_v_available.data) + __pyx_t_6)) )) = 0;
+
+      /* "_sudokugen.pyx":283
+ *             filled += 1
+ *             available[i] = 0
+ *             candidate_values[i] = grid[i]             # <<<<<<<<<<<<<<
+ *             candidate_nums[i] = 1
+ * 
+ */
+      __pyx_t_7 = __pyx_v_i;
+      __pyx_t_8 = __pyx_v_i;
+      *((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_candidate_values.data) + __pyx_t_8)) )) = (*((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_grid.data) + __pyx_t_7)) )));
+
+      /* "_sudokugen.pyx":284
+ *             available[i] = 0
+ *             candidate_values[i] = grid[i]
+ *             candidate_nums[i] = 1             # <<<<<<<<<<<<<<
+ * 
+ *             for j in range(group_size):
+ */
+      __pyx_t_9 = __pyx_v_i;
+      *((unsigned long *) ( /* dim=0 */ ((char *) (((unsigned long *) __pyx_v_candidate_nums.data) + __pyx_t_9)) )) = 1;
+
+      /* "_sudokugen.pyx":286
+ *             candidate_nums[i] = 1
+ * 
+ *             for j in range(group_size):             # <<<<<<<<<<<<<<
+ *                 k = group_indices[i, j]
+ *                 if grid[k] == 0 and candidate_values[k] & grid[i]:
+ */
+      __pyx_t_10 = __pyx_v_group_size;
+      __pyx_t_11 = __pyx_t_10;
+      for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_11; __pyx_t_12+=1) {
+        __pyx_v_j = __pyx_t_12;
+
+        /* "_sudokugen.pyx":287
+ * 
+ *             for j in range(group_size):
+ *                 k = group_indices[i, j]             # <<<<<<<<<<<<<<
+ *                 if grid[k] == 0 and candidate_values[k] & grid[i]:
+ *                     candidate_values[k] &= ~grid[i]
+ */
+        __pyx_t_13 = __pyx_v_i;
+        __pyx_t_14 = __pyx_v_j;
+        __pyx_v_k = (*((Py_ssize_t const  *) ( /* dim=1 */ ((char *) (((Py_ssize_t const  *) ( /* dim=0 */ (__pyx_v_group_indices.data + __pyx_t_13 * __pyx_v_group_indices.strides[0]) )) + __pyx_t_14)) )));
+
+        /* "_sudokugen.pyx":288
+ *             for j in range(group_size):
+ *                 k = group_indices[i, j]
+ *                 if grid[k] == 0 and candidate_values[k] & grid[i]:             # <<<<<<<<<<<<<<
+ *                     candidate_values[k] &= ~grid[i]
+ *                     candidate_nums[k] -= 1
+ */
+        __pyx_t_15 = __pyx_v_k;
+        __pyx_t_16 = (((*((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_grid.data) + __pyx_t_15)) ))) == 0) != 0);
+        if (__pyx_t_16) {
+        } else {
+          __pyx_t_5 = __pyx_t_16;
+          goto __pyx_L9_bool_binop_done;
+        }
+        __pyx_t_17 = __pyx_v_k;
+        __pyx_t_18 = __pyx_v_i;
+        __pyx_t_16 = (((*((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_candidate_values.data) + __pyx_t_17)) ))) & (*((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_grid.data) + __pyx_t_18)) )))) != 0);
+        __pyx_t_5 = __pyx_t_16;
+        __pyx_L9_bool_binop_done:;
+        if (__pyx_t_5) {
+
+          /* "_sudokugen.pyx":289
+ *                 k = group_indices[i, j]
+ *                 if grid[k] == 0 and candidate_values[k] & grid[i]:
+ *                     candidate_values[k] &= ~grid[i]             # <<<<<<<<<<<<<<
+ *                     candidate_nums[k] -= 1
+ * 
+ */
+          __pyx_t_19 = __pyx_v_i;
+          __pyx_t_20 = __pyx_v_k;
+          *((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_candidate_values.data) + __pyx_t_20)) )) &= (~(*((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_grid.data) + __pyx_t_19)) ))));
+
+          /* "_sudokugen.pyx":290
+ *                 if grid[k] == 0 and candidate_values[k] & grid[i]:
+ *                     candidate_values[k] &= ~grid[i]
+ *                     candidate_nums[k] -= 1             # <<<<<<<<<<<<<<
+ * 
+ *                     if candidate_nums[k] == 0:
+ */
+          __pyx_t_21 = __pyx_v_k;
+          *((unsigned long *) ( /* dim=0 */ ((char *) (((unsigned long *) __pyx_v_candidate_nums.data) + __pyx_t_21)) )) -= 1;
+
+          /* "_sudokugen.pyx":292
+ *                     candidate_nums[k] -= 1
+ * 
+ *                     if candidate_nums[k] == 0:             # <<<<<<<<<<<<<<
+ *                         return -1
+ * 
+ */
+          __pyx_t_22 = __pyx_v_k;
+          __pyx_t_5 = (((*((unsigned long *) ( /* dim=0 */ ((char *) (((unsigned long *) __pyx_v_candidate_nums.data) + __pyx_t_22)) ))) == 0) != 0);
+          if (__pyx_t_5) {
+
+            /* "_sudokugen.pyx":293
+ * 
+ *                     if candidate_nums[k] == 0:
+ *                         return -1             # <<<<<<<<<<<<<<
+ * 
+ *     return filled
+ */
+            __pyx_r = -1;
+            goto __pyx_L0;
+
+            /* "_sudokugen.pyx":292
+ *                     candidate_nums[k] -= 1
+ * 
+ *                     if candidate_nums[k] == 0:             # <<<<<<<<<<<<<<
+ *                         return -1
+ * 
+ */
+          }
+
+          /* "_sudokugen.pyx":288
+ *             for j in range(group_size):
+ *                 k = group_indices[i, j]
+ *                 if grid[k] == 0 and candidate_values[k] & grid[i]:             # <<<<<<<<<<<<<<
+ *                     candidate_values[k] &= ~grid[i]
+ *                     candidate_nums[k] -= 1
+ */
+        }
+      }
+
+      /* "_sudokugen.pyx":280
+ * 
+ *     for i in range(grid_size):
+ *         if grid[i] != 0:             # <<<<<<<<<<<<<<
+ *             filled += 1
+ *             available[i] = 0
+ */
+    }
+  }
+
+  /* "_sudokugen.pyx":295
+ *                         return -1
+ * 
+ *     return filled             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = __pyx_v_filled;
+  goto __pyx_L0;
+
+  /* "_sudokugen.pyx":266
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * cdef inline int initialize(unsigned long long[::1] grid,             # <<<<<<<<<<<<<<
+ *                            unsigned long long[::1] candidate_values,
+ *                            unsigned long[::1] candidate_nums,
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "_sudokugen.pyx":301
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * cdef inline short update_effected(const unsigned long long value,             # <<<<<<<<<<<<<<
+ *                                   unsigned long long[::1] candidate_values,
+ *                                   unsigned long[::1] candidate_nums,
+ */
+
+static CYTHON_INLINE short __pyx_f_10_sudokugen_update_effected(unsigned PY_LONG_LONG const __pyx_v_value, __Pyx_memviewslice __pyx_v_candidate_values, __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_effected_indices, __Pyx_memviewslice __pyx_v_available) {
+  Py_ssize_t __pyx_v_i;
+  Py_ssize_t __pyx_v_j;
+  Py_ssize_t __pyx_v_group_size;
+  short __pyx_r;
+  __Pyx_RefNannyDeclarations
+  Py_ssize_t __pyx_t_1;
+  Py_ssize_t __pyx_t_2;
+  Py_ssize_t __pyx_t_3;
+  Py_ssize_t __pyx_t_4;
+  int __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
+  int __pyx_t_7;
+  Py_ssize_t __pyx_t_8;
+  Py_ssize_t __pyx_t_9;
+  Py_ssize_t __pyx_t_10;
+  Py_ssize_t __pyx_t_11;
+  __Pyx_RefNannySetupContext("update_effected", 0);
+
+  /* "_sudokugen.pyx":310
+ * 
+ *     cdef Py_ssize_t i, j
+ *     cdef Py_ssize_t group_size = effected_indices.shape[0]             # <<<<<<<<<<<<<<
+ * 
+ *     for j in range(group_size):
+ */
+  __pyx_v_group_size = (__pyx_v_effected_indices.shape[0]);
+
+  /* "_sudokugen.pyx":312
+ *     cdef Py_ssize_t group_size = effected_indices.shape[0]
+ * 
+ *     for j in range(group_size):             # <<<<<<<<<<<<<<
+ *             i = effected_indices[j]
+ * 
+ */
+  __pyx_t_1 = __pyx_v_group_size;
+  __pyx_t_2 = __pyx_t_1;
+  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
+    __pyx_v_j = __pyx_t_3;
+
+    /* "_sudokugen.pyx":313
+ * 
+ *     for j in range(group_size):
+ *             i = effected_indices[j]             # <<<<<<<<<<<<<<
+ * 
+ *             if available[i] and candidate_values[i] & value:
+ */
+    __pyx_t_4 = __pyx_v_j;
+    __pyx_v_i = (*((Py_ssize_t const  *) ( /* dim=0 */ ((char *) (((Py_ssize_t const  *) __pyx_v_effected_indices.data) + __pyx_t_4)) )));
+
+    /* "_sudokugen.pyx":315
+ *             i = effected_indices[j]
+ * 
+ *             if available[i] and candidate_values[i] & value:             # <<<<<<<<<<<<<<
+ *                 candidate_values[i] &= ~value
+ *                 candidate_nums[i] -= 1
+ */
+    __pyx_t_6 = __pyx_v_i;
+    __pyx_t_7 = ((*((short const  *) ( /* dim=0 */ ((char *) (((short const  *) __pyx_v_available.data) + __pyx_t_6)) ))) != 0);
+    if (__pyx_t_7) {
+    } else {
+      __pyx_t_5 = __pyx_t_7;
+      goto __pyx_L6_bool_binop_done;
+    }
+    __pyx_t_8 = __pyx_v_i;
+    __pyx_t_7 = (((*((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_candidate_values.data) + __pyx_t_8)) ))) & __pyx_v_value) != 0);
+    __pyx_t_5 = __pyx_t_7;
+    __pyx_L6_bool_binop_done:;
+    if (__pyx_t_5) {
+
+      /* "_sudokugen.pyx":316
+ * 
+ *             if available[i] and candidate_values[i] & value:
+ *                 candidate_values[i] &= ~value             # <<<<<<<<<<<<<<
+ *                 candidate_nums[i] -= 1
+ * 
+ */
+      __pyx_t_9 = __pyx_v_i;
+      *((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_candidate_values.data) + __pyx_t_9)) )) &= (~__pyx_v_value);
+
+      /* "_sudokugen.pyx":317
+ *             if available[i] and candidate_values[i] & value:
+ *                 candidate_values[i] &= ~value
+ *                 candidate_nums[i] -= 1             # <<<<<<<<<<<<<<
+ * 
+ *                 if candidate_nums[i] == 0:
+ */
+      __pyx_t_10 = __pyx_v_i;
+      *((unsigned long *) ( /* dim=0 */ ((char *) (((unsigned long *) __pyx_v_candidate_nums.data) + __pyx_t_10)) )) -= 1;
+
+      /* "_sudokugen.pyx":319
+ *                 candidate_nums[i] -= 1
+ * 
+ *                 if candidate_nums[i] == 0:             # <<<<<<<<<<<<<<
+ *                     return False
+ * 
+ */
+      __pyx_t_11 = __pyx_v_i;
+      __pyx_t_5 = (((*((unsigned long *) ( /* dim=0 */ ((char *) (((unsigned long *) __pyx_v_candidate_nums.data) + __pyx_t_11)) ))) == 0) != 0);
+      if (__pyx_t_5) {
+
+        /* "_sudokugen.pyx":320
+ * 
+ *                 if candidate_nums[i] == 0:
+ *                     return False             # <<<<<<<<<<<<<<
+ * 
+ *     return True
+ */
+        __pyx_r = 0;
+        goto __pyx_L0;
+
+        /* "_sudokugen.pyx":319
+ *                 candidate_nums[i] -= 1
+ * 
+ *                 if candidate_nums[i] == 0:             # <<<<<<<<<<<<<<
+ *                     return False
+ * 
+ */
+      }
+
+      /* "_sudokugen.pyx":315
+ *             i = effected_indices[j]
+ * 
+ *             if available[i] and candidate_values[i] & value:             # <<<<<<<<<<<<<<
+ *                 candidate_values[i] &= ~value
+ *                 candidate_nums[i] -= 1
+ */
+    }
+  }
+
+  /* "_sudokugen.pyx":322
+ *                     return False
+ * 
+ *     return True             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = 1;
+  goto __pyx_L0;
+
+  /* "_sudokugen.pyx":301
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * cdef inline short update_effected(const unsigned long long value,             # <<<<<<<<<<<<<<
+ *                                   unsigned long long[::1] candidate_values,
+ *                                   unsigned long[::1] candidate_nums,
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "_sudokugen.pyx":328
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * cdef inline int reduce_naked_singles(unsigned long long[::1] candidate_values,             # <<<<<<<<<<<<<<
+ *                                      unsigned long[::1] candidate_nums,
+ *                                      const Py_ssize_t[:,::1] group_indices,
+ */
+
+static CYTHON_INLINE int __pyx_f_10_sudokugen_reduce_naked_singles(__Pyx_memviewslice __pyx_v_candidate_values, __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_group_indices, __Pyx_memviewslice __pyx_v_available) {
+  Py_ssize_t __pyx_v_i;
+  Py_ssize_t __pyx_v_j;
+  Py_ssize_t __pyx_v_k;
+  Py_ssize_t __pyx_v_grid_size;
+  Py_ssize_t __pyx_v_group_size;
+  int __pyx_v_found;
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  Py_ssize_t __pyx_t_1;
+  Py_ssize_t __pyx_t_2;
+  Py_ssize_t __pyx_t_3;
+  int __pyx_t_4;
+  Py_ssize_t __pyx_t_5;
+  int __pyx_t_6;
+  Py_ssize_t __pyx_t_7;
+  Py_ssize_t __pyx_t_8;
+  Py_ssize_t __pyx_t_9;
+  Py_ssize_t __pyx_t_10;
+  Py_ssize_t __pyx_t_11;
+  Py_ssize_t __pyx_t_12;
+  Py_ssize_t __pyx_t_13;
+  Py_ssize_t __pyx_t_14;
+  Py_ssize_t __pyx_t_15;
+  Py_ssize_t __pyx_t_16;
+  Py_ssize_t __pyx_t_17;
+  Py_ssize_t __pyx_t_18;
+  Py_ssize_t __pyx_t_19;
+  __Pyx_RefNannySetupContext("reduce_naked_singles", 0);
+
+  /* "_sudokugen.pyx":335
+ * 
+ *     cdef Py_ssize_t i, j, k
+ *     cdef Py_ssize_t grid_size = candidate_values.shape[0]             # <<<<<<<<<<<<<<
+ *     cdef Py_ssize_t group_size = group_indices.shape[1]
+ * 
+ */
+  __pyx_v_grid_size = (__pyx_v_candidate_values.shape[0]);
+
+  /* "_sudokugen.pyx":336
+ *     cdef Py_ssize_t i, j, k
+ *     cdef Py_ssize_t grid_size = candidate_values.shape[0]
+ *     cdef Py_ssize_t group_size = group_indices.shape[1]             # <<<<<<<<<<<<<<
+ * 
+ *     cdef int found = 0
+ */
+  __pyx_v_group_size = (__pyx_v_group_indices.shape[1]);
+
+  /* "_sudokugen.pyx":338
+ *     cdef Py_ssize_t group_size = group_indices.shape[1]
+ * 
+ *     cdef int found = 0             # <<<<<<<<<<<<<<
+ * 
+ *     for i in range(grid_size):
+ */
+  __pyx_v_found = 0;
+
+  /* "_sudokugen.pyx":340
+ *     cdef int found = 0
+ * 
+ *     for i in range(grid_size):             # <<<<<<<<<<<<<<
+ *         if available[i] and candidate_nums[i] == 1:
+ *             for j in range(group_size):
+ */
+  __pyx_t_1 = __pyx_v_grid_size;
+  __pyx_t_2 = __pyx_t_1;
+  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
+    __pyx_v_i = __pyx_t_3;
+
+    /* "_sudokugen.pyx":341
+ * 
+ *     for i in range(grid_size):
+ *         if available[i] and candidate_nums[i] == 1:             # <<<<<<<<<<<<<<
+ *             for j in range(group_size):
+ *                 k = group_indices[i, j]
+ */
+    __pyx_t_5 = __pyx_v_i;
+    __pyx_t_6 = ((*((short const  *) ( /* dim=0 */ ((char *) (((short const  *) __pyx_v_available.data) + __pyx_t_5)) ))) != 0);
+    if (__pyx_t_6) {
+    } else {
+      __pyx_t_4 = __pyx_t_6;
+      goto __pyx_L6_bool_binop_done;
+    }
+    __pyx_t_7 = __pyx_v_i;
+    __pyx_t_6 = (((*((unsigned long *) ( /* dim=0 */ ((char *) (((unsigned long *) __pyx_v_candidate_nums.data) + __pyx_t_7)) ))) == 1) != 0);
+    __pyx_t_4 = __pyx_t_6;
+    __pyx_L6_bool_binop_done:;
+    if (__pyx_t_4) {
+
+      /* "_sudokugen.pyx":342
+ *     for i in range(grid_size):
+ *         if available[i] and candidate_nums[i] == 1:
+ *             for j in range(group_size):             # <<<<<<<<<<<<<<
+ *                 k = group_indices[i, j]
+ * 
+ */
+      __pyx_t_8 = __pyx_v_group_size;
+      __pyx_t_9 = __pyx_t_8;
+      for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
+        __pyx_v_j = __pyx_t_10;
+
+        /* "_sudokugen.pyx":343
+ *         if available[i] and candidate_nums[i] == 1:
+ *             for j in range(group_size):
+ *                 k = group_indices[i, j]             # <<<<<<<<<<<<<<
+ * 
+ *                 if available[k] and candidate_values[i] & candidate_values[k]:
+ */
+        __pyx_t_11 = __pyx_v_i;
+        __pyx_t_12 = __pyx_v_j;
+        __pyx_v_k = (*((Py_ssize_t const  *) ( /* dim=1 */ ((char *) (((Py_ssize_t const  *) ( /* dim=0 */ (__pyx_v_group_indices.data + __pyx_t_11 * __pyx_v_group_indices.strides[0]) )) + __pyx_t_12)) )));
+
+        /* "_sudokugen.pyx":345
+ *                 k = group_indices[i, j]
+ * 
+ *                 if available[k] and candidate_values[i] & candidate_values[k]:             # <<<<<<<<<<<<<<
+ *                     candidate_values[k] &= ~candidate_values[i]
+ *                     candidate_nums[k] -= 1
+ */
+        __pyx_t_13 = __pyx_v_k;
+        __pyx_t_6 = ((*((short const  *) ( /* dim=0 */ ((char *) (((short const  *) __pyx_v_available.data) + __pyx_t_13)) ))) != 0);
+        if (__pyx_t_6) {
+        } else {
+          __pyx_t_4 = __pyx_t_6;
+          goto __pyx_L11_bool_binop_done;
+        }
+        __pyx_t_14 = __pyx_v_i;
+        __pyx_t_15 = __pyx_v_k;
+        __pyx_t_6 = (((*((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_candidate_values.data) + __pyx_t_14)) ))) & (*((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_candidate_values.data) + __pyx_t_15)) )))) != 0);
+        __pyx_t_4 = __pyx_t_6;
+        __pyx_L11_bool_binop_done:;
+        if (__pyx_t_4) {
+
+          /* "_sudokugen.pyx":346
+ * 
+ *                 if available[k] and candidate_values[i] & candidate_values[k]:
+ *                     candidate_values[k] &= ~candidate_values[i]             # <<<<<<<<<<<<<<
+ *                     candidate_nums[k] -= 1
+ * 
+ */
+          __pyx_t_16 = __pyx_v_i;
+          __pyx_t_17 = __pyx_v_k;
+          *((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_candidate_values.data) + __pyx_t_17)) )) &= (~(*((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_candidate_values.data) + __pyx_t_16)) ))));
+
+          /* "_sudokugen.pyx":347
+ *                 if available[k] and candidate_values[i] & candidate_values[k]:
+ *                     candidate_values[k] &= ~candidate_values[i]
+ *                     candidate_nums[k] -= 1             # <<<<<<<<<<<<<<
+ * 
+ *                     if candidate_nums[k] == 0:
+ */
+          __pyx_t_18 = __pyx_v_k;
+          *((unsigned long *) ( /* dim=0 */ ((char *) (((unsigned long *) __pyx_v_candidate_nums.data) + __pyx_t_18)) )) -= 1;
+
+          /* "_sudokugen.pyx":349
+ *                     candidate_nums[k] -= 1
+ * 
+ *                     if candidate_nums[k] == 0:             # <<<<<<<<<<<<<<
+ *                         return -1
+ * 
+ */
+          __pyx_t_19 = __pyx_v_k;
+          __pyx_t_4 = (((*((unsigned long *) ( /* dim=0 */ ((char *) (((unsigned long *) __pyx_v_candidate_nums.data) + __pyx_t_19)) ))) == 0) != 0);
+          if (__pyx_t_4) {
+
+            /* "_sudokugen.pyx":350
+ * 
+ *                     if candidate_nums[k] == 0:
+ *                         return -1             # <<<<<<<<<<<<<<
+ * 
+ *                     found += 1
+ */
+            __pyx_r = -1;
+            goto __pyx_L0;
+
+            /* "_sudokugen.pyx":349
+ *                     candidate_nums[k] -= 1
+ * 
+ *                     if candidate_nums[k] == 0:             # <<<<<<<<<<<<<<
+ *                         return -1
+ * 
+ */
+          }
+
+          /* "_sudokugen.pyx":352
+ *                         return -1
+ * 
+ *                     found += 1             # <<<<<<<<<<<<<<
+ * 
+ *     return found
+ */
+          __pyx_v_found = (__pyx_v_found + 1);
+
+          /* "_sudokugen.pyx":345
+ *                 k = group_indices[i, j]
+ * 
+ *                 if available[k] and candidate_values[i] & candidate_values[k]:             # <<<<<<<<<<<<<<
+ *                     candidate_values[k] &= ~candidate_values[i]
+ *                     candidate_nums[k] -= 1
+ */
+        }
+      }
+
+      /* "_sudokugen.pyx":341
+ * 
+ *     for i in range(grid_size):
+ *         if available[i] and candidate_nums[i] == 1:             # <<<<<<<<<<<<<<
+ *             for j in range(group_size):
+ *                 k = group_indices[i, j]
+ */
+    }
+  }
+
+  /* "_sudokugen.pyx":354
+ *                     found += 1
+ * 
+ *     return found             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = __pyx_v_found;
+  goto __pyx_L0;
+
+  /* "_sudokugen.pyx":328
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * cdef inline int reduce_naked_singles(unsigned long long[::1] candidate_values,             # <<<<<<<<<<<<<<
+ *                                      unsigned long[::1] candidate_nums,
+ *                                      const Py_ssize_t[:,::1] group_indices,
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "_sudokugen.pyx":360
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cpdef Py_ssize_t[::1] _generate_subgrid_indices(Py_ssize_t row_index,             # <<<<<<<<<<<<<<
@@ -2490,7 +6009,7 @@ static PyObject *__pyx_codeobj__42;
  *                                                 unsigned int n):
  */
 
-static PyObject *__pyx_pw_10_sudokugen_1_generate_subgrid_indices(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_10_sudokugen_5_generate_subgrid_indices(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_subgrid_indices(Py_ssize_t __pyx_v_row_index, Py_ssize_t __pyx_v_col_index, unsigned int __pyx_v_n, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_subgrid = NULL;
   Py_ssize_t __pyx_v_sub_row_index;
@@ -2516,35 +6035,35 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_subgrid_indices(Py_ssiz
   __Pyx_memviewslice __pyx_t_14 = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_RefNannySetupContext("_generate_subgrid_indices", 0);
 
-  /* "_sudokugen.pyx":35
- * 		                 which contains the provided row_index, col_index.
- *     """
+  /* "_sudokugen.pyx":365
+ *     """Generates the subgrid group indices for a given coordinate"""
+ * 
  *     subgrid = np.empty(n ** 2 - 1, dtype=np.intp)             # <<<<<<<<<<<<<<
  *     cdef Py_ssize_t sub_row_index, sub_col_index, row_coord, col_coord
  *     cdef Py_ssize_t i = 0
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_From_long((__Pyx_pow_long(((long)__pyx_v_n), 2) - 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_long((__Pyx_pow_long(((long)__pyx_v_n), 2) - 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_intp); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_intp); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 35, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -2552,7 +6071,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_subgrid_indices(Py_ssiz
   __pyx_v_subgrid = __pyx_t_5;
   __pyx_t_5 = 0;
 
-  /* "_sudokugen.pyx":37
+  /* "_sudokugen.pyx":367
  *     subgrid = np.empty(n ** 2 - 1, dtype=np.intp)
  *     cdef Py_ssize_t sub_row_index, sub_col_index, row_coord, col_coord
  *     cdef Py_ssize_t i = 0             # <<<<<<<<<<<<<<
@@ -2561,7 +6080,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_subgrid_indices(Py_ssiz
  */
   __pyx_v_i = 0;
 
-  /* "_sudokugen.pyx":39
+  /* "_sudokugen.pyx":369
  *     cdef Py_ssize_t i = 0
  * 
  *     for sub_row_index in range(n):             # <<<<<<<<<<<<<<
@@ -2573,7 +6092,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_subgrid_indices(Py_ssiz
   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
     __pyx_v_sub_row_index = __pyx_t_8;
 
-    /* "_sudokugen.pyx":40
+    /* "_sudokugen.pyx":370
  * 
  *     for sub_row_index in range(n):
  *         for sub_col_index in range(n):             # <<<<<<<<<<<<<<
@@ -2585,7 +6104,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_subgrid_indices(Py_ssiz
     for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
       __pyx_v_sub_col_index = __pyx_t_11;
 
-      /* "_sudokugen.pyx":41
+      /* "_sudokugen.pyx":371
  *     for sub_row_index in range(n):
  *         for sub_col_index in range(n):
  *             row_coord = (row_index // n) * n + sub_row_index             # <<<<<<<<<<<<<<
@@ -2594,15 +6113,15 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_subgrid_indices(Py_ssiz
  */
       if (unlikely(__pyx_v_n == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-        __PYX_ERR(0, 41, __pyx_L1_error)
+        __PYX_ERR(0, 371, __pyx_L1_error)
       }
       else if (sizeof(Py_ssize_t) == sizeof(long) && (!(((unsigned int)-1) > 0)) && unlikely(__pyx_v_n == (unsigned int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_row_index))) {
         PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-        __PYX_ERR(0, 41, __pyx_L1_error)
+        __PYX_ERR(0, 371, __pyx_L1_error)
       }
       __pyx_v_row_coord = ((__Pyx_div_Py_ssize_t(__pyx_v_row_index, __pyx_v_n) * __pyx_v_n) + __pyx_v_sub_row_index);
 
-      /* "_sudokugen.pyx":42
+      /* "_sudokugen.pyx":372
  *         for sub_col_index in range(n):
  *             row_coord = (row_index // n) * n + sub_row_index
  *             col_coord = (col_index // n) * n + sub_col_index             # <<<<<<<<<<<<<<
@@ -2611,15 +6130,15 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_subgrid_indices(Py_ssiz
  */
       if (unlikely(__pyx_v_n == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "integer division or modulo by zero");
-        __PYX_ERR(0, 42, __pyx_L1_error)
+        __PYX_ERR(0, 372, __pyx_L1_error)
       }
       else if (sizeof(Py_ssize_t) == sizeof(long) && (!(((unsigned int)-1) > 0)) && unlikely(__pyx_v_n == (unsigned int)-1)  && unlikely(UNARY_NEG_WOULD_OVERFLOW(__pyx_v_col_index))) {
         PyErr_SetString(PyExc_OverflowError, "value too large to perform division");
-        __PYX_ERR(0, 42, __pyx_L1_error)
+        __PYX_ERR(0, 372, __pyx_L1_error)
       }
       __pyx_v_col_coord = ((__Pyx_div_Py_ssize_t(__pyx_v_col_index, __pyx_v_n) * __pyx_v_n) + __pyx_v_sub_col_index);
 
-      /* "_sudokugen.pyx":43
+      /* "_sudokugen.pyx":373
  *             row_coord = (row_index // n) * n + sub_row_index
  *             col_coord = (col_index // n) * n + sub_col_index
  *             if row_coord != row_index or col_coord != col_index:             # <<<<<<<<<<<<<<
@@ -2637,19 +6156,19 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_subgrid_indices(Py_ssiz
       __pyx_L8_bool_binop_done:;
       if (__pyx_t_12) {
 
-        /* "_sudokugen.pyx":44
+        /* "_sudokugen.pyx":374
  *             col_coord = (col_index // n) * n + sub_col_index
  *             if row_coord != row_index or col_coord != col_index:
  *                 subgrid[i] = n ** 2 * row_coord + col_coord             # <<<<<<<<<<<<<<
  *                 i += 1
  * 
  */
-        __pyx_t_5 = PyInt_FromSsize_t(((__Pyx_pow_long(((long)__pyx_v_n), 2) * __pyx_v_row_coord) + __pyx_v_col_coord)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 44, __pyx_L1_error)
+        __pyx_t_5 = PyInt_FromSsize_t(((__Pyx_pow_long(((long)__pyx_v_n), 2) * __pyx_v_row_coord) + __pyx_v_col_coord)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 374, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
-        if (unlikely(__Pyx_SetItemInt(__pyx_v_subgrid, __pyx_v_i, __pyx_t_5, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 0, 0) < 0)) __PYX_ERR(0, 44, __pyx_L1_error)
+        if (unlikely(__Pyx_SetItemInt(__pyx_v_subgrid, __pyx_v_i, __pyx_t_5, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 0, 0) < 0)) __PYX_ERR(0, 374, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-        /* "_sudokugen.pyx":45
+        /* "_sudokugen.pyx":375
  *             if row_coord != row_index or col_coord != col_index:
  *                 subgrid[i] = n ** 2 * row_coord + col_coord
  *                 i += 1             # <<<<<<<<<<<<<<
@@ -2658,7 +6177,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_subgrid_indices(Py_ssiz
  */
         __pyx_v_i = (__pyx_v_i + 1);
 
-        /* "_sudokugen.pyx":43
+        /* "_sudokugen.pyx":373
  *             row_coord = (row_index // n) * n + sub_row_index
  *             col_coord = (col_index // n) * n + sub_col_index
  *             if row_coord != row_index or col_coord != col_index:             # <<<<<<<<<<<<<<
@@ -2669,20 +6188,20 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_subgrid_indices(Py_ssiz
     }
   }
 
-  /* "_sudokugen.pyx":47
+  /* "_sudokugen.pyx":377
  *                 i += 1
  * 
  *     return subgrid             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __pyx_t_14 = __Pyx_PyObject_to_MemoryviewSlice_dc_Py_ssize_t(__pyx_v_subgrid, PyBUF_WRITABLE); if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_t_14 = __Pyx_PyObject_to_MemoryviewSlice_dc_Py_ssize_t(__pyx_v_subgrid, PyBUF_WRITABLE); if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 377, __pyx_L1_error)
   __pyx_r = __pyx_t_14;
   __pyx_t_14.memview = NULL;
   __pyx_t_14.data = NULL;
   goto __pyx_L0;
 
-  /* "_sudokugen.pyx":17
+  /* "_sudokugen.pyx":360
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cpdef Py_ssize_t[::1] _generate_subgrid_indices(Py_ssize_t row_index,             # <<<<<<<<<<<<<<
@@ -2714,9 +6233,9 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_subgrid_indices(Py_ssiz
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10_sudokugen_1_generate_subgrid_indices(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_10_sudokugen__generate_subgrid_indices[] = "Generates the subgrid group indices for a given coordinate\n\n    Args:\n        :param row_index: Row index of the element, for which the\n\t\t                  the subgrid is generated currently.\n\n\t    :param col_index: Column index of the element,\n\t\t                  described previously.\n\n    Returns:\n\t    :return subgrid: A numpy array, that holds\n\t\t                 the indices of the n x n - 1 sized subgrid group,\n\t\t                 which contains the provided row_index, col_index.\n    ";
-static PyObject *__pyx_pw_10_sudokugen_1_generate_subgrid_indices(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_10_sudokugen_5_generate_subgrid_indices(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_10_sudokugen_4_generate_subgrid_indices[] = "Generates the subgrid group indices for a given coordinate";
+static PyObject *__pyx_pw_10_sudokugen_5_generate_subgrid_indices(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   Py_ssize_t __pyx_v_row_index;
   Py_ssize_t __pyx_v_col_index;
   unsigned int __pyx_v_n;
@@ -2748,17 +6267,17 @@ static PyObject *__pyx_pw_10_sudokugen_1_generate_subgrid_indices(PyObject *__py
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_col_index)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("_generate_subgrid_indices", 1, 3, 3, 1); __PYX_ERR(0, 17, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("_generate_subgrid_indices", 1, 3, 3, 1); __PYX_ERR(0, 360, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_n)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("_generate_subgrid_indices", 1, 3, 3, 2); __PYX_ERR(0, 17, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("_generate_subgrid_indices", 1, 3, 3, 2); __PYX_ERR(0, 360, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_generate_subgrid_indices") < 0)) __PYX_ERR(0, 17, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_generate_subgrid_indices") < 0)) __PYX_ERR(0, 360, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
@@ -2767,34 +6286,34 @@ static PyObject *__pyx_pw_10_sudokugen_1_generate_subgrid_indices(PyObject *__py
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
       values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
     }
-    __pyx_v_row_index = __Pyx_PyIndex_AsSsize_t(values[0]); if (unlikely((__pyx_v_row_index == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 17, __pyx_L3_error)
-    __pyx_v_col_index = __Pyx_PyIndex_AsSsize_t(values[1]); if (unlikely((__pyx_v_col_index == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 18, __pyx_L3_error)
-    __pyx_v_n = __Pyx_PyInt_As_unsigned_int(values[2]); if (unlikely((__pyx_v_n == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 19, __pyx_L3_error)
+    __pyx_v_row_index = __Pyx_PyIndex_AsSsize_t(values[0]); if (unlikely((__pyx_v_row_index == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 360, __pyx_L3_error)
+    __pyx_v_col_index = __Pyx_PyIndex_AsSsize_t(values[1]); if (unlikely((__pyx_v_col_index == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 361, __pyx_L3_error)
+    __pyx_v_n = __Pyx_PyInt_As_unsigned_int(values[2]); if (unlikely((__pyx_v_n == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 362, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_generate_subgrid_indices", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 17, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("_generate_subgrid_indices", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 360, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("_sudokugen._generate_subgrid_indices", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10_sudokugen__generate_subgrid_indices(__pyx_self, __pyx_v_row_index, __pyx_v_col_index, __pyx_v_n);
+  __pyx_r = __pyx_pf_10_sudokugen_4_generate_subgrid_indices(__pyx_self, __pyx_v_row_index, __pyx_v_col_index, __pyx_v_n);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10_sudokugen__generate_subgrid_indices(CYTHON_UNUSED PyObject *__pyx_self, Py_ssize_t __pyx_v_row_index, Py_ssize_t __pyx_v_col_index, unsigned int __pyx_v_n) {
+static PyObject *__pyx_pf_10_sudokugen_4_generate_subgrid_indices(CYTHON_UNUSED PyObject *__pyx_self, Py_ssize_t __pyx_v_row_index, Py_ssize_t __pyx_v_col_index, unsigned int __pyx_v_n) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_memviewslice __pyx_t_1 = { 0, 0, { 0 }, { 0 }, { 0 } };
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("_generate_subgrid_indices", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10_sudokugen__generate_subgrid_indices(__pyx_v_row_index, __pyx_v_col_index, __pyx_v_n, 0); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 17, __pyx_L1_error)
-  __pyx_t_2 = __pyx_memoryview_fromslice(__pyx_t_1, 1, (PyObject *(*)(char *)) __pyx_memview_get_Py_ssize_t, (int (*)(char *, PyObject *)) __pyx_memview_set_Py_ssize_t, 0);; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 17, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_10_sudokugen__generate_subgrid_indices(__pyx_v_row_index, __pyx_v_col_index, __pyx_v_n, 0); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 360, __pyx_L1_error)
+  __pyx_t_2 = __pyx_memoryview_fromslice(__pyx_t_1, 1, (PyObject *(*)(char *)) __pyx_memview_get_Py_ssize_t, (int (*)(char *, PyObject *)) __pyx_memview_set_Py_ssize_t, 0);; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 360, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
   __pyx_t_1.memview = NULL;
@@ -2815,7 +6334,7 @@ static PyObject *__pyx_pf_10_sudokugen__generate_subgrid_indices(CYTHON_UNUSED P
   return __pyx_r;
 }
 
-/* "_sudokugen.pyx":53
+/* "_sudokugen.pyx":383
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cdef Py_ssize_t[::1] _generate_col_indices(Py_ssize_t row_index,             # <<<<<<<<<<<<<<
@@ -2842,35 +6361,35 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_col_indices(Py_ssize_t 
   __Pyx_memviewslice __pyx_t_10 = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_RefNannySetupContext("_generate_col_indices", 0);
 
-  /* "_sudokugen.pyx":71
- *                      contains the provided row_index, col_index.
- *     """
+  /* "_sudokugen.pyx":388
+ *     """Generates the column group indices for a given coordinate"""
+ * 
  *     column = np.empty(n ** 2 - 1, dtype=np.intp)             # <<<<<<<<<<<<<<
  * 
  *     cdef Py_ssize_t j, i = 0
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 388, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 71, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 388, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_From_long((__Pyx_pow_long(((long)__pyx_v_n), 2) - 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_long((__Pyx_pow_long(((long)__pyx_v_n), 2) - 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 388, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 71, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 388, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 388, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 71, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 388, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_intp); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 71, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_intp); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 388, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 71, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 388, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 71, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 388, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -2878,7 +6397,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_col_indices(Py_ssize_t 
   __pyx_v_column = __pyx_t_5;
   __pyx_t_5 = 0;
 
-  /* "_sudokugen.pyx":73
+  /* "_sudokugen.pyx":390
  *     column = np.empty(n ** 2 - 1, dtype=np.intp)
  * 
  *     cdef Py_ssize_t j, i = 0             # <<<<<<<<<<<<<<
@@ -2887,23 +6406,23 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_col_indices(Py_ssize_t 
  */
   __pyx_v_i = 0;
 
-  /* "_sudokugen.pyx":74
+  /* "_sudokugen.pyx":391
  * 
  *     cdef Py_ssize_t j, i = 0
  *     cdef Py_ssize_t size = column.shape[0]             # <<<<<<<<<<<<<<
  * 
  *     for j in range(n ** 2):
  */
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_column, __pyx_n_s_shape); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 74, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_column, __pyx_n_s_shape); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 391, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_5, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 74, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_5, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 391, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_6 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_6 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 74, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_6 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 391, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_size = __pyx_t_6;
 
-  /* "_sudokugen.pyx":76
+  /* "_sudokugen.pyx":393
  *     cdef Py_ssize_t size = column.shape[0]
  * 
  *     for j in range(n ** 2):             # <<<<<<<<<<<<<<
@@ -2915,7 +6434,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_col_indices(Py_ssize_t 
   for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_8; __pyx_t_6+=1) {
     __pyx_v_j = __pyx_t_6;
 
-    /* "_sudokugen.pyx":77
+    /* "_sudokugen.pyx":394
  * 
  *     for j in range(n ** 2):
  *         if j != row_index:             # <<<<<<<<<<<<<<
@@ -2925,19 +6444,19 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_col_indices(Py_ssize_t 
     __pyx_t_9 = ((__pyx_v_j != __pyx_v_row_index) != 0);
     if (__pyx_t_9) {
 
-      /* "_sudokugen.pyx":78
+      /* "_sudokugen.pyx":395
  *     for j in range(n ** 2):
  *         if j != row_index:
  *             column[i] = n ** 2 * j + col_index             # <<<<<<<<<<<<<<
  *             i += 1
  * 
  */
-      __pyx_t_1 = PyInt_FromSsize_t(((__Pyx_pow_long(((long)__pyx_v_n), 2) * __pyx_v_j) + __pyx_v_col_index)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
+      __pyx_t_1 = PyInt_FromSsize_t(((__Pyx_pow_long(((long)__pyx_v_n), 2) * __pyx_v_j) + __pyx_v_col_index)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 395, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (unlikely(__Pyx_SetItemInt(__pyx_v_column, __pyx_v_i, __pyx_t_1, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 0, 0) < 0)) __PYX_ERR(0, 78, __pyx_L1_error)
+      if (unlikely(__Pyx_SetItemInt(__pyx_v_column, __pyx_v_i, __pyx_t_1, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 0, 0) < 0)) __PYX_ERR(0, 395, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "_sudokugen.pyx":79
+      /* "_sudokugen.pyx":396
  *         if j != row_index:
  *             column[i] = n ** 2 * j + col_index
  *             i += 1             # <<<<<<<<<<<<<<
@@ -2946,7 +6465,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_col_indices(Py_ssize_t 
  */
       __pyx_v_i = (__pyx_v_i + 1);
 
-      /* "_sudokugen.pyx":77
+      /* "_sudokugen.pyx":394
  * 
  *     for j in range(n ** 2):
  *         if j != row_index:             # <<<<<<<<<<<<<<
@@ -2956,20 +6475,20 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_col_indices(Py_ssize_t 
     }
   }
 
-  /* "_sudokugen.pyx":81
+  /* "_sudokugen.pyx":398
  *             i += 1
  * 
  *     return column             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_dc_Py_ssize_t(__pyx_v_column, PyBUF_WRITABLE); if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 81, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_dc_Py_ssize_t(__pyx_v_column, PyBUF_WRITABLE); if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 398, __pyx_L1_error)
   __pyx_r = __pyx_t_10;
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
   goto __pyx_L0;
 
-  /* "_sudokugen.pyx":53
+  /* "_sudokugen.pyx":383
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cdef Py_ssize_t[::1] _generate_col_indices(Py_ssize_t row_index,             # <<<<<<<<<<<<<<
@@ -3000,7 +6519,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_col_indices(Py_ssize_t 
   return __pyx_r;
 }
 
-/* "_sudokugen.pyx":87
+/* "_sudokugen.pyx":404
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cdef Py_ssize_t[::1] _generate_row_indices(Py_ssize_t row_index,             # <<<<<<<<<<<<<<
@@ -3027,35 +6546,35 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_row_indices(Py_ssize_t 
   __Pyx_memviewslice __pyx_t_10 = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_RefNannySetupContext("_generate_row_indices", 0);
 
-  /* "_sudokugen.pyx":105
- *                      contains the provided row_index, col_index.
- *     """
+  /* "_sudokugen.pyx":409
+ *     """Generates the row group indices for a given coordinate"""
+ * 
  *     row = np.empty(n ** 2 - 1, dtype=np.intp)             # <<<<<<<<<<<<<<
  * 
  *     cdef Py_ssize_t j, i = 0
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 409, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 409, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_From_long((__Pyx_pow_long(((long)__pyx_v_n), 2) - 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_long((__Pyx_pow_long(((long)__pyx_v_n), 2) - 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 409, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 409, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 409, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 409, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_intp); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_intp); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 409, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 105, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 409, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 409, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -3063,7 +6582,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_row_indices(Py_ssize_t 
   __pyx_v_row = __pyx_t_5;
   __pyx_t_5 = 0;
 
-  /* "_sudokugen.pyx":107
+  /* "_sudokugen.pyx":411
  *     row = np.empty(n ** 2 - 1, dtype=np.intp)
  * 
  *     cdef Py_ssize_t j, i = 0             # <<<<<<<<<<<<<<
@@ -3072,23 +6591,23 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_row_indices(Py_ssize_t 
  */
   __pyx_v_i = 0;
 
-  /* "_sudokugen.pyx":108
+  /* "_sudokugen.pyx":412
  * 
  *     cdef Py_ssize_t j, i = 0
  *     cdef Py_ssize_t size = row.shape[0]             # <<<<<<<<<<<<<<
  * 
  *     for j in range(n ** 2):
  */
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_row, __pyx_n_s_shape); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 108, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_row, __pyx_n_s_shape); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 412, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_5, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 108, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_5, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 412, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_6 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_6 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 108, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyIndex_AsSsize_t(__pyx_t_1); if (unlikely((__pyx_t_6 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 412, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_size = __pyx_t_6;
 
-  /* "_sudokugen.pyx":110
+  /* "_sudokugen.pyx":414
  *     cdef Py_ssize_t size = row.shape[0]
  * 
  *     for j in range(n ** 2):             # <<<<<<<<<<<<<<
@@ -3100,7 +6619,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_row_indices(Py_ssize_t 
   for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_8; __pyx_t_6+=1) {
     __pyx_v_j = __pyx_t_6;
 
-    /* "_sudokugen.pyx":111
+    /* "_sudokugen.pyx":415
  * 
  *     for j in range(n ** 2):
  *         if j != col_index:             # <<<<<<<<<<<<<<
@@ -3110,19 +6629,19 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_row_indices(Py_ssize_t 
     __pyx_t_9 = ((__pyx_v_j != __pyx_v_col_index) != 0);
     if (__pyx_t_9) {
 
-      /* "_sudokugen.pyx":112
+      /* "_sudokugen.pyx":416
  *     for j in range(n ** 2):
  *         if j != col_index:
  *             row[i] = row_index * n ** 2 + j             # <<<<<<<<<<<<<<
  *             i += 1
  * 
  */
-      __pyx_t_1 = PyInt_FromSsize_t(((__pyx_v_row_index * __Pyx_pow_long(((long)__pyx_v_n), 2)) + __pyx_v_j)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 112, __pyx_L1_error)
+      __pyx_t_1 = PyInt_FromSsize_t(((__pyx_v_row_index * __Pyx_pow_long(((long)__pyx_v_n), 2)) + __pyx_v_j)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 416, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (unlikely(__Pyx_SetItemInt(__pyx_v_row, __pyx_v_i, __pyx_t_1, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 0, 0) < 0)) __PYX_ERR(0, 112, __pyx_L1_error)
+      if (unlikely(__Pyx_SetItemInt(__pyx_v_row, __pyx_v_i, __pyx_t_1, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 0, 0) < 0)) __PYX_ERR(0, 416, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "_sudokugen.pyx":113
+      /* "_sudokugen.pyx":417
  *         if j != col_index:
  *             row[i] = row_index * n ** 2 + j
  *             i += 1             # <<<<<<<<<<<<<<
@@ -3131,7 +6650,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_row_indices(Py_ssize_t 
  */
       __pyx_v_i = (__pyx_v_i + 1);
 
-      /* "_sudokugen.pyx":111
+      /* "_sudokugen.pyx":415
  * 
  *     for j in range(n ** 2):
  *         if j != col_index:             # <<<<<<<<<<<<<<
@@ -3141,20 +6660,20 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_row_indices(Py_ssize_t 
     }
   }
 
-  /* "_sudokugen.pyx":115
+  /* "_sudokugen.pyx":419
  *             i += 1
  * 
  *     return row             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_dc_Py_ssize_t(__pyx_v_row, PyBUF_WRITABLE); if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 115, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_dc_Py_ssize_t(__pyx_v_row, PyBUF_WRITABLE); if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 419, __pyx_L1_error)
   __pyx_r = __pyx_t_10;
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
   goto __pyx_L0;
 
-  /* "_sudokugen.pyx":87
+  /* "_sudokugen.pyx":404
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cdef Py_ssize_t[::1] _generate_row_indices(Py_ssize_t row_index,             # <<<<<<<<<<<<<<
@@ -3185,7 +6704,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_row_indices(Py_ssize_t 
   return __pyx_r;
 }
 
-/* "_sudokugen.pyx":121
+/* "_sudokugen.pyx":425
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cpdef Py_ssize_t[:, ::1] generate_group_indices(unsigned int n):             # <<<<<<<<<<<<<<
@@ -3193,7 +6712,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen__generate_row_indices(Py_ssize_t 
  *         coordinate
  */
 
-static PyObject *__pyx_pw_10_sudokugen_3generate_group_indices(PyObject *__pyx_self, PyObject *__pyx_arg_n); /*proto*/
+static PyObject *__pyx_pw_10_sudokugen_7generate_group_indices(PyObject *__pyx_self, PyObject *__pyx_arg_n); /*proto*/
 static __Pyx_memviewslice __pyx_f_10_sudokugen_generate_group_indices(unsigned int __pyx_v_n, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_group_indices = NULL;
   Py_ssize_t __pyx_v_row_index;
@@ -3216,23 +6735,23 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen_generate_group_indices(unsigned i
   __Pyx_memviewslice __pyx_t_14 = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_RefNannySetupContext("generate_group_indices", 0);
 
-  /* "_sudokugen.pyx":128
- *         :return: A numpy tensor of shape (n ** 4, (n x n - 1) * 3)
+  /* "_sudokugen.pyx":429
+ *         coordinate
  *     """
  *     group_indices = np.empty([n ** 4, (n ** 2 - 1) * 3], dtype=np.intp)             # <<<<<<<<<<<<<<
  * 
  *     cdef Py_ssize_t row_index, col_index
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 429, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 429, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_From_long(__Pyx_pow_long(((long)__pyx_v_n), 4)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_long(__Pyx_pow_long(((long)__pyx_v_n), 4)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 429, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyInt_From_long(((__Pyx_pow_long(((long)__pyx_v_n), 2) - 1) * 3)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_long(((__Pyx_pow_long(((long)__pyx_v_n), 2) - 1) * 3)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 429, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyList_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __pyx_t_4 = PyList_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 429, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_1);
   PyList_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
@@ -3240,21 +6759,21 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen_generate_group_indices(unsigned i
   PyList_SET_ITEM(__pyx_t_4, 1, __pyx_t_3);
   __pyx_t_1 = 0;
   __pyx_t_3 = 0;
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 429, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4);
   __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 429, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 429, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_intp); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_intp); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 429, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 128, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 429, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 429, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -3262,7 +6781,7 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen_generate_group_indices(unsigned i
   __pyx_v_group_indices = __pyx_t_5;
   __pyx_t_5 = 0;
 
-  /* "_sudokugen.pyx":132
+  /* "_sudokugen.pyx":433
  *     cdef Py_ssize_t row_index, col_index
  * 
  *     for row_index in range(n ** 2):             # <<<<<<<<<<<<<<
@@ -3274,73 +6793,81 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen_generate_group_indices(unsigned i
   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
     __pyx_v_row_index = __pyx_t_8;
 
-    /* "_sudokugen.pyx":133
+    /* "_sudokugen.pyx":434
  * 
  *     for row_index in range(n ** 2):
  *         for col_index in range(n ** 2):             # <<<<<<<<<<<<<<
  *             group_indices[row_index * n ** 2 + col_index, :] = \
- *                 np.hstack((_generate_row_indices(row_index, col_index, n),
+ *                 np.hstack((
  */
     __pyx_t_9 = __Pyx_pow_long(((long)__pyx_v_n), 2);
     __pyx_t_10 = __pyx_t_9;
     for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
       __pyx_v_col_index = __pyx_t_11;
 
-      /* "_sudokugen.pyx":135
+      /* "_sudokugen.pyx":436
  *         for col_index in range(n ** 2):
  *             group_indices[row_index * n ** 2 + col_index, :] = \
- *                 np.hstack((_generate_row_indices(row_index, col_index, n),             # <<<<<<<<<<<<<<
- *                            _generate_col_indices(row_index, col_index, n),
- *                            _generate_subgrid_indices(row_index, col_index, n)))
+ *                 np.hstack((             # <<<<<<<<<<<<<<
+ *                     _generate_row_indices(row_index, col_index, n),
+ *                     _generate_col_indices(row_index, col_index, n),
  */
-      __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 135, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 436, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_hstack); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 135, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_hstack); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 436, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_12 = __pyx_f_10_sudokugen__generate_row_indices(__pyx_v_row_index, __pyx_v_col_index, __pyx_v_n); if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 135, __pyx_L1_error)
-      __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_12, 1, (PyObject *(*)(char *)) __pyx_memview_get_Py_ssize_t, (int (*)(char *, PyObject *)) __pyx_memview_set_Py_ssize_t, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 135, __pyx_L1_error)
+
+      /* "_sudokugen.pyx":437
+ *             group_indices[row_index * n ** 2 + col_index, :] = \
+ *                 np.hstack((
+ *                     _generate_row_indices(row_index, col_index, n),             # <<<<<<<<<<<<<<
+ *                     _generate_col_indices(row_index, col_index, n),
+ *                     _generate_subgrid_indices(
+ */
+      __pyx_t_12 = __pyx_f_10_sudokugen__generate_row_indices(__pyx_v_row_index, __pyx_v_col_index, __pyx_v_n); if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 437, __pyx_L1_error)
+      __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_12, 1, (PyObject *(*)(char *)) __pyx_memview_get_Py_ssize_t, (int (*)(char *, PyObject *)) __pyx_memview_set_Py_ssize_t, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 437, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __PYX_XDEC_MEMVIEW(&__pyx_t_12, 1);
       __pyx_t_12.memview = NULL;
       __pyx_t_12.data = NULL;
 
-      /* "_sudokugen.pyx":136
- *             group_indices[row_index * n ** 2 + col_index, :] = \
- *                 np.hstack((_generate_row_indices(row_index, col_index, n),
- *                            _generate_col_indices(row_index, col_index, n),             # <<<<<<<<<<<<<<
- *                            _generate_subgrid_indices(row_index, col_index, n)))
- * 
+      /* "_sudokugen.pyx":438
+ *                 np.hstack((
+ *                     _generate_row_indices(row_index, col_index, n),
+ *                     _generate_col_indices(row_index, col_index, n),             # <<<<<<<<<<<<<<
+ *                     _generate_subgrid_indices(
+ *                         row_index, col_index, n)))
  */
-      __pyx_t_12 = __pyx_f_10_sudokugen__generate_col_indices(__pyx_v_row_index, __pyx_v_col_index, __pyx_v_n); if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 136, __pyx_L1_error)
-      __pyx_t_2 = __pyx_memoryview_fromslice(__pyx_t_12, 1, (PyObject *(*)(char *)) __pyx_memview_get_Py_ssize_t, (int (*)(char *, PyObject *)) __pyx_memview_set_Py_ssize_t, 0);; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 136, __pyx_L1_error)
+      __pyx_t_12 = __pyx_f_10_sudokugen__generate_col_indices(__pyx_v_row_index, __pyx_v_col_index, __pyx_v_n); if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 438, __pyx_L1_error)
+      __pyx_t_2 = __pyx_memoryview_fromslice(__pyx_t_12, 1, (PyObject *(*)(char *)) __pyx_memview_get_Py_ssize_t, (int (*)(char *, PyObject *)) __pyx_memview_set_Py_ssize_t, 0);; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 438, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __PYX_XDEC_MEMVIEW(&__pyx_t_12, 1);
       __pyx_t_12.memview = NULL;
       __pyx_t_12.data = NULL;
 
-      /* "_sudokugen.pyx":137
- *                 np.hstack((_generate_row_indices(row_index, col_index, n),
- *                            _generate_col_indices(row_index, col_index, n),
- *                            _generate_subgrid_indices(row_index, col_index, n)))             # <<<<<<<<<<<<<<
+      /* "_sudokugen.pyx":439
+ *                     _generate_row_indices(row_index, col_index, n),
+ *                     _generate_col_indices(row_index, col_index, n),
+ *                     _generate_subgrid_indices(             # <<<<<<<<<<<<<<
+ *                         row_index, col_index, n)))
  * 
- *     return group_indices
  */
-      __pyx_t_12 = __pyx_f_10_sudokugen__generate_subgrid_indices(__pyx_v_row_index, __pyx_v_col_index, __pyx_v_n, 0); if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 137, __pyx_L1_error)
-      __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_t_12, 1, (PyObject *(*)(char *)) __pyx_memview_get_Py_ssize_t, (int (*)(char *, PyObject *)) __pyx_memview_set_Py_ssize_t, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 137, __pyx_L1_error)
+      __pyx_t_12 = __pyx_f_10_sudokugen__generate_subgrid_indices(__pyx_v_row_index, __pyx_v_col_index, __pyx_v_n, 0); if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 439, __pyx_L1_error)
+      __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_t_12, 1, (PyObject *(*)(char *)) __pyx_memview_get_Py_ssize_t, (int (*)(char *, PyObject *)) __pyx_memview_set_Py_ssize_t, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 439, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __PYX_XDEC_MEMVIEW(&__pyx_t_12, 1);
       __pyx_t_12.memview = NULL;
       __pyx_t_12.data = NULL;
 
-      /* "_sudokugen.pyx":135
- *         for col_index in range(n ** 2):
+      /* "_sudokugen.pyx":437
  *             group_indices[row_index * n ** 2 + col_index, :] = \
- *                 np.hstack((_generate_row_indices(row_index, col_index, n),             # <<<<<<<<<<<<<<
- *                            _generate_col_indices(row_index, col_index, n),
- *                            _generate_subgrid_indices(row_index, col_index, n)))
+ *                 np.hstack((
+ *                     _generate_row_indices(row_index, col_index, n),             # <<<<<<<<<<<<<<
+ *                     _generate_col_indices(row_index, col_index, n),
+ *                     _generate_subgrid_indices(
  */
-      __pyx_t_13 = PyTuple_New(3); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 135, __pyx_L1_error)
+      __pyx_t_13 = PyTuple_New(3); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 437, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_13);
       __Pyx_GIVEREF(__pyx_t_4);
       PyTuple_SET_ITEM(__pyx_t_13, 0, __pyx_t_4);
@@ -3362,14 +6889,14 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen_generate_group_indices(unsigned i
         }
       }
       if (!__pyx_t_1) {
-        __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_13); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 135, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_13); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 436, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
         __Pyx_GOTREF(__pyx_t_5);
       } else {
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_3)) {
           PyObject *__pyx_temp[2] = {__pyx_t_1, __pyx_t_13};
-          __pyx_t_5 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 135, __pyx_L1_error)
+          __pyx_t_5 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 436, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
@@ -3378,36 +6905,36 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen_generate_group_indices(unsigned i
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
           PyObject *__pyx_temp[2] = {__pyx_t_1, __pyx_t_13};
-          __pyx_t_5 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 135, __pyx_L1_error)
+          __pyx_t_5 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 436, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
         } else
         #endif
         {
-          __pyx_t_2 = PyTuple_New(1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 135, __pyx_L1_error)
+          __pyx_t_2 = PyTuple_New(1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 436, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_GIVEREF(__pyx_t_1); PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1); __pyx_t_1 = NULL;
           __Pyx_GIVEREF(__pyx_t_13);
           PyTuple_SET_ITEM(__pyx_t_2, 0+1, __pyx_t_13);
           __pyx_t_13 = 0;
-          __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 135, __pyx_L1_error)
+          __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 436, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         }
       }
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-      /* "_sudokugen.pyx":134
+      /* "_sudokugen.pyx":435
  *     for row_index in range(n ** 2):
  *         for col_index in range(n ** 2):
  *             group_indices[row_index * n ** 2 + col_index, :] = \             # <<<<<<<<<<<<<<
- *                 np.hstack((_generate_row_indices(row_index, col_index, n),
- *                            _generate_col_indices(row_index, col_index, n),
+ *                 np.hstack((
+ *                     _generate_row_indices(row_index, col_index, n),
  */
-      __pyx_t_3 = PyInt_FromSsize_t(((__pyx_v_row_index * __Pyx_pow_long(((long)__pyx_v_n), 2)) + __pyx_v_col_index)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 134, __pyx_L1_error)
+      __pyx_t_3 = PyInt_FromSsize_t(((__pyx_v_row_index * __Pyx_pow_long(((long)__pyx_v_n), 2)) + __pyx_v_col_index)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 435, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 134, __pyx_L1_error)
+      __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 435, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_GIVEREF(__pyx_t_3);
       PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3);
@@ -3415,26 +6942,25 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen_generate_group_indices(unsigned i
       __Pyx_GIVEREF(__pyx_slice_);
       PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_slice_);
       __pyx_t_3 = 0;
-      if (unlikely(PyObject_SetItem(__pyx_v_group_indices, __pyx_t_2, __pyx_t_5) < 0)) __PYX_ERR(0, 134, __pyx_L1_error)
+      if (unlikely(PyObject_SetItem(__pyx_v_group_indices, __pyx_t_2, __pyx_t_5) < 0)) __PYX_ERR(0, 435, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     }
   }
 
-  /* "_sudokugen.pyx":139
- *                            _generate_subgrid_indices(row_index, col_index, n)))
+  /* "_sudokugen.pyx":442
+ *                         row_index, col_index, n)))
  * 
  *     return group_indices             # <<<<<<<<<<<<<<
  * 
- * 
  */
-  __pyx_t_14 = __Pyx_PyObject_to_MemoryviewSlice_d_dc_Py_ssize_t(__pyx_v_group_indices, PyBUF_WRITABLE); if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 139, __pyx_L1_error)
+  __pyx_t_14 = __Pyx_PyObject_to_MemoryviewSlice_d_dc_Py_ssize_t(__pyx_v_group_indices, PyBUF_WRITABLE); if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 442, __pyx_L1_error)
   __pyx_r = __pyx_t_14;
   __pyx_t_14.memview = NULL;
   __pyx_t_14.data = NULL;
   goto __pyx_L0;
 
-  /* "_sudokugen.pyx":121
+  /* "_sudokugen.pyx":425
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cpdef Py_ssize_t[:, ::1] generate_group_indices(unsigned int n):             # <<<<<<<<<<<<<<
@@ -3468,15 +6994,15 @@ static __Pyx_memviewslice __pyx_f_10_sudokugen_generate_group_indices(unsigned i
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10_sudokugen_3generate_group_indices(PyObject *__pyx_self, PyObject *__pyx_arg_n); /*proto*/
-static char __pyx_doc_10_sudokugen_2generate_group_indices[] = "Generates the tensor, which holds the indices of groups for each\n        coordinate\n\n    Returns:\n        :return: A numpy tensor of shape (n ** 4, (n x n - 1) * 3)\n    ";
-static PyObject *__pyx_pw_10_sudokugen_3generate_group_indices(PyObject *__pyx_self, PyObject *__pyx_arg_n) {
+static PyObject *__pyx_pw_10_sudokugen_7generate_group_indices(PyObject *__pyx_self, PyObject *__pyx_arg_n); /*proto*/
+static char __pyx_doc_10_sudokugen_6generate_group_indices[] = "Generates the tensor, which holds the indices of groups for each\n        coordinate\n    ";
+static PyObject *__pyx_pw_10_sudokugen_7generate_group_indices(PyObject *__pyx_self, PyObject *__pyx_arg_n) {
   unsigned int __pyx_v_n;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("generate_group_indices (wrapper)", 0);
   assert(__pyx_arg_n); {
-    __pyx_v_n = __Pyx_PyInt_As_unsigned_int(__pyx_arg_n); if (unlikely((__pyx_v_n == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 121, __pyx_L3_error)
+    __pyx_v_n = __Pyx_PyInt_As_unsigned_int(__pyx_arg_n); if (unlikely((__pyx_v_n == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 425, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -3484,22 +7010,22 @@ static PyObject *__pyx_pw_10_sudokugen_3generate_group_indices(PyObject *__pyx_s
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10_sudokugen_2generate_group_indices(__pyx_self, ((unsigned int)__pyx_v_n));
+  __pyx_r = __pyx_pf_10_sudokugen_6generate_group_indices(__pyx_self, ((unsigned int)__pyx_v_n));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10_sudokugen_2generate_group_indices(CYTHON_UNUSED PyObject *__pyx_self, unsigned int __pyx_v_n) {
+static PyObject *__pyx_pf_10_sudokugen_6generate_group_indices(CYTHON_UNUSED PyObject *__pyx_self, unsigned int __pyx_v_n) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_memviewslice __pyx_t_1 = { 0, 0, { 0 }, { 0 }, { 0 } };
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("generate_group_indices", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10_sudokugen_generate_group_indices(__pyx_v_n, 0); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 121, __pyx_L1_error)
-  __pyx_t_2 = __pyx_memoryview_fromslice(__pyx_t_1, 2, (PyObject *(*)(char *)) __pyx_memview_get_Py_ssize_t, (int (*)(char *, PyObject *)) __pyx_memview_set_Py_ssize_t, 0);; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 121, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_10_sudokugen_generate_group_indices(__pyx_v_n, 0); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 425, __pyx_L1_error)
+  __pyx_t_2 = __pyx_memoryview_fromslice(__pyx_t_1, 2, (PyObject *(*)(char *)) __pyx_memview_get_Py_ssize_t, (int (*)(char *, PyObject *)) __pyx_memview_set_Py_ssize_t, 0);; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 425, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
   __pyx_t_1.memview = NULL;
@@ -3517,1749 +7043,6 @@ static PyObject *__pyx_pf_10_sudokugen_2generate_group_indices(CYTHON_UNUSED PyO
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "_sudokugen.pyx":145
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * cpdef void brute_force_search(unsigned long long[::1] grid,             # <<<<<<<<<<<<<<
- *                               unsigned long long[:, ::1] candidate_values,
- *                               unsigned long long[:, ::1] candidate_nums,
- */
-
-static PyObject *__pyx_pw_10_sudokugen_5brute_force_search(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static void __pyx_f_10_sudokugen_brute_force_search(__Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_candidate_values, __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_group_indices, __Pyx_memviewslice __pyx_v_value_indices, __Pyx_memviewslice __pyx_v_available, unsigned int __pyx_v_filled, CYTHON_UNUSED int __pyx_skip_dispatch) {
-  unsigned PY_LONG_LONG __pyx_v_value;
-  unsigned int __pyx_v_size;
-  CYTHON_UNUSED unsigned int __pyx_v_group_size;
-  __Pyx_memviewslice __pyx_v_effected_indices = { 0, 0, { 0 }, { 0 }, { 0 } };
-  Py_ssize_t __pyx_v_value_index;
-  Py_ssize_t __pyx_v_next_state;
-  Py_ssize_t __pyx_v_state;
-  __Pyx_RefNannyDeclarations
-  Py_ssize_t __pyx_t_1;
-  Py_ssize_t __pyx_t_2;
-  Py_ssize_t __pyx_t_3;
-  int __pyx_t_4;
-  Py_ssize_t __pyx_t_5;
-  Py_ssize_t __pyx_t_6;
-  Py_ssize_t __pyx_t_7;
-  Py_ssize_t __pyx_t_8;
-  Py_ssize_t __pyx_t_9;
-  Py_ssize_t __pyx_t_10;
-  Py_ssize_t __pyx_t_11;
-  Py_ssize_t __pyx_t_12;
-  __Pyx_memviewslice __pyx_t_13 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_t_14 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_t_15 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_t_16 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_t_17 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  Py_ssize_t __pyx_t_18;
-  Py_ssize_t __pyx_t_19;
-  Py_ssize_t __pyx_t_20;
-  Py_ssize_t __pyx_t_21;
-  __Pyx_memviewslice __pyx_t_22 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_t_23 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  Py_ssize_t __pyx_t_24;
-  __Pyx_RefNannySetupContext("brute_force_search", 0);
-
-  /* "_sudokugen.pyx":180
- * 
- *     cdef unsigned long long value
- *     cdef unsigned int size = grid.shape[0]             # <<<<<<<<<<<<<<
- *     cdef unsigned int group_size = group_indices.shape[1]
- * 
- */
-  __pyx_v_size = (__pyx_v_grid.shape[0]);
-
-  /* "_sudokugen.pyx":181
- *     cdef unsigned long long value
- *     cdef unsigned int size = grid.shape[0]
- *     cdef unsigned int group_size = group_indices.shape[1]             # <<<<<<<<<<<<<<
- * 
- *     cdef short refresh
- */
-  __pyx_v_group_size = (__pyx_v_group_indices.shape[1]);
-
-  /* "_sudokugen.pyx":188
- * 
- *     cdef Py_ssize_t i, j
- *     cdef Py_ssize_t value_index, next_state, state = 0             # <<<<<<<<<<<<<<
- * 
- *     while True:
- */
-  __pyx_v_state = 0;
-
-  /* "_sudokugen.pyx":190
- *     cdef Py_ssize_t value_index, next_state, state = 0
- * 
- *     while True:             # <<<<<<<<<<<<<<
- *         value_index = value_indices[state]
- * 
- */
-  while (1) {
-
-    /* "_sudokugen.pyx":191
- * 
- *     while True:
- *         value_index = value_indices[state]             # <<<<<<<<<<<<<<
- * 
- *         # If no candidates left -> backtrack
- */
-    __pyx_t_1 = __pyx_v_state;
-    __pyx_v_value_index = (*((Py_ssize_t *) ( /* dim=0 */ ((char *) (((Py_ssize_t *) __pyx_v_value_indices.data) + __pyx_t_1)) )));
-
-    /* "_sudokugen.pyx":195
- *         # If no candidates left -> backtrack
- * 
- *         if candidate_nums[state, value_index] == 0:             # <<<<<<<<<<<<<<
- *             grid[value_index] = 0
- *             state -= 1
- */
-    __pyx_t_2 = __pyx_v_state;
-    __pyx_t_3 = __pyx_v_value_index;
-    __pyx_t_4 = (((*((unsigned PY_LONG_LONG *) ( /* dim=1 */ ((char *) (((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_nums.data + __pyx_t_2 * __pyx_v_candidate_nums.strides[0]) )) + __pyx_t_3)) ))) == 0) != 0);
-    if (__pyx_t_4) {
-
-      /* "_sudokugen.pyx":196
- * 
- *         if candidate_nums[state, value_index] == 0:
- *             grid[value_index] = 0             # <<<<<<<<<<<<<<
- *             state -= 1
- *             filled -= 1
- */
-      __pyx_t_5 = __pyx_v_value_index;
-      *((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_grid.data) + __pyx_t_5)) )) = 0;
-
-      /* "_sudokugen.pyx":197
- *         if candidate_nums[state, value_index] == 0:
- *             grid[value_index] = 0
- *             state -= 1             # <<<<<<<<<<<<<<
- *             filled -= 1
- *             continue
- */
-      __pyx_v_state = (__pyx_v_state - 1);
-
-      /* "_sudokugen.pyx":198
- *             grid[value_index] = 0
- *             state -= 1
- *             filled -= 1             # <<<<<<<<<<<<<<
- *             continue
- * 
- */
-      __pyx_v_filled = (__pyx_v_filled - 1);
-
-      /* "_sudokugen.pyx":199
- *             state -= 1
- *             filled -= 1
- *             continue             # <<<<<<<<<<<<<<
- * 
- *         # TODO refactor next value choosing mechanism
- */
-      goto __pyx_L3_continue;
-
-      /* "_sudokugen.pyx":195
- *         # If no candidates left -> backtrack
- * 
- *         if candidate_nums[state, value_index] == 0:             # <<<<<<<<<<<<<<
- *             grid[value_index] = 0
- *             state -= 1
- */
-    }
-
-    /* "_sudokugen.pyx":205
- * 
- *         value = 2 ** (__builtin_ffsll(
- *             candidate_values[state, value_index]) - 1)             # <<<<<<<<<<<<<<
- * 
- *         grid[value_index] = value
- */
-    __pyx_t_6 = __pyx_v_state;
-    __pyx_t_7 = __pyx_v_value_index;
-
-    /* "_sudokugen.pyx":204
- *         # The next value will be the first set bit from the candidates
- * 
- *         value = 2 ** (__builtin_ffsll(             # <<<<<<<<<<<<<<
- *             candidate_values[state, value_index]) - 1)
- * 
- */
-    __pyx_v_value = __Pyx_pow_long(2, (__builtin_ffsll((*((unsigned PY_LONG_LONG *) ( /* dim=1 */ ((char *) (((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_values.data + __pyx_t_6 * __pyx_v_candidate_values.strides[0]) )) + __pyx_t_7)) )))) - 1));
-
-    /* "_sudokugen.pyx":207
- *             candidate_values[state, value_index]) - 1)
- * 
- *         grid[value_index] = value             # <<<<<<<<<<<<<<
- * 
- *         # Chosen value is removed from the candidates
- */
-    __pyx_t_8 = __pyx_v_value_index;
-    *((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_grid.data) + __pyx_t_8)) )) = __pyx_v_value;
-
-    /* "_sudokugen.pyx":211
- *         # Chosen value is removed from the candidates
- * 
- *         candidate_values[state, value_index] &= ~value             # <<<<<<<<<<<<<<
- *         candidate_nums[state, value_index] -= 1
- * 
- */
-    __pyx_t_9 = __pyx_v_state;
-    __pyx_t_10 = __pyx_v_value_index;
-    *((unsigned PY_LONG_LONG *) ( /* dim=1 */ ((char *) (((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_values.data + __pyx_t_9 * __pyx_v_candidate_values.strides[0]) )) + __pyx_t_10)) )) &= (~__pyx_v_value);
-
-    /* "_sudokugen.pyx":212
- * 
- *         candidate_values[state, value_index] &= ~value
- *         candidate_nums[state, value_index] -= 1             # <<<<<<<<<<<<<<
- * 
- *         # Preparing the next state, by continuing the previous state
- */
-    __pyx_t_11 = __pyx_v_state;
-    __pyx_t_12 = __pyx_v_value_index;
-    *((unsigned PY_LONG_LONG *) ( /* dim=1 */ ((char *) (((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_nums.data + __pyx_t_11 * __pyx_v_candidate_nums.strides[0]) )) + __pyx_t_12)) )) -= 1;
-
-    /* "_sudokugen.pyx":216
- *         # Preparing the next state, by continuing the previous state
- * 
- *         next_state = state + 1             # <<<<<<<<<<<<<<
- * 
- *         candidate_values[next_state, :] = candidate_values[state, :]
- */
-    __pyx_v_next_state = (__pyx_v_state + 1);
-
-    /* "_sudokugen.pyx":218
- *         next_state = state + 1
- * 
- *         candidate_values[next_state, :] = candidate_values[state, :]             # <<<<<<<<<<<<<<
- *         candidate_nums[next_state, :] = candidate_nums[state, :]
- *         available[next_state, :] = available[state, :]
- */
-    __pyx_t_13.data = __pyx_v_candidate_values.data;
-    __pyx_t_13.memview = __pyx_v_candidate_values.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_13, 0);
-    {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
-    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_values.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_values.strides[0];
-    if (0 && (__pyx_tmp_idx < 0))
-        __pyx_tmp_idx += __pyx_tmp_shape;
-    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
-        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
-        __PYX_ERR(0, 218, __pyx_L1_error)
-    }
-        __pyx_t_13.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_13.shape[0] = __pyx_v_candidate_values.shape[1];
-__pyx_t_13.strides[0] = __pyx_v_candidate_values.strides[1];
-    __pyx_t_13.suboffsets[0] = -1;
-
-__pyx_t_14.data = __pyx_v_candidate_values.data;
-    __pyx_t_14.memview = __pyx_v_candidate_values.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_14, 0);
-    {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_next_state;
-    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_values.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_values.strides[0];
-    if (0 && (__pyx_tmp_idx < 0))
-        __pyx_tmp_idx += __pyx_tmp_shape;
-    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
-        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
-        __PYX_ERR(0, 218, __pyx_L1_error)
-    }
-        __pyx_t_14.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_14.shape[0] = __pyx_v_candidate_values.shape[1];
-__pyx_t_14.strides[0] = __pyx_v_candidate_values.strides[1];
-    __pyx_t_14.suboffsets[0] = -1;
-
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_13, __pyx_t_14, 1, 1, 0) < 0)) __PYX_ERR(0, 218, __pyx_L1_error)
-    __PYX_XDEC_MEMVIEW(&__pyx_t_14, 1);
-    __pyx_t_14.memview = NULL;
-    __pyx_t_14.data = NULL;
-    __PYX_XDEC_MEMVIEW(&__pyx_t_13, 1);
-    __pyx_t_13.memview = NULL;
-    __pyx_t_13.data = NULL;
-
-    /* "_sudokugen.pyx":219
- * 
- *         candidate_values[next_state, :] = candidate_values[state, :]
- *         candidate_nums[next_state, :] = candidate_nums[state, :]             # <<<<<<<<<<<<<<
- *         available[next_state, :] = available[state, :]
- * 
- */
-    __pyx_t_13.data = __pyx_v_candidate_nums.data;
-    __pyx_t_13.memview = __pyx_v_candidate_nums.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_13, 0);
-    {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
-    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
-    if (0 && (__pyx_tmp_idx < 0))
-        __pyx_tmp_idx += __pyx_tmp_shape;
-    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
-        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
-        __PYX_ERR(0, 219, __pyx_L1_error)
-    }
-        __pyx_t_13.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_13.shape[0] = __pyx_v_candidate_nums.shape[1];
-__pyx_t_13.strides[0] = __pyx_v_candidate_nums.strides[1];
-    __pyx_t_13.suboffsets[0] = -1;
-
-__pyx_t_15.data = __pyx_v_candidate_nums.data;
-    __pyx_t_15.memview = __pyx_v_candidate_nums.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_15, 0);
-    {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_next_state;
-    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
-    if (0 && (__pyx_tmp_idx < 0))
-        __pyx_tmp_idx += __pyx_tmp_shape;
-    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
-        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
-        __PYX_ERR(0, 219, __pyx_L1_error)
-    }
-        __pyx_t_15.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_15.shape[0] = __pyx_v_candidate_nums.shape[1];
-__pyx_t_15.strides[0] = __pyx_v_candidate_nums.strides[1];
-    __pyx_t_15.suboffsets[0] = -1;
-
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_13, __pyx_t_15, 1, 1, 0) < 0)) __PYX_ERR(0, 219, __pyx_L1_error)
-    __PYX_XDEC_MEMVIEW(&__pyx_t_15, 1);
-    __pyx_t_15.memview = NULL;
-    __pyx_t_15.data = NULL;
-    __PYX_XDEC_MEMVIEW(&__pyx_t_13, 1);
-    __pyx_t_13.memview = NULL;
-    __pyx_t_13.data = NULL;
-
-    /* "_sudokugen.pyx":220
- *         candidate_values[next_state, :] = candidate_values[state, :]
- *         candidate_nums[next_state, :] = candidate_nums[state, :]
- *         available[next_state, :] = available[state, :]             # <<<<<<<<<<<<<<
- * 
- *         # Candidate values may contain other values, besides the filled one.
- */
-    __pyx_t_16.data = __pyx_v_available.data;
-    __pyx_t_16.memview = __pyx_v_available.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_16, 0);
-    {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
-    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
-    if (0 && (__pyx_tmp_idx < 0))
-        __pyx_tmp_idx += __pyx_tmp_shape;
-    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
-        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
-        __PYX_ERR(0, 220, __pyx_L1_error)
-    }
-        __pyx_t_16.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_16.shape[0] = __pyx_v_available.shape[1];
-__pyx_t_16.strides[0] = __pyx_v_available.strides[1];
-    __pyx_t_16.suboffsets[0] = -1;
-
-__pyx_t_17.data = __pyx_v_available.data;
-    __pyx_t_17.memview = __pyx_v_available.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_17, 0);
-    {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_next_state;
-    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
-    if (0 && (__pyx_tmp_idx < 0))
-        __pyx_tmp_idx += __pyx_tmp_shape;
-    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
-        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
-        __PYX_ERR(0, 220, __pyx_L1_error)
-    }
-        __pyx_t_17.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_17.shape[0] = __pyx_v_available.shape[1];
-__pyx_t_17.strides[0] = __pyx_v_available.strides[1];
-    __pyx_t_17.suboffsets[0] = -1;
-
-if (unlikely(__pyx_memoryview_copy_contents(__pyx_t_16, __pyx_t_17, 1, 1, 0) < 0)) __PYX_ERR(0, 220, __pyx_L1_error)
-    __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
-    __pyx_t_17.memview = NULL;
-    __pyx_t_17.data = NULL;
-    __PYX_XDEC_MEMVIEW(&__pyx_t_16, 1);
-    __pyx_t_16.memview = NULL;
-    __pyx_t_16.data = NULL;
-
-    /* "_sudokugen.pyx":226
- *         # the correct behaviour of several candidate reduction mechanisms
- * 
- *         candidate_values[next_state, value_index] = value             # <<<<<<<<<<<<<<
- *         available[next_state, value_index] = 0
- * 
- */
-    __pyx_t_18 = __pyx_v_next_state;
-    __pyx_t_19 = __pyx_v_value_index;
-    *((unsigned PY_LONG_LONG *) ( /* dim=1 */ ((char *) (((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_values.data + __pyx_t_18 * __pyx_v_candidate_values.strides[0]) )) + __pyx_t_19)) )) = __pyx_v_value;
-
-    /* "_sudokugen.pyx":227
- * 
- *         candidate_values[next_state, value_index] = value
- *         available[next_state, value_index] = 0             # <<<<<<<<<<<<<<
- * 
- *         effected_indices = group_indices[value_index]
- */
-    __pyx_t_20 = __pyx_v_next_state;
-    __pyx_t_21 = __pyx_v_value_index;
-    *((short *) ( /* dim=1 */ ((char *) (((short *) ( /* dim=0 */ (__pyx_v_available.data + __pyx_t_20 * __pyx_v_available.strides[0]) )) + __pyx_t_21)) )) = 0;
-
-    /* "_sudokugen.pyx":229
- *         available[next_state, value_index] = 0
- * 
- *         effected_indices = group_indices[value_index]             # <<<<<<<<<<<<<<
- * 
- *         # Update effected indices
- */
-    __pyx_t_22.data = __pyx_v_group_indices.data;
-    __pyx_t_22.memview = __pyx_v_group_indices.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_22, 0);
-    {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_value_index;
-    Py_ssize_t __pyx_tmp_shape = __pyx_v_group_indices.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_group_indices.strides[0];
-    if (0 && (__pyx_tmp_idx < 0))
-        __pyx_tmp_idx += __pyx_tmp_shape;
-    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
-        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
-        __PYX_ERR(0, 229, __pyx_L1_error)
-    }
-        __pyx_t_22.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_22.shape[0] = __pyx_v_group_indices.shape[1];
-__pyx_t_22.strides[0] = __pyx_v_group_indices.strides[1];
-    __pyx_t_22.suboffsets[0] = -1;
-
-__PYX_XDEC_MEMVIEW(&__pyx_v_effected_indices, 1);
-    __pyx_v_effected_indices = __pyx_t_22;
-    __pyx_t_22.memview = NULL;
-    __pyx_t_22.data = NULL;
-
-    /* "_sudokugen.pyx":233
- *         # Update effected indices
- * 
- *         if not update_effected(value, candidate_values[next_state],             # <<<<<<<<<<<<<<
- *                 candidate_nums[next_state], effected_indices,
- *                                available[next_state]):
- */
-    __pyx_t_13.data = __pyx_v_candidate_values.data;
-    __pyx_t_13.memview = __pyx_v_candidate_values.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_13, 0);
-    {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_next_state;
-    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_values.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_values.strides[0];
-    if (0 && (__pyx_tmp_idx < 0))
-        __pyx_tmp_idx += __pyx_tmp_shape;
-    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
-        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
-        __PYX_ERR(0, 233, __pyx_L1_error)
-    }
-        __pyx_t_13.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_13.shape[0] = __pyx_v_candidate_values.shape[1];
-__pyx_t_13.strides[0] = __pyx_v_candidate_values.strides[1];
-    __pyx_t_13.suboffsets[0] = -1;
-
-__pyx_t_23.data = __pyx_v_candidate_nums.data;
-
-    /* "_sudokugen.pyx":234
- * 
- *         if not update_effected(value, candidate_values[next_state],
- *                 candidate_nums[next_state], effected_indices,             # <<<<<<<<<<<<<<
- *                                available[next_state]):
- *             continue
- */
-    __pyx_t_23.memview = __pyx_v_candidate_nums.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_23, 0);
-    {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_next_state;
-    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
-    if (0 && (__pyx_tmp_idx < 0))
-        __pyx_tmp_idx += __pyx_tmp_shape;
-    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
-        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
-        __PYX_ERR(0, 234, __pyx_L1_error)
-    }
-        __pyx_t_23.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_23.shape[0] = __pyx_v_candidate_nums.shape[1];
-__pyx_t_23.strides[0] = __pyx_v_candidate_nums.strides[1];
-    __pyx_t_23.suboffsets[0] = -1;
-
-__pyx_t_16.data = __pyx_v_available.data;
-
-    /* "_sudokugen.pyx":235
- *         if not update_effected(value, candidate_values[next_state],
- *                 candidate_nums[next_state], effected_indices,
- *                                available[next_state]):             # <<<<<<<<<<<<<<
- *             continue
- * 
- */
-    __pyx_t_16.memview = __pyx_v_available.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_16, 0);
-    {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_next_state;
-    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
-    if (0 && (__pyx_tmp_idx < 0))
-        __pyx_tmp_idx += __pyx_tmp_shape;
-    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
-        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
-        __PYX_ERR(0, 235, __pyx_L1_error)
-    }
-        __pyx_t_16.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_16.shape[0] = __pyx_v_available.shape[1];
-__pyx_t_16.strides[0] = __pyx_v_available.strides[1];
-    __pyx_t_16.suboffsets[0] = -1;
-
-__pyx_t_4 = ((!(__pyx_f_10_sudokugen_update_effected(__pyx_v_value, __pyx_t_13, __pyx_t_23, __pyx_v_effected_indices, __pyx_t_16) != 0)) != 0);
-
-    /* "_sudokugen.pyx":233
- *         # Update effected indices
- * 
- *         if not update_effected(value, candidate_values[next_state],             # <<<<<<<<<<<<<<
- *                 candidate_nums[next_state], effected_indices,
- *                                available[next_state]):
- */
-    __PYX_XDEC_MEMVIEW(&__pyx_t_13, 1);
-    __pyx_t_13.memview = NULL;
-    __pyx_t_13.data = NULL;
-    __PYX_XDEC_MEMVIEW(&__pyx_t_23, 1);
-    __pyx_t_23.memview = NULL;
-    __pyx_t_23.data = NULL;
-    __PYX_XDEC_MEMVIEW(&__pyx_t_16, 1);
-    __pyx_t_16.memview = NULL;
-    __pyx_t_16.data = NULL;
-    if (__pyx_t_4) {
-
-      /* "_sudokugen.pyx":236
- *                 candidate_nums[next_state], effected_indices,
- *                                available[next_state]):
- *             continue             # <<<<<<<<<<<<<<
- * 
- *         if state == 10:
- */
-      goto __pyx_L3_continue;
-
-      /* "_sudokugen.pyx":233
- *         # Update effected indices
- * 
- *         if not update_effected(value, candidate_values[next_state],             # <<<<<<<<<<<<<<
- *                 candidate_nums[next_state], effected_indices,
- *                                available[next_state]):
- */
-    }
-
-    /* "_sudokugen.pyx":238
- *             continue
- * 
- *         if state == 10:             # <<<<<<<<<<<<<<
- *             break
- * 
- */
-    __pyx_t_4 = ((__pyx_v_state == 10) != 0);
-    if (__pyx_t_4) {
-
-      /* "_sudokugen.pyx":239
- * 
- *         if state == 10:
- *             break             # <<<<<<<<<<<<<<
- * 
- *         # TODO update candidates (and getting the least candidate index)
- */
-      goto __pyx_L4_break;
-
-      /* "_sudokugen.pyx":238
- *             continue
- * 
- *         if state == 10:             # <<<<<<<<<<<<<<
- *             break
- * 
- */
-    }
-
-    /* "_sudokugen.pyx":254
- *         # Termination upon all cells are filled
- * 
- *         filled += 1             # <<<<<<<<<<<<<<
- *         if filled == size:
- *             break
- */
-    __pyx_v_filled = (__pyx_v_filled + 1);
-
-    /* "_sudokugen.pyx":255
- * 
- *         filled += 1
- *         if filled == size:             # <<<<<<<<<<<<<<
- *             break
- * 
- */
-    __pyx_t_4 = ((__pyx_v_filled == __pyx_v_size) != 0);
-    if (__pyx_t_4) {
-
-      /* "_sudokugen.pyx":256
- *         filled += 1
- *         if filled == size:
- *             break             # <<<<<<<<<<<<<<
- * 
- *         state += 1
- */
-      goto __pyx_L4_break;
-
-      /* "_sudokugen.pyx":255
- * 
- *         filled += 1
- *         if filled == size:             # <<<<<<<<<<<<<<
- *             break
- * 
- */
-    }
-
-    /* "_sudokugen.pyx":258
- *             break
- * 
- *         state += 1             # <<<<<<<<<<<<<<
- * 
- *         # TODO move this to candidate calculation
- */
-    __pyx_v_state = (__pyx_v_state + 1);
-
-    /* "_sudokugen.pyx":263
- * 
- *         value_indices[state] = argmin(
- *             candidate_nums[state], available[state], size)             # <<<<<<<<<<<<<<
- * 
- * 
- */
-    __pyx_t_23.data = __pyx_v_candidate_nums.data;
-    __pyx_t_23.memview = __pyx_v_candidate_nums.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_23, 0);
-    {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
-    Py_ssize_t __pyx_tmp_shape = __pyx_v_candidate_nums.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_candidate_nums.strides[0];
-    if (0 && (__pyx_tmp_idx < 0))
-        __pyx_tmp_idx += __pyx_tmp_shape;
-    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
-        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
-        __PYX_ERR(0, 263, __pyx_L1_error)
-    }
-        __pyx_t_23.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_23.shape[0] = __pyx_v_candidate_nums.shape[1];
-__pyx_t_23.strides[0] = __pyx_v_candidate_nums.strides[1];
-    __pyx_t_23.suboffsets[0] = -1;
-
-__pyx_t_16.data = __pyx_v_available.data;
-    __pyx_t_16.memview = __pyx_v_available.memview;
-    __PYX_INC_MEMVIEW(&__pyx_t_16, 0);
-    {
-    Py_ssize_t __pyx_tmp_idx = __pyx_v_state;
-    Py_ssize_t __pyx_tmp_shape = __pyx_v_available.shape[0];
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_available.strides[0];
-    if (0 && (__pyx_tmp_idx < 0))
-        __pyx_tmp_idx += __pyx_tmp_shape;
-    if (0 && (__pyx_tmp_idx < 0 || __pyx_tmp_idx >= __pyx_tmp_shape)) {
-        PyErr_SetString(PyExc_IndexError, "Index out of bounds (axis 0)");
-        __PYX_ERR(0, 263, __pyx_L1_error)
-    }
-        __pyx_t_16.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_16.shape[0] = __pyx_v_available.shape[1];
-__pyx_t_16.strides[0] = __pyx_v_available.strides[1];
-    __pyx_t_16.suboffsets[0] = -1;
-
-__pyx_t_24 = __pyx_v_state;
-
-    /* "_sudokugen.pyx":262
- *         # TODO move this to candidate calculation
- * 
- *         value_indices[state] = argmin(             # <<<<<<<<<<<<<<
- *             candidate_nums[state], available[state], size)
- * 
- */
-    *((Py_ssize_t *) ( /* dim=0 */ ((char *) (((Py_ssize_t *) __pyx_v_value_indices.data) + __pyx_t_24)) )) = __pyx_f_10_sudokugen_argmin(__pyx_t_23, __pyx_t_16, __pyx_v_size);
-    __PYX_XDEC_MEMVIEW(&__pyx_t_23, 1);
-    __pyx_t_23.memview = NULL;
-    __pyx_t_23.data = NULL;
-    __PYX_XDEC_MEMVIEW(&__pyx_t_16, 1);
-    __pyx_t_16.memview = NULL;
-    __pyx_t_16.data = NULL;
-    __pyx_L3_continue:;
-  }
-  __pyx_L4_break:;
-
-  /* "_sudokugen.pyx":145
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * cpdef void brute_force_search(unsigned long long[::1] grid,             # <<<<<<<<<<<<<<
- *                               unsigned long long[:, ::1] candidate_values,
- *                               unsigned long long[:, ::1] candidate_nums,
- */
-
-  /* function exit code */
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __PYX_XDEC_MEMVIEW(&__pyx_t_13, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_14, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_15, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_16, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_17, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_22, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_23, 1);
-  __Pyx_WriteUnraisable("_sudokugen.brute_force_search", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
-  __pyx_L0:;
-  __PYX_XDEC_MEMVIEW(&__pyx_v_effected_indices, 1);
-  __Pyx_RefNannyFinishContext();
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_10_sudokugen_5brute_force_search(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_10_sudokugen_4brute_force_search[] = "Implementation of a brute force backtracking search, with\n    deductive candidate reduction.\n\n    Args:\n        :param grid: The sudoku grid.\n\n        :param candidate_values: An array for caching the candidate\n                                 states during the run of the algorithm.\n\n        :param candidate_nums: An array for caching the number of\n                               candidates for each position of the grid.\n\n        :param group_indices: An array that serves as a lookup for each\n                              position of the grid. The lookup contains\n                              the group indices for the corresponding\n                              grid index.\n\n        :param value_indices: An array for holding the index\n                              visited at every state of the run.\n\n        :param available: An array that holds the availability of a\n                          cell at the current state.\n\n        :param filled: Counter for the number of filled cells.\n\n    ";
-static PyObject *__pyx_pw_10_sudokugen_5brute_force_search(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  __Pyx_memviewslice __pyx_v_grid = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_v_candidate_values = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_v_candidate_nums = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_v_group_indices = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_v_value_indices = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_v_available = { 0, 0, { 0 }, { 0 }, { 0 } };
-  unsigned int __pyx_v_filled;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("brute_force_search (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_grid,&__pyx_n_s_candidate_values,&__pyx_n_s_candidate_nums,&__pyx_n_s_group_indices,&__pyx_n_s_value_indices,&__pyx_n_s_available,&__pyx_n_s_filled,0};
-    PyObject* values[7] = {0,0,0,0,0,0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  7: values[6] = PyTuple_GET_ITEM(__pyx_args, 6);
-        CYTHON_FALLTHROUGH;
-        case  6: values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
-        CYTHON_FALLTHROUGH;
-        case  5: values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
-        CYTHON_FALLTHROUGH;
-        case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
-        CYTHON_FALLTHROUGH;
-        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-        CYTHON_FALLTHROUGH;
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        CYTHON_FALLTHROUGH;
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        CYTHON_FALLTHROUGH;
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_grid)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        CYTHON_FALLTHROUGH;
-        case  1:
-        if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_candidate_values)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("brute_force_search", 1, 7, 7, 1); __PYX_ERR(0, 145, __pyx_L3_error)
-        }
-        CYTHON_FALLTHROUGH;
-        case  2:
-        if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_candidate_nums)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("brute_force_search", 1, 7, 7, 2); __PYX_ERR(0, 145, __pyx_L3_error)
-        }
-        CYTHON_FALLTHROUGH;
-        case  3:
-        if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_group_indices)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("brute_force_search", 1, 7, 7, 3); __PYX_ERR(0, 145, __pyx_L3_error)
-        }
-        CYTHON_FALLTHROUGH;
-        case  4:
-        if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_value_indices)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("brute_force_search", 1, 7, 7, 4); __PYX_ERR(0, 145, __pyx_L3_error)
-        }
-        CYTHON_FALLTHROUGH;
-        case  5:
-        if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_available)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("brute_force_search", 1, 7, 7, 5); __PYX_ERR(0, 145, __pyx_L3_error)
-        }
-        CYTHON_FALLTHROUGH;
-        case  6:
-        if (likely((values[6] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_filled)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("brute_force_search", 1, 7, 7, 6); __PYX_ERR(0, 145, __pyx_L3_error)
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "brute_force_search") < 0)) __PYX_ERR(0, 145, __pyx_L3_error)
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 7) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-      values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
-      values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
-      values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
-      values[6] = PyTuple_GET_ITEM(__pyx_args, 6);
-    }
-    __pyx_v_grid = __Pyx_PyObject_to_MemoryviewSlice_dc_unsigned_PY_LONG_LONG(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_grid.memview)) __PYX_ERR(0, 145, __pyx_L3_error)
-    __pyx_v_candidate_values = __Pyx_PyObject_to_MemoryviewSlice_d_dc_unsigned_PY_LONG_LONG(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_candidate_values.memview)) __PYX_ERR(0, 146, __pyx_L3_error)
-    __pyx_v_candidate_nums = __Pyx_PyObject_to_MemoryviewSlice_d_dc_unsigned_PY_LONG_LONG(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_candidate_nums.memview)) __PYX_ERR(0, 147, __pyx_L3_error)
-    __pyx_v_group_indices = __Pyx_PyObject_to_MemoryviewSlice_d_dc_Py_ssize_t__const__(values[3], 0); if (unlikely(!__pyx_v_group_indices.memview)) __PYX_ERR(0, 148, __pyx_L3_error)
-    __pyx_v_value_indices = __Pyx_PyObject_to_MemoryviewSlice_dc_Py_ssize_t(values[4], PyBUF_WRITABLE); if (unlikely(!__pyx_v_value_indices.memview)) __PYX_ERR(0, 149, __pyx_L3_error)
-    __pyx_v_available = __Pyx_PyObject_to_MemoryviewSlice_d_dc_short(values[5], PyBUF_WRITABLE); if (unlikely(!__pyx_v_available.memview)) __PYX_ERR(0, 150, __pyx_L3_error)
-    __pyx_v_filled = __Pyx_PyInt_As_unsigned_int(values[6]); if (unlikely((__pyx_v_filled == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 151, __pyx_L3_error)
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("brute_force_search", 1, 7, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 145, __pyx_L3_error)
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("_sudokugen.brute_force_search", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10_sudokugen_4brute_force_search(__pyx_self, __pyx_v_grid, __pyx_v_candidate_values, __pyx_v_candidate_nums, __pyx_v_group_indices, __pyx_v_value_indices, __pyx_v_available, __pyx_v_filled);
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_10_sudokugen_4brute_force_search(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_candidate_values, __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_group_indices, __Pyx_memviewslice __pyx_v_value_indices, __Pyx_memviewslice __pyx_v_available, unsigned int __pyx_v_filled) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  __Pyx_RefNannySetupContext("brute_force_search", 0);
-  __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_v_grid.memview)) { __Pyx_RaiseUnboundLocalError("grid"); __PYX_ERR(0, 145, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_candidate_values.memview)) { __Pyx_RaiseUnboundLocalError("candidate_values"); __PYX_ERR(0, 145, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_candidate_nums.memview)) { __Pyx_RaiseUnboundLocalError("candidate_nums"); __PYX_ERR(0, 145, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_group_indices.memview)) { __Pyx_RaiseUnboundLocalError("group_indices"); __PYX_ERR(0, 145, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_value_indices.memview)) { __Pyx_RaiseUnboundLocalError("value_indices"); __PYX_ERR(0, 145, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_available.memview)) { __Pyx_RaiseUnboundLocalError("available"); __PYX_ERR(0, 145, __pyx_L1_error) }
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_10_sudokugen_brute_force_search(__pyx_v_grid, __pyx_v_candidate_values, __pyx_v_candidate_nums, __pyx_v_group_indices, __pyx_v_value_indices, __pyx_v_available, __pyx_v_filled, 0)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 145, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("_sudokugen.brute_force_search", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __PYX_XDEC_MEMVIEW(&__pyx_v_grid, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_candidate_values, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_candidate_nums, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_group_indices, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_value_indices, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_available, 1);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "_sudokugen.pyx":269
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * cdef inline Py_ssize_t argmin(const unsigned long long[::1] candidate_nums,             # <<<<<<<<<<<<<<
- *                               const short[::1] available,
- *                               unsigned int size):
- */
-
-static CYTHON_INLINE Py_ssize_t __pyx_f_10_sudokugen_argmin(__Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_available, unsigned int __pyx_v_size) {
-  Py_ssize_t __pyx_v_i;
-  Py_ssize_t __pyx_v_m;
-  unsigned int __pyx_v_min;
-  Py_ssize_t __pyx_r;
-  __Pyx_RefNannyDeclarations
-  unsigned int __pyx_t_1;
-  unsigned int __pyx_t_2;
-  Py_ssize_t __pyx_t_3;
-  Py_ssize_t __pyx_t_4;
-  int __pyx_t_5;
-  Py_ssize_t __pyx_t_6;
-  Py_ssize_t __pyx_t_7;
-  Py_ssize_t __pyx_t_8;
-  __Pyx_RefNannySetupContext("argmin", 0);
-
-  /* "_sudokugen.pyx":289
- *     """
- *     cdef Py_ssize_t i, m
- *     cdef unsigned int min = size + 1             # <<<<<<<<<<<<<<
- * 
- *     for i in range(size):
- */
-  __pyx_v_min = (__pyx_v_size + 1);
-
-  /* "_sudokugen.pyx":291
- *     cdef unsigned int min = size + 1
- * 
- *     for i in range(size):             # <<<<<<<<<<<<<<
- *         if available[i]:
- *             if candidate_nums[i] == 1:
- */
-  __pyx_t_1 = __pyx_v_size;
-  __pyx_t_2 = __pyx_t_1;
-  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
-    __pyx_v_i = __pyx_t_3;
-
-    /* "_sudokugen.pyx":292
- * 
- *     for i in range(size):
- *         if available[i]:             # <<<<<<<<<<<<<<
- *             if candidate_nums[i] == 1:
- *                 return i
- */
-    __pyx_t_4 = __pyx_v_i;
-    __pyx_t_5 = ((*((short const  *) ( /* dim=0 */ ((char *) (((short const  *) __pyx_v_available.data) + __pyx_t_4)) ))) != 0);
-    if (__pyx_t_5) {
-
-      /* "_sudokugen.pyx":293
- *     for i in range(size):
- *         if available[i]:
- *             if candidate_nums[i] == 1:             # <<<<<<<<<<<<<<
- *                 return i
- * 
- */
-      __pyx_t_6 = __pyx_v_i;
-      __pyx_t_5 = (((*((unsigned PY_LONG_LONG const  *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG const  *) __pyx_v_candidate_nums.data) + __pyx_t_6)) ))) == 1) != 0);
-      if (__pyx_t_5) {
-
-        /* "_sudokugen.pyx":294
- *         if available[i]:
- *             if candidate_nums[i] == 1:
- *                 return i             # <<<<<<<<<<<<<<
- * 
- *             if candidate_nums[i] < min:
- */
-        __pyx_r = __pyx_v_i;
-        goto __pyx_L0;
-
-        /* "_sudokugen.pyx":293
- *     for i in range(size):
- *         if available[i]:
- *             if candidate_nums[i] == 1:             # <<<<<<<<<<<<<<
- *                 return i
- * 
- */
-      }
-
-      /* "_sudokugen.pyx":296
- *                 return i
- * 
- *             if candidate_nums[i] < min:             # <<<<<<<<<<<<<<
- *                 m = i
- *                 min = candidate_nums[i]
- */
-      __pyx_t_7 = __pyx_v_i;
-      __pyx_t_5 = (((*((unsigned PY_LONG_LONG const  *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG const  *) __pyx_v_candidate_nums.data) + __pyx_t_7)) ))) < __pyx_v_min) != 0);
-      if (__pyx_t_5) {
-
-        /* "_sudokugen.pyx":297
- * 
- *             if candidate_nums[i] < min:
- *                 m = i             # <<<<<<<<<<<<<<
- *                 min = candidate_nums[i]
- * 
- */
-        __pyx_v_m = __pyx_v_i;
-
-        /* "_sudokugen.pyx":298
- *             if candidate_nums[i] < min:
- *                 m = i
- *                 min = candidate_nums[i]             # <<<<<<<<<<<<<<
- * 
- *     return m
- */
-        __pyx_t_8 = __pyx_v_i;
-        __pyx_v_min = (*((unsigned PY_LONG_LONG const  *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG const  *) __pyx_v_candidate_nums.data) + __pyx_t_8)) )));
-
-        /* "_sudokugen.pyx":296
- *                 return i
- * 
- *             if candidate_nums[i] < min:             # <<<<<<<<<<<<<<
- *                 m = i
- *                 min = candidate_nums[i]
- */
-      }
-
-      /* "_sudokugen.pyx":292
- * 
- *     for i in range(size):
- *         if available[i]:             # <<<<<<<<<<<<<<
- *             if candidate_nums[i] == 1:
- *                 return i
- */
-    }
-  }
-
-  /* "_sudokugen.pyx":300
- *                 min = candidate_nums[i]
- * 
- *     return m             # <<<<<<<<<<<<<<
- * 
- * 
- */
-  __pyx_r = __pyx_v_m;
-  goto __pyx_L0;
-
-  /* "_sudokugen.pyx":269
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * cdef inline Py_ssize_t argmin(const unsigned long long[::1] candidate_nums,             # <<<<<<<<<<<<<<
- *                               const short[::1] available,
- *                               unsigned int size):
- */
-
-  /* function exit code */
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "_sudokugen.pyx":306
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * cdef inline short update_effected(const unsigned long long value,             # <<<<<<<<<<<<<<
- *                                   unsigned long long[::1] candidate_values,
- *                                   unsigned long long[::1] candidate_nums,
- */
-
-static CYTHON_INLINE short __pyx_f_10_sudokugen_update_effected(unsigned PY_LONG_LONG const __pyx_v_value, __Pyx_memviewslice __pyx_v_candidate_values, __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_effected_indices, __Pyx_memviewslice __pyx_v_available) {
-  Py_ssize_t __pyx_v_i;
-  Py_ssize_t __pyx_v_j;
-  Py_ssize_t __pyx_v_group_size;
-  short __pyx_r;
-  __Pyx_RefNannyDeclarations
-  Py_ssize_t __pyx_t_1;
-  Py_ssize_t __pyx_t_2;
-  Py_ssize_t __pyx_t_3;
-  Py_ssize_t __pyx_t_4;
-  int __pyx_t_5;
-  Py_ssize_t __pyx_t_6;
-  int __pyx_t_7;
-  Py_ssize_t __pyx_t_8;
-  Py_ssize_t __pyx_t_9;
-  Py_ssize_t __pyx_t_10;
-  Py_ssize_t __pyx_t_11;
-  __Pyx_RefNannySetupContext("update_effected", 0);
-
-  /* "_sudokugen.pyx":335
- * 
- *     cdef Py_ssize_t i, j
- *     cdef Py_ssize_t group_size = effected_indices.shape[0]             # <<<<<<<<<<<<<<
- * 
- *     for j in range(group_size):
- */
-  __pyx_v_group_size = (__pyx_v_effected_indices.shape[0]);
-
-  /* "_sudokugen.pyx":337
- *     cdef Py_ssize_t group_size = effected_indices.shape[0]
- * 
- *     for j in range(group_size):             # <<<<<<<<<<<<<<
- *             i = effected_indices[j]
- * 
- */
-  __pyx_t_1 = __pyx_v_group_size;
-  __pyx_t_2 = __pyx_t_1;
-  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
-    __pyx_v_j = __pyx_t_3;
-
-    /* "_sudokugen.pyx":338
- * 
- *     for j in range(group_size):
- *             i = effected_indices[j]             # <<<<<<<<<<<<<<
- * 
- *             if available[i] and candidate_values[i] & value:
- */
-    __pyx_t_4 = __pyx_v_j;
-    __pyx_v_i = (*((Py_ssize_t const  *) ( /* dim=0 */ ((char *) (((Py_ssize_t const  *) __pyx_v_effected_indices.data) + __pyx_t_4)) )));
-
-    /* "_sudokugen.pyx":340
- *             i = effected_indices[j]
- * 
- *             if available[i] and candidate_values[i] & value:             # <<<<<<<<<<<<<<
- *                 candidate_values[i] &= ~value
- *                 candidate_nums[i] -= 1
- */
-    __pyx_t_6 = __pyx_v_i;
-    __pyx_t_7 = ((*((short const  *) ( /* dim=0 */ ((char *) (((short const  *) __pyx_v_available.data) + __pyx_t_6)) ))) != 0);
-    if (__pyx_t_7) {
-    } else {
-      __pyx_t_5 = __pyx_t_7;
-      goto __pyx_L6_bool_binop_done;
-    }
-    __pyx_t_8 = __pyx_v_i;
-    __pyx_t_7 = (((*((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_candidate_values.data) + __pyx_t_8)) ))) & __pyx_v_value) != 0);
-    __pyx_t_5 = __pyx_t_7;
-    __pyx_L6_bool_binop_done:;
-    if (__pyx_t_5) {
-
-      /* "_sudokugen.pyx":341
- * 
- *             if available[i] and candidate_values[i] & value:
- *                 candidate_values[i] &= ~value             # <<<<<<<<<<<<<<
- *                 candidate_nums[i] -= 1
- * 
- */
-      __pyx_t_9 = __pyx_v_i;
-      *((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_candidate_values.data) + __pyx_t_9)) )) &= (~__pyx_v_value);
-
-      /* "_sudokugen.pyx":342
- *             if available[i] and candidate_values[i] & value:
- *                 candidate_values[i] &= ~value
- *                 candidate_nums[i] -= 1             # <<<<<<<<<<<<<<
- * 
- *                 if candidate_nums[i] == 0:
- */
-      __pyx_t_10 = __pyx_v_i;
-      *((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_candidate_nums.data) + __pyx_t_10)) )) -= 1;
-
-      /* "_sudokugen.pyx":344
- *                 candidate_nums[i] -= 1
- * 
- *                 if candidate_nums[i] == 0:             # <<<<<<<<<<<<<<
- *                     return False
- * 
- */
-      __pyx_t_11 = __pyx_v_i;
-      __pyx_t_5 = (((*((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_candidate_nums.data) + __pyx_t_11)) ))) == 0) != 0);
-      if (__pyx_t_5) {
-
-        /* "_sudokugen.pyx":345
- * 
- *                 if candidate_nums[i] == 0:
- *                     return False             # <<<<<<<<<<<<<<
- * 
- *     return True
- */
-        __pyx_r = 0;
-        goto __pyx_L0;
-
-        /* "_sudokugen.pyx":344
- *                 candidate_nums[i] -= 1
- * 
- *                 if candidate_nums[i] == 0:             # <<<<<<<<<<<<<<
- *                     return False
- * 
- */
-      }
-
-      /* "_sudokugen.pyx":340
- *             i = effected_indices[j]
- * 
- *             if available[i] and candidate_values[i] & value:             # <<<<<<<<<<<<<<
- *                 candidate_values[i] &= ~value
- *                 candidate_nums[i] -= 1
- */
-    }
-  }
-
-  /* "_sudokugen.pyx":347
- *                     return False
- * 
- *     return True             # <<<<<<<<<<<<<<
- * 
- * 
- */
-  __pyx_r = 1;
-  goto __pyx_L0;
-
-  /* "_sudokugen.pyx":306
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * cdef inline short update_effected(const unsigned long long value,             # <<<<<<<<<<<<<<
- *                                   unsigned long long[::1] candidate_values,
- *                                   unsigned long long[::1] candidate_nums,
- */
-
-  /* function exit code */
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "_sudokugen.pyx":353
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * def reduce_candidates_parallel(const unsigned long long[:] grid,             # <<<<<<<<<<<<<<
- *                                unsigned long long[:] candidate_values,
- *                                unsigned long long[:] candidate_nums,
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_10_sudokugen_7reduce_candidates_parallel(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_10_sudokugen_7reduce_candidates_parallel = {"reduce_candidates_parallel", (PyCFunction)__pyx_pw_10_sudokugen_7reduce_candidates_parallel, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10_sudokugen_7reduce_candidates_parallel(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  __Pyx_memviewslice __pyx_v_grid = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_v_candidate_values = { 0, 0, { 0 }, { 0 }, { 0 } };
-  CYTHON_UNUSED __Pyx_memviewslice __pyx_v_candidate_nums = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_v_group_indices = { 0, 0, { 0 }, { 0 }, { 0 } };
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("reduce_candidates_parallel (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_grid,&__pyx_n_s_candidate_values,&__pyx_n_s_candidate_nums,&__pyx_n_s_group_indices,0};
-    PyObject* values[4] = {0,0,0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
-        CYTHON_FALLTHROUGH;
-        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-        CYTHON_FALLTHROUGH;
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        CYTHON_FALLTHROUGH;
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        CYTHON_FALLTHROUGH;
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_grid)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        CYTHON_FALLTHROUGH;
-        case  1:
-        if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_candidate_values)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("reduce_candidates_parallel", 1, 4, 4, 1); __PYX_ERR(0, 353, __pyx_L3_error)
-        }
-        CYTHON_FALLTHROUGH;
-        case  2:
-        if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_candidate_nums)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("reduce_candidates_parallel", 1, 4, 4, 2); __PYX_ERR(0, 353, __pyx_L3_error)
-        }
-        CYTHON_FALLTHROUGH;
-        case  3:
-        if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_group_indices)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("reduce_candidates_parallel", 1, 4, 4, 3); __PYX_ERR(0, 353, __pyx_L3_error)
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "reduce_candidates_parallel") < 0)) __PYX_ERR(0, 353, __pyx_L3_error)
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 4) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-      values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
-    }
-    __pyx_v_grid = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_PY_LONG_LONG__const__(values[0], 0); if (unlikely(!__pyx_v_grid.memview)) __PYX_ERR(0, 353, __pyx_L3_error)
-    __pyx_v_candidate_values = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_PY_LONG_LONG(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_candidate_values.memview)) __PYX_ERR(0, 354, __pyx_L3_error)
-    __pyx_v_candidate_nums = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_PY_LONG_LONG(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_candidate_nums.memview)) __PYX_ERR(0, 355, __pyx_L3_error)
-    __pyx_v_group_indices = __Pyx_PyObject_to_MemoryviewSlice_dsds_Py_ssize_t__const__(values[3], 0); if (unlikely(!__pyx_v_group_indices.memview)) __PYX_ERR(0, 356, __pyx_L3_error)
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("reduce_candidates_parallel", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 353, __pyx_L3_error)
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("_sudokugen.reduce_candidates_parallel", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10_sudokugen_6reduce_candidates_parallel(__pyx_self, __pyx_v_grid, __pyx_v_candidate_values, __pyx_v_candidate_nums, __pyx_v_group_indices);
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_10_sudokugen_6reduce_candidates_parallel(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_candidate_values, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_candidate_nums, __Pyx_memviewslice __pyx_v_group_indices) {
-  Py_ssize_t __pyx_v_i;
-  Py_ssize_t __pyx_v_j;
-  CYTHON_UNUSED Py_ssize_t __pyx_v_grid_size;
-  Py_ssize_t __pyx_v_group_size;
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  Py_ssize_t __pyx_t_1;
-  Py_ssize_t __pyx_t_2;
-  Py_ssize_t __pyx_t_3;
-  Py_ssize_t __pyx_t_4;
-  Py_ssize_t __pyx_t_5;
-  Py_ssize_t __pyx_t_6;
-  Py_ssize_t __pyx_t_7;
-  Py_ssize_t __pyx_t_8;
-  Py_ssize_t __pyx_t_9;
-  Py_ssize_t __pyx_t_10;
-  Py_ssize_t __pyx_t_11;
-  Py_ssize_t __pyx_t_12;
-  Py_ssize_t __pyx_t_13;
-  __Pyx_RefNannySetupContext("reduce_candidates_parallel", 0);
-
-  /* "_sudokugen.pyx":359
- * 
- *     cdef Py_ssize_t i, j
- *     cdef Py_ssize_t grid_size = grid.shape[0]             # <<<<<<<<<<<<<<
- *     cdef Py_ssize_t group_size = group_indices.shape[1]
- * 
- */
-  __pyx_v_grid_size = (__pyx_v_grid.shape[0]);
-
-  /* "_sudokugen.pyx":360
- *     cdef Py_ssize_t i, j
- *     cdef Py_ssize_t grid_size = grid.shape[0]
- *     cdef Py_ssize_t group_size = group_indices.shape[1]             # <<<<<<<<<<<<<<
- * 
- *     with nogil:
- */
-  __pyx_v_group_size = (__pyx_v_group_indices.shape[1]);
-
-  /* "_sudokugen.pyx":362
- *     cdef Py_ssize_t group_size = group_indices.shape[1]
- * 
- *     with nogil:             # <<<<<<<<<<<<<<
- *         for i in prange(grid_size, num_threads=8):
- *             candidate_values[i] = 0
- */
-  {
-      #ifdef WITH_THREAD
-      PyThreadState *_save;
-      Py_UNBLOCK_THREADS
-      __Pyx_FastGIL_Remember();
-      #endif
-      /*try:*/ {
-
-        /* "_sudokugen.pyx":363
- * 
- *     with nogil:
- *         for i in prange(grid_size, num_threads=8):             # <<<<<<<<<<<<<<
- *             candidate_values[i] = 0
- *             for j in range(group_size):
- */
-        __pyx_t_1 = __pyx_v_grid_size;
-        if (1 == 0) abort();
-        {
-            #if ((defined(__APPLE__) || defined(__OSX__)) && (defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && (__GNUC_MINOR__ > 95)))))
-                #undef likely
-                #undef unlikely
-                #define likely(x)   (x)
-                #define unlikely(x) (x)
-            #endif
-            __pyx_t_3 = (__pyx_t_1 - 0 + 1 - 1/abs(1)) / 1;
-            if (__pyx_t_3 > 0)
-            {
-                #ifdef _OPENMP
-                #pragma omp parallel num_threads(8) private(__pyx_t_10, __pyx_t_11, __pyx_t_12, __pyx_t_13, __pyx_t_4, __pyx_t_5, __pyx_t_6, __pyx_t_7, __pyx_t_8, __pyx_t_9)
-                #endif /* _OPENMP */
-                {
-                    #ifdef _OPENMP
-                    #pragma omp for firstprivate(__pyx_v_i) lastprivate(__pyx_v_i) lastprivate(__pyx_v_j)
-                    #endif /* _OPENMP */
-                    for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_3; __pyx_t_2++){
-                        {
-                            __pyx_v_i = (Py_ssize_t)(0 + 1 * __pyx_t_2);
-                            /* Initialize private variables to invalid values */
-                            __pyx_v_j = ((Py_ssize_t)0xbad0bad0);
-
-                            /* "_sudokugen.pyx":364
- *     with nogil:
- *         for i in prange(grid_size, num_threads=8):
- *             candidate_values[i] = 0             # <<<<<<<<<<<<<<
- *             for j in range(group_size):
- *                 candidate_values[i] |= grid[group_indices[i, j]]
- */
-                            __pyx_t_4 = __pyx_v_i;
-                            *((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_values.data + __pyx_t_4 * __pyx_v_candidate_values.strides[0]) )) = 0;
-
-                            /* "_sudokugen.pyx":365
- *         for i in prange(grid_size, num_threads=8):
- *             candidate_values[i] = 0
- *             for j in range(group_size):             # <<<<<<<<<<<<<<
- *                 candidate_values[i] |= grid[group_indices[i, j]]
- *             candidate_values[i] = ~candidate_values[i]
- */
-                            __pyx_t_5 = __pyx_v_group_size;
-                            __pyx_t_6 = __pyx_t_5;
-                            for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
-                              __pyx_v_j = __pyx_t_7;
-
-                              /* "_sudokugen.pyx":366
- *             candidate_values[i] = 0
- *             for j in range(group_size):
- *                 candidate_values[i] |= grid[group_indices[i, j]]             # <<<<<<<<<<<<<<
- *             candidate_values[i] = ~candidate_values[i]
- * 
- */
-                              __pyx_t_8 = __pyx_v_i;
-                              __pyx_t_9 = __pyx_v_j;
-                              __pyx_t_10 = (*((Py_ssize_t const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_group_indices.data + __pyx_t_8 * __pyx_v_group_indices.strides[0]) ) + __pyx_t_9 * __pyx_v_group_indices.strides[1]) )));
-                              __pyx_t_11 = __pyx_v_i;
-                              *((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_values.data + __pyx_t_11 * __pyx_v_candidate_values.strides[0]) )) |= (*((unsigned PY_LONG_LONG const  *) ( /* dim=0 */ (__pyx_v_grid.data + __pyx_t_10 * __pyx_v_grid.strides[0]) )));
-                            }
-
-                            /* "_sudokugen.pyx":367
- *             for j in range(group_size):
- *                 candidate_values[i] |= grid[group_indices[i, j]]
- *             candidate_values[i] = ~candidate_values[i]             # <<<<<<<<<<<<<<
- * 
- * 
- */
-                            __pyx_t_12 = __pyx_v_i;
-                            __pyx_t_13 = __pyx_v_i;
-                            *((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_values.data + __pyx_t_13 * __pyx_v_candidate_values.strides[0]) )) = (~(*((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidate_values.data + __pyx_t_12 * __pyx_v_candidate_values.strides[0]) ))));
-                        }
-                    }
-                }
-            }
-        }
-        #if ((defined(__APPLE__) || defined(__OSX__)) && (defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && (__GNUC_MINOR__ > 95)))))
-            #undef likely
-            #undef unlikely
-            #define likely(x)   __builtin_expect(!!(x), 1)
-            #define unlikely(x) __builtin_expect(!!(x), 0)
-        #endif
-      }
-
-      /* "_sudokugen.pyx":362
- *     cdef Py_ssize_t group_size = group_indices.shape[1]
- * 
- *     with nogil:             # <<<<<<<<<<<<<<
- *         for i in prange(grid_size, num_threads=8):
- *             candidate_values[i] = 0
- */
-      /*finally:*/ {
-        /*normal exit:*/{
-          #ifdef WITH_THREAD
-          __Pyx_FastGIL_Forget();
-          Py_BLOCK_THREADS
-          #endif
-          goto __pyx_L5;
-        }
-        __pyx_L5:;
-      }
-  }
-
-  /* "_sudokugen.pyx":353
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * def reduce_candidates_parallel(const unsigned long long[:] grid,             # <<<<<<<<<<<<<<
- *                                unsigned long long[:] candidate_values,
- *                                unsigned long long[:] candidate_nums,
- */
-
-  /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_grid, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_candidate_values, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_candidate_nums, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_group_indices, 1);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "_sudokugen.pyx":373
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * def reduce_candidates(const unsigned long long[:] grid,             # <<<<<<<<<<<<<<
- *                       unsigned long long[:] candidates,
- *                       const Py_ssize_t[:,:] group_indices):
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_10_sudokugen_9reduce_candidates(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_10_sudokugen_9reduce_candidates = {"reduce_candidates", (PyCFunction)__pyx_pw_10_sudokugen_9reduce_candidates, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10_sudokugen_9reduce_candidates(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  __Pyx_memviewslice __pyx_v_grid = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_v_candidates = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_v_group_indices = { 0, 0, { 0 }, { 0 }, { 0 } };
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("reduce_candidates (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_grid,&__pyx_n_s_candidates,&__pyx_n_s_group_indices,0};
-    PyObject* values[3] = {0,0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-        CYTHON_FALLTHROUGH;
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        CYTHON_FALLTHROUGH;
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        CYTHON_FALLTHROUGH;
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_grid)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        CYTHON_FALLTHROUGH;
-        case  1:
-        if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_candidates)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("reduce_candidates", 1, 3, 3, 1); __PYX_ERR(0, 373, __pyx_L3_error)
-        }
-        CYTHON_FALLTHROUGH;
-        case  2:
-        if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_group_indices)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("reduce_candidates", 1, 3, 3, 2); __PYX_ERR(0, 373, __pyx_L3_error)
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "reduce_candidates") < 0)) __PYX_ERR(0, 373, __pyx_L3_error)
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-    }
-    __pyx_v_grid = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_PY_LONG_LONG__const__(values[0], 0); if (unlikely(!__pyx_v_grid.memview)) __PYX_ERR(0, 373, __pyx_L3_error)
-    __pyx_v_candidates = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_PY_LONG_LONG(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_candidates.memview)) __PYX_ERR(0, 374, __pyx_L3_error)
-    __pyx_v_group_indices = __Pyx_PyObject_to_MemoryviewSlice_dsds_Py_ssize_t__const__(values[2], 0); if (unlikely(!__pyx_v_group_indices.memview)) __PYX_ERR(0, 375, __pyx_L3_error)
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("reduce_candidates", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 373, __pyx_L3_error)
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("_sudokugen.reduce_candidates", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10_sudokugen_8reduce_candidates(__pyx_self, __pyx_v_grid, __pyx_v_candidates, __pyx_v_group_indices);
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_10_sudokugen_8reduce_candidates(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_candidates, __Pyx_memviewslice __pyx_v_group_indices) {
-  Py_ssize_t __pyx_v_i;
-  Py_ssize_t __pyx_v_j;
-  Py_ssize_t __pyx_v_grid_size;
-  Py_ssize_t __pyx_v_group_size;
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  Py_ssize_t __pyx_t_1;
-  Py_ssize_t __pyx_t_2;
-  Py_ssize_t __pyx_t_3;
-  Py_ssize_t __pyx_t_4;
-  Py_ssize_t __pyx_t_5;
-  Py_ssize_t __pyx_t_6;
-  Py_ssize_t __pyx_t_7;
-  Py_ssize_t __pyx_t_8;
-  Py_ssize_t __pyx_t_9;
-  Py_ssize_t __pyx_t_10;
-  Py_ssize_t __pyx_t_11;
-  Py_ssize_t __pyx_t_12;
-  Py_ssize_t __pyx_t_13;
-  __Pyx_RefNannySetupContext("reduce_candidates", 0);
-
-  /* "_sudokugen.pyx":378
- * 
- *     cdef Py_ssize_t i, j
- *     cdef Py_ssize_t grid_size = grid.shape[0]             # <<<<<<<<<<<<<<
- *     cdef Py_ssize_t group_size = group_indices.shape[1]
- * 
- */
-  __pyx_v_grid_size = (__pyx_v_grid.shape[0]);
-
-  /* "_sudokugen.pyx":379
- *     cdef Py_ssize_t i, j
- *     cdef Py_ssize_t grid_size = grid.shape[0]
- *     cdef Py_ssize_t group_size = group_indices.shape[1]             # <<<<<<<<<<<<<<
- * 
- *     for i in range(grid_size):
- */
-  __pyx_v_group_size = (__pyx_v_group_indices.shape[1]);
-
-  /* "_sudokugen.pyx":381
- *     cdef Py_ssize_t group_size = group_indices.shape[1]
- * 
- *     for i in range(grid_size):             # <<<<<<<<<<<<<<
- *         candidates[i] = 0
- *         for j in range(group_size):
- */
-  __pyx_t_1 = __pyx_v_grid_size;
-  __pyx_t_2 = __pyx_t_1;
-  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
-    __pyx_v_i = __pyx_t_3;
-
-    /* "_sudokugen.pyx":382
- * 
- *     for i in range(grid_size):
- *         candidates[i] = 0             # <<<<<<<<<<<<<<
- *         for j in range(group_size):
- *             candidates[i] |= grid[group_indices[i, j]]
- */
-    __pyx_t_4 = __pyx_v_i;
-    *((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidates.data + __pyx_t_4 * __pyx_v_candidates.strides[0]) )) = 0;
-
-    /* "_sudokugen.pyx":383
- *     for i in range(grid_size):
- *         candidates[i] = 0
- *         for j in range(group_size):             # <<<<<<<<<<<<<<
- *             candidates[i] |= grid[group_indices[i, j]]
- *         candidates[i] = ~candidates[i]
- */
-    __pyx_t_5 = __pyx_v_group_size;
-    __pyx_t_6 = __pyx_t_5;
-    for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
-      __pyx_v_j = __pyx_t_7;
-
-      /* "_sudokugen.pyx":384
- *         candidates[i] = 0
- *         for j in range(group_size):
- *             candidates[i] |= grid[group_indices[i, j]]             # <<<<<<<<<<<<<<
- *         candidates[i] = ~candidates[i]
- * 
- */
-      __pyx_t_8 = __pyx_v_i;
-      __pyx_t_9 = __pyx_v_j;
-      __pyx_t_10 = (*((Py_ssize_t const  *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_group_indices.data + __pyx_t_8 * __pyx_v_group_indices.strides[0]) ) + __pyx_t_9 * __pyx_v_group_indices.strides[1]) )));
-      __pyx_t_11 = __pyx_v_i;
-      *((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidates.data + __pyx_t_11 * __pyx_v_candidates.strides[0]) )) |= (*((unsigned PY_LONG_LONG const  *) ( /* dim=0 */ (__pyx_v_grid.data + __pyx_t_10 * __pyx_v_grid.strides[0]) )));
-    }
-
-    /* "_sudokugen.pyx":385
- *         for j in range(group_size):
- *             candidates[i] |= grid[group_indices[i, j]]
- *         candidates[i] = ~candidates[i]             # <<<<<<<<<<<<<<
- * 
- * 
- */
-    __pyx_t_12 = __pyx_v_i;
-    __pyx_t_13 = __pyx_v_i;
-    *((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidates.data + __pyx_t_13 * __pyx_v_candidates.strides[0]) )) = (~(*((unsigned PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_candidates.data + __pyx_t_12 * __pyx_v_candidates.strides[0]) ))));
-  }
-
-  /* "_sudokugen.pyx":373
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * def reduce_candidates(const unsigned long long[:] grid,             # <<<<<<<<<<<<<<
- *                       unsigned long long[:] candidates,
- *                       const Py_ssize_t[:,:] group_indices):
- */
-
-  /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_grid, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_candidates, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_group_indices, 1);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "_sudokugen.pyx":391
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * cdef inline unsigned long long fetch_candidates(             # <<<<<<<<<<<<<<
- *         unsigned long long[::1] grid, Py_ssize_t[:] group_indices) nogil:
- * 
- */
-
-static CYTHON_INLINE unsigned PY_LONG_LONG __pyx_f_10_sudokugen_fetch_candidates(__Pyx_memviewslice __pyx_v_grid, __Pyx_memviewslice __pyx_v_group_indices) {
-  unsigned PY_LONG_LONG __pyx_v_total;
-  Py_ssize_t __pyx_v_size;
-  Py_ssize_t __pyx_v_i;
-  unsigned PY_LONG_LONG __pyx_r;
-  Py_ssize_t __pyx_t_1;
-  Py_ssize_t __pyx_t_2;
-  Py_ssize_t __pyx_t_3;
-  Py_ssize_t __pyx_t_4;
-  Py_ssize_t __pyx_t_5;
-
-  /* "_sudokugen.pyx":394
- *         unsigned long long[::1] grid, Py_ssize_t[:] group_indices) nogil:
- * 
- *     cdef unsigned long long total = 0             # <<<<<<<<<<<<<<
- *     cdef Py_ssize_t size = group_indices.shape[0]
- *     cdef Py_ssize_t i
- */
-  __pyx_v_total = 0;
-
-  /* "_sudokugen.pyx":395
- * 
- *     cdef unsigned long long total = 0
- *     cdef Py_ssize_t size = group_indices.shape[0]             # <<<<<<<<<<<<<<
- *     cdef Py_ssize_t i
- * 
- */
-  __pyx_v_size = (__pyx_v_group_indices.shape[0]);
-
-  /* "_sudokugen.pyx":398
- *     cdef Py_ssize_t i
- * 
- *     for i in range(size):             # <<<<<<<<<<<<<<
- *         total |= grid[group_indices[i]]
- * 
- */
-  __pyx_t_1 = __pyx_v_size;
-  __pyx_t_2 = __pyx_t_1;
-  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
-    __pyx_v_i = __pyx_t_3;
-
-    /* "_sudokugen.pyx":399
- * 
- *     for i in range(size):
- *         total |= grid[group_indices[i]]             # <<<<<<<<<<<<<<
- * 
- *     return ~total
- */
-    __pyx_t_4 = __pyx_v_i;
-    __pyx_t_5 = (*((Py_ssize_t *) ( /* dim=0 */ (__pyx_v_group_indices.data + __pyx_t_4 * __pyx_v_group_indices.strides[0]) )));
-    __pyx_v_total = (__pyx_v_total | (*((unsigned PY_LONG_LONG *) ( /* dim=0 */ ((char *) (((unsigned PY_LONG_LONG *) __pyx_v_grid.data) + __pyx_t_5)) ))));
-  }
-
-  /* "_sudokugen.pyx":401
- *         total |= grid[group_indices[i]]
- * 
- *     return ~total             # <<<<<<<<<<<<<<
- */
-  __pyx_r = (~__pyx_v_total);
-  goto __pyx_L0;
-
-  /* "_sudokugen.pyx":391
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * cdef inline unsigned long long fetch_candidates(             # <<<<<<<<<<<<<<
- *         unsigned long long[::1] grid, Py_ssize_t[:] group_indices) nogil:
- * 
- */
-
-  /* function exit code */
-  __pyx_L0:;
   return __pyx_r;
 }
 
@@ -21313,9 +23096,10 @@ static PyTypeObject __pyx_type___pyx_memoryviewslice = {
 };
 
 static PyMethodDef __pyx_methods[] = {
-  {"_generate_subgrid_indices", (PyCFunction)__pyx_pw_10_sudokugen_1_generate_subgrid_indices, METH_VARARGS|METH_KEYWORDS, __pyx_doc_10_sudokugen__generate_subgrid_indices},
-  {"generate_group_indices", (PyCFunction)__pyx_pw_10_sudokugen_3generate_group_indices, METH_O, __pyx_doc_10_sudokugen_2generate_group_indices},
-  {"brute_force_search", (PyCFunction)__pyx_pw_10_sudokugen_5brute_force_search, METH_VARARGS|METH_KEYWORDS, __pyx_doc_10_sudokugen_4brute_force_search},
+  {"brute_force_search", (PyCFunction)__pyx_pw_10_sudokugen_1brute_force_search, METH_VARARGS|METH_KEYWORDS, __pyx_doc_10_sudokugen_brute_force_search},
+  {"brute_force_search_debug", (PyCFunction)__pyx_pw_10_sudokugen_3brute_force_search_debug, METH_VARARGS|METH_KEYWORDS, __pyx_doc_10_sudokugen_2brute_force_search_debug},
+  {"_generate_subgrid_indices", (PyCFunction)__pyx_pw_10_sudokugen_5_generate_subgrid_indices, METH_VARARGS|METH_KEYWORDS, __pyx_doc_10_sudokugen_4_generate_subgrid_indices},
+  {"generate_group_indices", (PyCFunction)__pyx_pw_10_sudokugen_7generate_group_indices, METH_O, __pyx_doc_10_sudokugen_6generate_group_indices},
   {0, 0, 0, 0}
 };
 
@@ -21387,12 +23171,12 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_u_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 1, 0, 1},
   {&__pyx_n_s_candidate_nums, __pyx_k_candidate_nums, sizeof(__pyx_k_candidate_nums), 0, 0, 1, 1},
   {&__pyx_n_s_candidate_values, __pyx_k_candidate_values, sizeof(__pyx_k_candidate_values), 0, 0, 1, 1},
-  {&__pyx_n_s_candidates, __pyx_k_candidates, sizeof(__pyx_k_candidates), 0, 0, 1, 1},
   {&__pyx_n_s_class, __pyx_k_class, sizeof(__pyx_k_class), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_s_col_index, __pyx_k_col_index, sizeof(__pyx_k_col_index), 0, 0, 1, 1},
   {&__pyx_kp_s_contiguous_and_direct, __pyx_k_contiguous_and_direct, sizeof(__pyx_k_contiguous_and_direct), 0, 0, 1, 0},
   {&__pyx_kp_s_contiguous_and_indirect, __pyx_k_contiguous_and_indirect, sizeof(__pyx_k_contiguous_and_indirect), 0, 0, 1, 0},
+  {&__pyx_n_s_debugger, __pyx_k_debugger, sizeof(__pyx_k_debugger), 0, 0, 1, 1},
   {&__pyx_n_s_dict, __pyx_k_dict, sizeof(__pyx_k_dict), 0, 0, 1, 1},
   {&__pyx_n_s_dtype, __pyx_k_dtype, sizeof(__pyx_k_dtype), 0, 0, 1, 1},
   {&__pyx_n_s_dtype_is_object, __pyx_k_dtype_is_object, sizeof(__pyx_k_dtype_is_object), 0, 0, 1, 1},
@@ -21400,7 +23184,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_encode, __pyx_k_encode, sizeof(__pyx_k_encode), 0, 0, 1, 1},
   {&__pyx_n_s_enumerate, __pyx_k_enumerate, sizeof(__pyx_k_enumerate), 0, 0, 1, 1},
   {&__pyx_n_s_error, __pyx_k_error, sizeof(__pyx_k_error), 0, 0, 1, 1},
-  {&__pyx_n_s_filled, __pyx_k_filled, sizeof(__pyx_k_filled), 0, 0, 1, 1},
   {&__pyx_n_s_flags, __pyx_k_flags, sizeof(__pyx_k_flags), 0, 0, 1, 1},
   {&__pyx_n_s_format, __pyx_k_format, sizeof(__pyx_k_format), 0, 0, 1, 1},
   {&__pyx_n_s_fortran, __pyx_k_fortran, sizeof(__pyx_k_fortran), 0, 0, 1, 1},
@@ -21408,18 +23191,15 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_getstate, __pyx_k_getstate, sizeof(__pyx_k_getstate), 0, 0, 1, 1},
   {&__pyx_kp_s_got_differing_extents_in_dimensi, __pyx_k_got_differing_extents_in_dimensi, sizeof(__pyx_k_got_differing_extents_in_dimensi), 0, 0, 1, 0},
   {&__pyx_n_s_grid, __pyx_k_grid, sizeof(__pyx_k_grid), 0, 0, 1, 1},
-  {&__pyx_n_s_grid_size, __pyx_k_grid_size, sizeof(__pyx_k_grid_size), 0, 0, 1, 1},
   {&__pyx_n_s_group_indices, __pyx_k_group_indices, sizeof(__pyx_k_group_indices), 0, 0, 1, 1},
-  {&__pyx_n_s_group_size, __pyx_k_group_size, sizeof(__pyx_k_group_size), 0, 0, 1, 1},
   {&__pyx_n_s_hstack, __pyx_k_hstack, sizeof(__pyx_k_hstack), 0, 0, 1, 1},
-  {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
   {&__pyx_n_s_id, __pyx_k_id, sizeof(__pyx_k_id), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_intp, __pyx_k_intp, sizeof(__pyx_k_intp), 0, 0, 1, 1},
   {&__pyx_n_s_itemsize, __pyx_k_itemsize, sizeof(__pyx_k_itemsize), 0, 0, 1, 1},
   {&__pyx_kp_s_itemsize_0_for_cython_array, __pyx_k_itemsize_0_for_cython_array, sizeof(__pyx_k_itemsize_0_for_cython_array), 0, 0, 1, 0},
-  {&__pyx_n_s_j, __pyx_k_j, sizeof(__pyx_k_j), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
+  {&__pyx_n_s_max_solutions, __pyx_k_max_solutions, sizeof(__pyx_k_max_solutions), 0, 0, 1, 1},
   {&__pyx_n_s_memview, __pyx_k_memview, sizeof(__pyx_k_memview), 0, 0, 1, 1},
   {&__pyx_n_s_mode, __pyx_k_mode, sizeof(__pyx_k_mode), 0, 0, 1, 1},
   {&__pyx_n_s_n, __pyx_k_n, sizeof(__pyx_k_n), 0, 0, 1, 1},
@@ -21447,8 +23227,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {&__pyx_n_s_reduce, __pyx_k_reduce, sizeof(__pyx_k_reduce), 0, 0, 1, 1},
-  {&__pyx_n_s_reduce_candidates, __pyx_k_reduce_candidates, sizeof(__pyx_k_reduce_candidates), 0, 0, 1, 1},
-  {&__pyx_n_s_reduce_candidates_parallel, __pyx_k_reduce_candidates_parallel, sizeof(__pyx_k_reduce_candidates_parallel), 0, 0, 1, 1},
   {&__pyx_n_s_reduce_cython, __pyx_k_reduce_cython, sizeof(__pyx_k_reduce_cython), 0, 0, 1, 1},
   {&__pyx_n_s_reduce_ex, __pyx_k_reduce_ex, sizeof(__pyx_k_reduce_ex), 0, 0, 1, 1},
   {&__pyx_n_s_row_index, __pyx_k_row_index, sizeof(__pyx_k_row_index), 0, 0, 1, 1},
@@ -21464,8 +23242,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_strided_and_indirect, __pyx_k_strided_and_indirect, sizeof(__pyx_k_strided_and_indirect), 0, 0, 1, 0},
   {&__pyx_kp_s_stringsource, __pyx_k_stringsource, sizeof(__pyx_k_stringsource), 0, 0, 1, 0},
   {&__pyx_n_s_struct, __pyx_k_struct, sizeof(__pyx_k_struct), 0, 0, 1, 1},
-  {&__pyx_n_s_sudokugen, __pyx_k_sudokugen, sizeof(__pyx_k_sudokugen), 0, 0, 1, 1},
-  {&__pyx_kp_s_sudokugen_pyx, __pyx_k_sudokugen_pyx, sizeof(__pyx_k_sudokugen_pyx), 0, 0, 1, 0},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_kp_s_unable_to_allocate_array_data, __pyx_k_unable_to_allocate_array_data, sizeof(__pyx_k_unable_to_allocate_array_data), 0, 0, 1, 0},
   {&__pyx_kp_s_unable_to_allocate_shape_and_str, __pyx_k_unable_to_allocate_shape_and_str, sizeof(__pyx_k_unable_to_allocate_shape_and_str), 0, 0, 1, 0},
@@ -21476,7 +23252,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 39, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 251, __pyx_L1_error)
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(1, 229, __pyx_L1_error)
   __pyx_builtin_RuntimeError = __Pyx_GetBuiltinName(__pyx_n_s_RuntimeError); if (!__pyx_builtin_RuntimeError) __PYX_ERR(1, 810, __pyx_L1_error)
   __pyx_builtin_ImportError = __Pyx_GetBuiltinName(__pyx_n_s_ImportError); if (!__pyx_builtin_ImportError) __PYX_ERR(1, 1000, __pyx_L1_error)
@@ -21495,14 +23271,14 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "_sudokugen.pyx":134
+  /* "_sudokugen.pyx":435
  *     for row_index in range(n ** 2):
  *         for col_index in range(n ** 2):
  *             group_indices[row_index * n ** 2 + col_index, :] = \             # <<<<<<<<<<<<<<
- *                 np.hstack((_generate_row_indices(row_index, col_index, n),
- *                            _generate_col_indices(row_index, col_index, n),
+ *                 np.hstack((
+ *                     _generate_row_indices(row_index, col_index, n),
  */
-  __pyx_slice_ = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice_)) __PYX_ERR(0, 134, __pyx_L1_error)
+  __pyx_slice_ = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice_)) __PYX_ERR(0, 435, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_slice_);
   __Pyx_GIVEREF(__pyx_slice_);
 
@@ -21828,30 +23604,6 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__31);
   __Pyx_GIVEREF(__pyx_tuple__31);
 
-  /* "_sudokugen.pyx":353
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * def reduce_candidates_parallel(const unsigned long long[:] grid,             # <<<<<<<<<<<<<<
- *                                unsigned long long[:] candidate_values,
- *                                unsigned long long[:] candidate_nums,
- */
-  __pyx_tuple__32 = PyTuple_Pack(8, __pyx_n_s_grid, __pyx_n_s_candidate_values, __pyx_n_s_candidate_nums, __pyx_n_s_group_indices, __pyx_n_s_i, __pyx_n_s_j, __pyx_n_s_grid_size, __pyx_n_s_group_size); if (unlikely(!__pyx_tuple__32)) __PYX_ERR(0, 353, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__32);
-  __Pyx_GIVEREF(__pyx_tuple__32);
-  __pyx_codeobj__33 = (PyObject*)__Pyx_PyCode_New(4, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__32, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_sudokugen_pyx, __pyx_n_s_reduce_candidates_parallel, 353, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__33)) __PYX_ERR(0, 353, __pyx_L1_error)
-
-  /* "_sudokugen.pyx":373
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * def reduce_candidates(const unsigned long long[:] grid,             # <<<<<<<<<<<<<<
- *                       unsigned long long[:] candidates,
- *                       const Py_ssize_t[:,:] group_indices):
- */
-  __pyx_tuple__34 = PyTuple_Pack(7, __pyx_n_s_grid, __pyx_n_s_candidates, __pyx_n_s_group_indices, __pyx_n_s_i, __pyx_n_s_j, __pyx_n_s_grid_size, __pyx_n_s_group_size); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(0, 373, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__34);
-  __Pyx_GIVEREF(__pyx_tuple__34);
-  __pyx_codeobj__35 = (PyObject*)__Pyx_PyCode_New(3, 0, 7, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__34, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_sudokugen_pyx, __pyx_n_s_reduce_candidates, 373, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__35)) __PYX_ERR(0, 373, __pyx_L1_error)
-
   /* "View.MemoryView":285
  *         return self.name
  * 
@@ -21859,9 +23611,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_tuple__36 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__36)) __PYX_ERR(2, 285, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__36);
-  __Pyx_GIVEREF(__pyx_tuple__36);
+  __pyx_tuple__32 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__32)) __PYX_ERR(2, 285, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__32);
+  __Pyx_GIVEREF(__pyx_tuple__32);
 
   /* "View.MemoryView":286
  * 
@@ -21870,9 +23622,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_tuple__37 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__37)) __PYX_ERR(2, 286, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__37);
-  __Pyx_GIVEREF(__pyx_tuple__37);
+  __pyx_tuple__33 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__33)) __PYX_ERR(2, 286, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__33);
+  __Pyx_GIVEREF(__pyx_tuple__33);
 
   /* "View.MemoryView":287
  * cdef generic = Enum("<strided and direct or indirect>")
@@ -21881,9 +23633,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__38 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__38)) __PYX_ERR(2, 287, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__38);
-  __Pyx_GIVEREF(__pyx_tuple__38);
+  __pyx_tuple__34 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(2, 287, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__34);
+  __Pyx_GIVEREF(__pyx_tuple__34);
 
   /* "View.MemoryView":290
  * 
@@ -21892,9 +23644,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_tuple__39 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__39)) __PYX_ERR(2, 290, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__39);
-  __Pyx_GIVEREF(__pyx_tuple__39);
+  __pyx_tuple__35 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__35)) __PYX_ERR(2, 290, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__35);
+  __Pyx_GIVEREF(__pyx_tuple__35);
 
   /* "View.MemoryView":291
  * 
@@ -21903,19 +23655,19 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__40 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__40)) __PYX_ERR(2, 291, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__40);
-  __Pyx_GIVEREF(__pyx_tuple__40);
+  __pyx_tuple__36 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__36)) __PYX_ERR(2, 291, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__36);
+  __Pyx_GIVEREF(__pyx_tuple__36);
 
   /* "(tree fragment)":1
  * def __pyx_unpickle_Enum(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
  *     if __pyx_checksum != 0xb068931:
  *         from pickle import PickleError as __pyx_PickleError
  */
-  __pyx_tuple__41 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__41)) __PYX_ERR(2, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__41);
-  __Pyx_GIVEREF(__pyx_tuple__41);
-  __pyx_codeobj__42 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__41, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Enum, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__42)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __pyx_tuple__37 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__37)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__37);
+  __Pyx_GIVEREF(__pyx_tuple__37);
+  __pyx_codeobj__38 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__37, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Enum, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__38)) __PYX_ERR(2, 1, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -21924,13 +23676,6 @@ static int __Pyx_InitCachedConstants(void) {
 }
 
 static int __Pyx_InitGlobals(void) {
-  /* InitThreads.init */
-  #ifdef WITH_THREAD
-PyEval_InitThreads();
-#endif
-
-if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 2, __pyx_L1_error)
-
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(0, 2, __pyx_L1_error);
   __pyx_int_0 = PyInt_FromLong(0); if (unlikely(!__pyx_int_0)) __PYX_ERR(0, 2, __pyx_L1_error)
   __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) __PYX_ERR(0, 2, __pyx_L1_error)
@@ -22256,35 +24001,12 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) __PYX_ERR(0, 2, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "_sudokugen.pyx":353
+  /* "_sudokugen.pyx":425
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
- * def reduce_candidates_parallel(const unsigned long long[:] grid,             # <<<<<<<<<<<<<<
- *                                unsigned long long[:] candidate_values,
- *                                unsigned long long[:] candidate_nums,
- */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10_sudokugen_7reduce_candidates_parallel, NULL, __pyx_n_s_sudokugen); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 353, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_reduce_candidates_parallel, __pyx_t_1) < 0) __PYX_ERR(0, 353, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "_sudokugen.pyx":373
- * @cython.boundscheck(False)
- * @cython.wraparound(False)
- * def reduce_candidates(const unsigned long long[:] grid,             # <<<<<<<<<<<<<<
- *                       unsigned long long[:] candidates,
- *                       const Py_ssize_t[:,:] group_indices):
- */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10_sudokugen_9reduce_candidates, NULL, __pyx_n_s_sudokugen); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 373, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_reduce_candidates, __pyx_t_1) < 0) __PYX_ERR(0, 373, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "_sudokugen.pyx":2
- * 
- * import numpy as np             # <<<<<<<<<<<<<<
- * cimport numpy as np
- * 
+ * cpdef Py_ssize_t[:, ::1] generate_group_indices(unsigned int n):             # <<<<<<<<<<<<<<
+ *     """Generates the tensor, which holds the indices of groups for each
+ *         coordinate
  */
   __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -22311,7 +24033,7 @@ if (!__Pyx_RefNanny) {
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__36, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 285, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__32, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 285, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(generic);
   __Pyx_DECREF_SET(generic, __pyx_t_1);
@@ -22325,7 +24047,7 @@ if (!__Pyx_RefNanny) {
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__37, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 286, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__33, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 286, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(strided);
   __Pyx_DECREF_SET(strided, __pyx_t_1);
@@ -22339,7 +24061,7 @@ if (!__Pyx_RefNanny) {
  * 
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__38, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 287, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__34, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 287, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(indirect);
   __Pyx_DECREF_SET(indirect, __pyx_t_1);
@@ -22353,7 +24075,7 @@ if (!__Pyx_RefNanny) {
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__39, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 290, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__35, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 290, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(contiguous);
   __Pyx_DECREF_SET(contiguous, __pyx_t_1);
@@ -22367,7 +24089,7 @@ if (!__Pyx_RefNanny) {
  * 
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__40, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 291, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__36, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 291, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(indirect_contiguous);
   __Pyx_DECREF_SET(indirect_contiguous, __pyx_t_1);
@@ -22514,111 +24236,8 @@ static PyObject *__Pyx_GetBuiltinName(PyObject *name) {
     return result;
 }
 
-/* GetModuleGlobalName */
-static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name) {
-    PyObject *result;
-#if !CYTHON_AVOID_BORROWED_REFS
-#if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030500A1
-    result = _PyDict_GetItem_KnownHash(__pyx_d, name, ((PyASCIIObject *) name)->hash);
-    if (likely(result)) {
-        Py_INCREF(result);
-    } else if (unlikely(PyErr_Occurred())) {
-        result = NULL;
-    } else {
-#else
-    result = PyDict_GetItem(__pyx_d, name);
-    if (likely(result)) {
-        Py_INCREF(result);
-    } else {
-#endif
-#else
-    result = PyObject_GetItem(__pyx_d, name);
-    if (!result) {
-        PyErr_Clear();
-#endif
-        result = __Pyx_GetBuiltinName(name);
-    }
-    return result;
-}
-
-/* PyObjectCall */
-    #if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
-    PyObject *result;
-    ternaryfunc call = func->ob_type->tp_call;
-    if (unlikely(!call))
-        return PyObject_Call(func, arg, kw);
-    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
-        return NULL;
-    result = (*call)(func, arg, kw);
-    Py_LeaveRecursiveCall();
-    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
-        PyErr_SetString(
-            PyExc_SystemError,
-            "NULL result without error in PyObject_Call");
-    }
-    return result;
-}
-#endif
-
-/* None */
-    static CYTHON_INLINE Py_ssize_t __Pyx_div_Py_ssize_t(Py_ssize_t a, Py_ssize_t b) {
-    Py_ssize_t q = a / b;
-    Py_ssize_t r = a - q*b;
-    q -= ((r != 0) & ((r ^ b) < 0));
-    return q;
-}
-
-/* SetItemInt */
-    static int __Pyx_SetItemInt_Generic(PyObject *o, PyObject *j, PyObject *v) {
-    int r;
-    if (!j) return -1;
-    r = PyObject_SetItem(o, j, v);
-    Py_DECREF(j);
-    return r;
-}
-static CYTHON_INLINE int __Pyx_SetItemInt_Fast(PyObject *o, Py_ssize_t i, PyObject *v, int is_list,
-                                               CYTHON_NCP_UNUSED int wraparound, CYTHON_NCP_UNUSED int boundscheck) {
-#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS && CYTHON_USE_TYPE_SLOTS
-    if (is_list || PyList_CheckExact(o)) {
-        Py_ssize_t n = (!wraparound) ? i : ((likely(i >= 0)) ? i : i + PyList_GET_SIZE(o));
-        if ((!boundscheck) || likely((n >= 0) & (n < PyList_GET_SIZE(o)))) {
-            PyObject* old = PyList_GET_ITEM(o, n);
-            Py_INCREF(v);
-            PyList_SET_ITEM(o, n, v);
-            Py_DECREF(old);
-            return 1;
-        }
-    } else {
-        PySequenceMethods *m = Py_TYPE(o)->tp_as_sequence;
-        if (likely(m && m->sq_ass_item)) {
-            if (wraparound && unlikely(i < 0) && likely(m->sq_length)) {
-                Py_ssize_t l = m->sq_length(o);
-                if (likely(l >= 0)) {
-                    i += l;
-                } else {
-                    if (!PyErr_ExceptionMatches(PyExc_OverflowError))
-                        return -1;
-                    PyErr_Clear();
-                }
-            }
-            return m->sq_ass_item(o, i, v);
-        }
-    }
-#else
-#if CYTHON_COMPILING_IN_PYPY
-    if (is_list || (PySequence_Check(o) && !PyDict_Check(o))) {
-#else
-    if (is_list || PySequence_Check(o)) {
-#endif
-        return PySequence_SetItem(o, i, v);
-    }
-#endif
-    return __Pyx_SetItemInt_Generic(o, PyInt_FromSsize_t(i), v);
-}
-
 /* MemviewSliceInit */
-      static int
+static int
 __Pyx_init_memviewslice(struct __pyx_memoryview_obj *memview,
                         int ndim,
                         __Pyx_memviewslice *memviewslice,
@@ -22755,8 +24374,74 @@ static CYTHON_INLINE void __Pyx_XDEC_MEMVIEW(__Pyx_memviewslice *memslice,
     }
 }
 
+/* PyErrFetchRestore */
+#if CYTHON_FAST_THREAD_STATE
+static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    tmp_type = tstate->curexc_type;
+    tmp_value = tstate->curexc_value;
+    tmp_tb = tstate->curexc_traceback;
+    tstate->curexc_type = type;
+    tstate->curexc_value = value;
+    tstate->curexc_traceback = tb;
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+}
+static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
+    *type = tstate->curexc_type;
+    *value = tstate->curexc_value;
+    *tb = tstate->curexc_traceback;
+    tstate->curexc_type = 0;
+    tstate->curexc_value = 0;
+    tstate->curexc_traceback = 0;
+}
+#endif
+
+/* WriteUnraisableException */
+static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
+                                  CYTHON_UNUSED int lineno, CYTHON_UNUSED const char *filename,
+                                  int full_traceback, CYTHON_UNUSED int nogil) {
+    PyObject *old_exc, *old_val, *old_tb;
+    PyObject *ctx;
+    __Pyx_PyThreadState_declare
+#ifdef WITH_THREAD
+    PyGILState_STATE state;
+    if (nogil)
+        state = PyGILState_Ensure();
+#ifdef _MSC_VER
+    else state = (PyGILState_STATE)-1;
+#endif
+#endif
+    __Pyx_PyThreadState_assign
+    __Pyx_ErrFetch(&old_exc, &old_val, &old_tb);
+    if (full_traceback) {
+        Py_XINCREF(old_exc);
+        Py_XINCREF(old_val);
+        Py_XINCREF(old_tb);
+        __Pyx_ErrRestore(old_exc, old_val, old_tb);
+        PyErr_PrintEx(1);
+    }
+    #if PY_MAJOR_VERSION < 3
+    ctx = PyString_FromString(name);
+    #else
+    ctx = PyUnicode_FromString(name);
+    #endif
+    __Pyx_ErrRestore(old_exc, old_val, old_tb);
+    if (!ctx) {
+        PyErr_WriteUnraisable(Py_None);
+    } else {
+        PyErr_WriteUnraisable(ctx);
+        Py_DECREF(ctx);
+    }
+#ifdef WITH_THREAD
+    if (nogil)
+        PyGILState_Release(state);
+#endif
+}
+
 /* RaiseArgTupleInvalid */
-      static void __Pyx_RaiseArgtupleInvalid(
+static void __Pyx_RaiseArgtupleInvalid(
     const char* func_name,
     int exact,
     Py_ssize_t num_min,
@@ -22782,7 +24467,7 @@ static CYTHON_INLINE void __Pyx_XDEC_MEMVIEW(__Pyx_memviewslice *memslice,
 }
 
 /* RaiseDoubleKeywords */
-      static void __Pyx_RaiseDoubleKeywordsError(
+static void __Pyx_RaiseDoubleKeywordsError(
     const char* func_name,
     PyObject* kw_name)
 {
@@ -22796,7 +24481,7 @@ static CYTHON_INLINE void __Pyx_XDEC_MEMVIEW(__Pyx_memviewslice *memslice,
 }
 
 /* ParseKeywords */
-      static int __Pyx_ParseOptionalKeywords(
+static int __Pyx_ParseOptionalKeywords(
     PyObject *kwds,
     PyObject **argnames[],
     PyObject *kwds2,
@@ -22897,118 +24582,13 @@ bad:
     return -1;
 }
 
-/* GetItemInt */
-      static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j) {
-    PyObject *r;
-    if (!j) return NULL;
-    r = PyObject_GetItem(o, j);
-    Py_DECREF(j);
-    return r;
+/* None */
+static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname) {
+    PyErr_Format(PyExc_UnboundLocalError, "local variable '%s' referenced before assignment", varname);
 }
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_List_Fast(PyObject *o, Py_ssize_t i,
-                                                              CYTHON_NCP_UNUSED int wraparound,
-                                                              CYTHON_NCP_UNUSED int boundscheck) {
-#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    Py_ssize_t wrapped_i = i;
-    if (wraparound & unlikely(i < 0)) {
-        wrapped_i += PyList_GET_SIZE(o);
-    }
-    if ((!boundscheck) || likely((0 <= wrapped_i) & (wrapped_i < PyList_GET_SIZE(o)))) {
-        PyObject *r = PyList_GET_ITEM(o, wrapped_i);
-        Py_INCREF(r);
-        return r;
-    }
-    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
-#else
-    return PySequence_GetItem(o, i);
-#endif
-}
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Tuple_Fast(PyObject *o, Py_ssize_t i,
-                                                              CYTHON_NCP_UNUSED int wraparound,
-                                                              CYTHON_NCP_UNUSED int boundscheck) {
-#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    Py_ssize_t wrapped_i = i;
-    if (wraparound & unlikely(i < 0)) {
-        wrapped_i += PyTuple_GET_SIZE(o);
-    }
-    if ((!boundscheck) || likely((0 <= wrapped_i) & (wrapped_i < PyTuple_GET_SIZE(o)))) {
-        PyObject *r = PyTuple_GET_ITEM(o, wrapped_i);
-        Py_INCREF(r);
-        return r;
-    }
-    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
-#else
-    return PySequence_GetItem(o, i);
-#endif
-}
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, int is_list,
-                                                     CYTHON_NCP_UNUSED int wraparound,
-                                                     CYTHON_NCP_UNUSED int boundscheck) {
-#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS && CYTHON_USE_TYPE_SLOTS
-    if (is_list || PyList_CheckExact(o)) {
-        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyList_GET_SIZE(o);
-        if ((!boundscheck) || (likely((n >= 0) & (n < PyList_GET_SIZE(o))))) {
-            PyObject *r = PyList_GET_ITEM(o, n);
-            Py_INCREF(r);
-            return r;
-        }
-    }
-    else if (PyTuple_CheckExact(o)) {
-        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyTuple_GET_SIZE(o);
-        if ((!boundscheck) || likely((n >= 0) & (n < PyTuple_GET_SIZE(o)))) {
-            PyObject *r = PyTuple_GET_ITEM(o, n);
-            Py_INCREF(r);
-            return r;
-        }
-    } else {
-        PySequenceMethods *m = Py_TYPE(o)->tp_as_sequence;
-        if (likely(m && m->sq_item)) {
-            if (wraparound && unlikely(i < 0) && likely(m->sq_length)) {
-                Py_ssize_t l = m->sq_length(o);
-                if (likely(l >= 0)) {
-                    i += l;
-                } else {
-                    if (!PyErr_ExceptionMatches(PyExc_OverflowError))
-                        return NULL;
-                    PyErr_Clear();
-                }
-            }
-            return m->sq_item(o, i);
-        }
-    }
-#else
-    if (is_list || PySequence_Check(o)) {
-        return PySequence_GetItem(o, i);
-    }
-#endif
-    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
-}
-
-/* PyCFunctionFastCall */
-      #if CYTHON_FAST_PYCCALL
-static CYTHON_INLINE PyObject * __Pyx_PyCFunction_FastCall(PyObject *func_obj, PyObject **args, Py_ssize_t nargs) {
-    PyCFunctionObject *func = (PyCFunctionObject*)func_obj;
-    PyCFunction meth = PyCFunction_GET_FUNCTION(func);
-    PyObject *self = PyCFunction_GET_SELF(func);
-    int flags = PyCFunction_GET_FLAGS(func);
-    assert(PyCFunction_Check(func));
-    assert(METH_FASTCALL == (flags & ~(METH_CLASS | METH_STATIC | METH_COEXIST | METH_KEYWORDS)));
-    assert(nargs >= 0);
-    assert(nargs == 0 || args != NULL);
-    /* _PyCFunction_FastCallDict() must not be called with an exception set,
-       because it may clear it (directly or indirectly) and so the
-       caller loses its exception */
-    assert(!PyErr_Occurred());
-    if ((PY_VERSION_HEX < 0x030700A0) || unlikely(flags & METH_KEYWORDS)) {
-        return (*((__Pyx_PyCFunctionFastWithKeywords)meth)) (self, args, nargs, NULL);
-    } else {
-        return (*((__Pyx_PyCFunctionFast)meth)) (self, args, nargs);
-    }
-}
-#endif
 
 /* PyFunctionFastCall */
-      #if CYTHON_FAST_PYCALL
+#if CYTHON_FAST_PYCALL
 #include "frameobject.h"
 static PyObject* __Pyx_PyFunction_FastCallNoKw(PyCodeObject *co, PyObject **args, Py_ssize_t na,
                                                PyObject *globals) {
@@ -23127,6 +24707,219 @@ done:
 #endif
 #endif
 
+/* PyCFunctionFastCall */
+#if CYTHON_FAST_PYCCALL
+static CYTHON_INLINE PyObject * __Pyx_PyCFunction_FastCall(PyObject *func_obj, PyObject **args, Py_ssize_t nargs) {
+    PyCFunctionObject *func = (PyCFunctionObject*)func_obj;
+    PyCFunction meth = PyCFunction_GET_FUNCTION(func);
+    PyObject *self = PyCFunction_GET_SELF(func);
+    int flags = PyCFunction_GET_FLAGS(func);
+    assert(PyCFunction_Check(func));
+    assert(METH_FASTCALL == (flags & ~(METH_CLASS | METH_STATIC | METH_COEXIST | METH_KEYWORDS)));
+    assert(nargs >= 0);
+    assert(nargs == 0 || args != NULL);
+    /* _PyCFunction_FastCallDict() must not be called with an exception set,
+       because it may clear it (directly or indirectly) and so the
+       caller loses its exception */
+    assert(!PyErr_Occurred());
+    if ((PY_VERSION_HEX < 0x030700A0) || unlikely(flags & METH_KEYWORDS)) {
+        return (*((__Pyx_PyCFunctionFastWithKeywords)meth)) (self, args, nargs, NULL);
+    } else {
+        return (*((__Pyx_PyCFunctionFast)meth)) (self, args, nargs);
+    }
+}
+#endif
+
+/* PyObjectCall */
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
+    PyObject *result;
+    ternaryfunc call = func->ob_type->tp_call;
+    if (unlikely(!call))
+        return PyObject_Call(func, arg, kw);
+    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
+        return NULL;
+    result = (*call)(func, arg, kw);
+    Py_LeaveRecursiveCall();
+    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
+        PyErr_SetString(
+            PyExc_SystemError,
+            "NULL result without error in PyObject_Call");
+    }
+    return result;
+}
+#endif
+
+/* GetModuleGlobalName */
+static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name) {
+    PyObject *result;
+#if !CYTHON_AVOID_BORROWED_REFS
+#if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030500A1
+    result = _PyDict_GetItem_KnownHash(__pyx_d, name, ((PyASCIIObject *) name)->hash);
+    if (likely(result)) {
+        Py_INCREF(result);
+    } else if (unlikely(PyErr_Occurred())) {
+        result = NULL;
+    } else {
+#else
+    result = PyDict_GetItem(__pyx_d, name);
+    if (likely(result)) {
+        Py_INCREF(result);
+    } else {
+#endif
+#else
+    result = PyObject_GetItem(__pyx_d, name);
+    if (!result) {
+        PyErr_Clear();
+#endif
+        result = __Pyx_GetBuiltinName(name);
+    }
+    return result;
+}
+
+/* None */
+    static CYTHON_INLINE Py_ssize_t __Pyx_div_Py_ssize_t(Py_ssize_t a, Py_ssize_t b) {
+    Py_ssize_t q = a / b;
+    Py_ssize_t r = a - q*b;
+    q -= ((r != 0) & ((r ^ b) < 0));
+    return q;
+}
+
+/* SetItemInt */
+    static int __Pyx_SetItemInt_Generic(PyObject *o, PyObject *j, PyObject *v) {
+    int r;
+    if (!j) return -1;
+    r = PyObject_SetItem(o, j, v);
+    Py_DECREF(j);
+    return r;
+}
+static CYTHON_INLINE int __Pyx_SetItemInt_Fast(PyObject *o, Py_ssize_t i, PyObject *v, int is_list,
+                                               CYTHON_NCP_UNUSED int wraparound, CYTHON_NCP_UNUSED int boundscheck) {
+#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS && CYTHON_USE_TYPE_SLOTS
+    if (is_list || PyList_CheckExact(o)) {
+        Py_ssize_t n = (!wraparound) ? i : ((likely(i >= 0)) ? i : i + PyList_GET_SIZE(o));
+        if ((!boundscheck) || likely((n >= 0) & (n < PyList_GET_SIZE(o)))) {
+            PyObject* old = PyList_GET_ITEM(o, n);
+            Py_INCREF(v);
+            PyList_SET_ITEM(o, n, v);
+            Py_DECREF(old);
+            return 1;
+        }
+    } else {
+        PySequenceMethods *m = Py_TYPE(o)->tp_as_sequence;
+        if (likely(m && m->sq_ass_item)) {
+            if (wraparound && unlikely(i < 0) && likely(m->sq_length)) {
+                Py_ssize_t l = m->sq_length(o);
+                if (likely(l >= 0)) {
+                    i += l;
+                } else {
+                    if (!PyErr_ExceptionMatches(PyExc_OverflowError))
+                        return -1;
+                    PyErr_Clear();
+                }
+            }
+            return m->sq_ass_item(o, i, v);
+        }
+    }
+#else
+#if CYTHON_COMPILING_IN_PYPY
+    if (is_list || (PySequence_Check(o) && !PyDict_Check(o))) {
+#else
+    if (is_list || PySequence_Check(o)) {
+#endif
+        return PySequence_SetItem(o, i, v);
+    }
+#endif
+    return __Pyx_SetItemInt_Generic(o, PyInt_FromSsize_t(i), v);
+}
+
+/* GetItemInt */
+      static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j) {
+    PyObject *r;
+    if (!j) return NULL;
+    r = PyObject_GetItem(o, j);
+    Py_DECREF(j);
+    return r;
+}
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_List_Fast(PyObject *o, Py_ssize_t i,
+                                                              CYTHON_NCP_UNUSED int wraparound,
+                                                              CYTHON_NCP_UNUSED int boundscheck) {
+#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+    Py_ssize_t wrapped_i = i;
+    if (wraparound & unlikely(i < 0)) {
+        wrapped_i += PyList_GET_SIZE(o);
+    }
+    if ((!boundscheck) || likely((0 <= wrapped_i) & (wrapped_i < PyList_GET_SIZE(o)))) {
+        PyObject *r = PyList_GET_ITEM(o, wrapped_i);
+        Py_INCREF(r);
+        return r;
+    }
+    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
+#else
+    return PySequence_GetItem(o, i);
+#endif
+}
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Tuple_Fast(PyObject *o, Py_ssize_t i,
+                                                              CYTHON_NCP_UNUSED int wraparound,
+                                                              CYTHON_NCP_UNUSED int boundscheck) {
+#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+    Py_ssize_t wrapped_i = i;
+    if (wraparound & unlikely(i < 0)) {
+        wrapped_i += PyTuple_GET_SIZE(o);
+    }
+    if ((!boundscheck) || likely((0 <= wrapped_i) & (wrapped_i < PyTuple_GET_SIZE(o)))) {
+        PyObject *r = PyTuple_GET_ITEM(o, wrapped_i);
+        Py_INCREF(r);
+        return r;
+    }
+    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
+#else
+    return PySequence_GetItem(o, i);
+#endif
+}
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, int is_list,
+                                                     CYTHON_NCP_UNUSED int wraparound,
+                                                     CYTHON_NCP_UNUSED int boundscheck) {
+#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS && CYTHON_USE_TYPE_SLOTS
+    if (is_list || PyList_CheckExact(o)) {
+        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyList_GET_SIZE(o);
+        if ((!boundscheck) || (likely((n >= 0) & (n < PyList_GET_SIZE(o))))) {
+            PyObject *r = PyList_GET_ITEM(o, n);
+            Py_INCREF(r);
+            return r;
+        }
+    }
+    else if (PyTuple_CheckExact(o)) {
+        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyTuple_GET_SIZE(o);
+        if ((!boundscheck) || likely((n >= 0) & (n < PyTuple_GET_SIZE(o)))) {
+            PyObject *r = PyTuple_GET_ITEM(o, n);
+            Py_INCREF(r);
+            return r;
+        }
+    } else {
+        PySequenceMethods *m = Py_TYPE(o)->tp_as_sequence;
+        if (likely(m && m->sq_item)) {
+            if (wraparound && unlikely(i < 0) && likely(m->sq_length)) {
+                Py_ssize_t l = m->sq_length(o);
+                if (likely(l >= 0)) {
+                    i += l;
+                } else {
+                    if (!PyErr_ExceptionMatches(PyExc_OverflowError))
+                        return NULL;
+                    PyErr_Clear();
+                }
+            }
+            return m->sq_item(o, i);
+        }
+    }
+#else
+    if (is_list || PySequence_Check(o)) {
+        return PySequence_GetItem(o, i);
+    }
+#endif
+    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
+}
+
 /* PyObjectCallMethO */
       #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg) {
@@ -23186,77 +24979,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObjec
     return result;
 }
 #endif
-
-/* PyErrFetchRestore */
-      #if CYTHON_FAST_THREAD_STATE
-static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    tmp_type = tstate->curexc_type;
-    tmp_value = tstate->curexc_value;
-    tmp_tb = tstate->curexc_traceback;
-    tstate->curexc_type = type;
-    tstate->curexc_value = value;
-    tstate->curexc_traceback = tb;
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-}
-static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
-    *type = tstate->curexc_type;
-    *value = tstate->curexc_value;
-    *tb = tstate->curexc_traceback;
-    tstate->curexc_type = 0;
-    tstate->curexc_value = 0;
-    tstate->curexc_traceback = 0;
-}
-#endif
-
-/* WriteUnraisableException */
-      static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
-                                  CYTHON_UNUSED int lineno, CYTHON_UNUSED const char *filename,
-                                  int full_traceback, CYTHON_UNUSED int nogil) {
-    PyObject *old_exc, *old_val, *old_tb;
-    PyObject *ctx;
-    __Pyx_PyThreadState_declare
-#ifdef WITH_THREAD
-    PyGILState_STATE state;
-    if (nogil)
-        state = PyGILState_Ensure();
-#ifdef _MSC_VER
-    else state = (PyGILState_STATE)-1;
-#endif
-#endif
-    __Pyx_PyThreadState_assign
-    __Pyx_ErrFetch(&old_exc, &old_val, &old_tb);
-    if (full_traceback) {
-        Py_XINCREF(old_exc);
-        Py_XINCREF(old_val);
-        Py_XINCREF(old_tb);
-        __Pyx_ErrRestore(old_exc, old_val, old_tb);
-        PyErr_PrintEx(1);
-    }
-    #if PY_MAJOR_VERSION < 3
-    ctx = PyString_FromString(name);
-    #else
-    ctx = PyUnicode_FromString(name);
-    #endif
-    __Pyx_ErrRestore(old_exc, old_val, old_tb);
-    if (!ctx) {
-        PyErr_WriteUnraisable(Py_None);
-    } else {
-        PyErr_WriteUnraisable(ctx);
-        Py_DECREF(ctx);
-    }
-#ifdef WITH_THREAD
-    if (nogil)
-        PyGILState_Release(state);
-#endif
-}
-
-/* None */
-      static CYTHON_INLINE void __Pyx_RaiseUnboundLocalError(const char *varname) {
-    PyErr_Format(PyExc_UnboundLocalError, "local variable '%s' referenced before assignment", varname);
-}
 
 /* RaiseException */
       #if PY_MAJOR_VERSION < 3
@@ -24635,28 +26357,6 @@ __pyx_capsule_create(void *p, CYTHON_UNUSED const char *sig)
     return cobj;
 }
 
-/* CIntFromPyVerify */
-        #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
-    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
-#define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
-    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
-#define __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, exc)\
-    {\
-        func_type value = func_value;\
-        if (sizeof(target_type) < sizeof(func_type)) {\
-            if (unlikely(value != (func_type) (target_type) value)) {\
-                func_type zero = 0;\
-                if (exc && unlikely(value == (func_type)-1 && PyErr_Occurred()))\
-                    return (target_type) -1;\
-                if (is_unsigned && unlikely(value < zero))\
-                    goto raise_neg_overflow;\
-                else\
-                    goto raise_overflow;\
-            }\
-        }\
-        return (target_type) value;\
-    }
-
 /* IsLittleEndian */
         static CYTHON_INLINE int __Pyx_Is_Little_Endian(void)
 {
@@ -25440,6 +27140,29 @@ __pyx_fail:
 }
 
 /* ObjectToMemviewSlice */
+          static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_d_dc_unsigned_long(PyObject *obj, int writable_flag) {
+    __Pyx_memviewslice result = { 0, 0, { 0 }, { 0 }, { 0 } };
+    __Pyx_BufFmt_StackElem stack[1];
+    int axes_specs[] = { (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_FOLLOW), (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_CONTIG) };
+    int retcode;
+    if (obj == Py_None) {
+        result.memview = (struct __pyx_memoryview_obj *) Py_None;
+        return result;
+    }
+    retcode = __Pyx_ValidateAndInit_memviewslice(axes_specs, __Pyx_IS_C_CONTIG,
+                                                 (PyBUF_C_CONTIGUOUS | PyBUF_FORMAT) | writable_flag, 2,
+                                                 &__Pyx_TypeInfo_unsigned_long, stack,
+                                                 &result, obj);
+    if (unlikely(retcode == -1))
+        goto __pyx_fail;
+    return result;
+__pyx_fail:
+    result.memview = NULL;
+    result.data = NULL;
+    return result;
+}
+
+/* ObjectToMemviewSlice */
           static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_d_dc_Py_ssize_t__const__(PyObject *obj, int writable_flag) {
     __Pyx_memviewslice result = { 0, 0, { 0 }, { 0 }, { 0 } };
     __Pyx_BufFmt_StackElem stack[1];
@@ -25508,100 +27231,143 @@ __pyx_fail:
     return result;
 }
 
-/* ObjectToMemviewSlice */
-          static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_PY_LONG_LONG__const__(PyObject *obj, int writable_flag) {
-    __Pyx_memviewslice result = { 0, 0, { 0 }, { 0 }, { 0 } };
-    __Pyx_BufFmt_StackElem stack[1];
-    int axes_specs[] = { (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED) };
-    int retcode;
-    if (obj == Py_None) {
-        result.memview = (struct __pyx_memoryview_obj *) Py_None;
-        return result;
+/* CIntFromPyVerify */
+          #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
+    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
+#define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
+    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
+#define __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, exc)\
+    {\
+        func_type value = func_value;\
+        if (sizeof(target_type) < sizeof(func_type)) {\
+            if (unlikely(value != (func_type) (target_type) value)) {\
+                func_type zero = 0;\
+                if (exc && unlikely(value == (func_type)-1 && PyErr_Occurred()))\
+                    return (target_type) -1;\
+                if (is_unsigned && unlikely(value < zero))\
+                    goto raise_neg_overflow;\
+                else\
+                    goto raise_overflow;\
+            }\
+        }\
+        return (target_type) value;\
     }
-    retcode = __Pyx_ValidateAndInit_memviewslice(axes_specs, 0,
-                                                 PyBUF_RECORDS_RO | writable_flag, 1,
-                                                 &__Pyx_TypeInfo_unsigned_PY_LONG_LONG__const__, stack,
-                                                 &result, obj);
-    if (unlikely(retcode == -1))
-        goto __pyx_fail;
-    return result;
-__pyx_fail:
-    result.memview = NULL;
-    result.data = NULL;
-    return result;
+
+/* CIntToPy */
+          static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
+    const int neg_one = (int) -1, const_zero = (int) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(int) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(int) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(int) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+#endif
+        }
+    } else {
+        if (sizeof(int) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(int) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+#endif
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(int),
+                                     little, !is_unsigned);
+    }
 }
 
-/* ObjectToMemviewSlice */
-          static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_PY_LONG_LONG(PyObject *obj, int writable_flag) {
-    __Pyx_memviewslice result = { 0, 0, { 0 }, { 0 }, { 0 } };
-    __Pyx_BufFmt_StackElem stack[1];
-    int axes_specs[] = { (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED) };
-    int retcode;
-    if (obj == Py_None) {
-        result.memview = (struct __pyx_memoryview_obj *) Py_None;
-        return result;
+/* CIntToPy */
+          static CYTHON_INLINE PyObject* __Pyx_PyInt_From_unsigned_PY_LONG_LONG(unsigned PY_LONG_LONG value) {
+    const unsigned PY_LONG_LONG neg_one = (unsigned PY_LONG_LONG) -1, const_zero = (unsigned PY_LONG_LONG) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(unsigned PY_LONG_LONG) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(unsigned PY_LONG_LONG) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(unsigned PY_LONG_LONG) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+#endif
+        }
+    } else {
+        if (sizeof(unsigned PY_LONG_LONG) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(unsigned PY_LONG_LONG) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+#endif
+        }
     }
-    retcode = __Pyx_ValidateAndInit_memviewslice(axes_specs, 0,
-                                                 PyBUF_RECORDS_RO | writable_flag, 1,
-                                                 &__Pyx_TypeInfo_unsigned_PY_LONG_LONG, stack,
-                                                 &result, obj);
-    if (unlikely(retcode == -1))
-        goto __pyx_fail;
-    return result;
-__pyx_fail:
-    result.memview = NULL;
-    result.data = NULL;
-    return result;
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(unsigned PY_LONG_LONG),
+                                     little, !is_unsigned);
+    }
 }
 
-/* ObjectToMemviewSlice */
-          static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsds_Py_ssize_t__const__(PyObject *obj, int writable_flag) {
-    __Pyx_memviewslice result = { 0, 0, { 0 }, { 0 }, { 0 } };
-    __Pyx_BufFmt_StackElem stack[1];
-    int axes_specs[] = { (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED), (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED) };
-    int retcode;
-    if (obj == Py_None) {
-        result.memview = (struct __pyx_memoryview_obj *) Py_None;
-        return result;
-    }
-    retcode = __Pyx_ValidateAndInit_memviewslice(axes_specs, 0,
-                                                 PyBUF_RECORDS_RO | writable_flag, 2,
-                                                 &__Pyx_TypeInfo_Py_ssize_t__const__, stack,
-                                                 &result, obj);
-    if (unlikely(retcode == -1))
-        goto __pyx_fail;
-    return result;
-__pyx_fail:
-    result.memview = NULL;
-    result.data = NULL;
-    return result;
+/* MemviewDtypeToObject */
+          static CYTHON_INLINE PyObject *__pyx_memview_get_unsigned_PY_LONG_LONG(const char *itemp) {
+    return (PyObject *) __Pyx_PyInt_From_unsigned_PY_LONG_LONG(*(unsigned PY_LONG_LONG *) itemp);
+}
+static CYTHON_INLINE int __pyx_memview_set_unsigned_PY_LONG_LONG(const char *itemp, PyObject *obj) {
+    unsigned PY_LONG_LONG value = __Pyx_PyInt_As_unsigned_PY_LONG_LONG(obj);
+    if ((value == (unsigned PY_LONG_LONG)-1) && PyErr_Occurred())
+        return 0;
+    *(unsigned PY_LONG_LONG *) itemp = value;
+    return 1;
 }
 
-/* None */
-          static CYTHON_INLINE long __Pyx_pow_long(long b, long e) {
-    long t = b;
-    switch (e) {
-        case 3:
-            t *= b;
-        CYTHON_FALLTHROUGH;
-        case 2:
-            t *= b;
-        CYTHON_FALLTHROUGH;
-        case 1:
-            return t;
-        case 0:
-            return 1;
+/* CIntToPy */
+          static CYTHON_INLINE PyObject* __Pyx_PyInt_From_unsigned_long(unsigned long value) {
+    const unsigned long neg_one = (unsigned long) -1, const_zero = (unsigned long) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(unsigned long) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(unsigned long) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(unsigned long) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+#endif
+        }
+    } else {
+        if (sizeof(unsigned long) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(unsigned long) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+#endif
+        }
     }
-    #if 1
-    if (unlikely(e<0)) return 0;
-    #endif
-    t = 1;
-    while (likely(e)) {
-        t *= (b * (e&1)) | ((~e)&1);
-        b *= b;
-        e >>= 1;
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(unsigned long),
+                                     little, !is_unsigned);
     }
-    return t;
+}
+
+/* MemviewDtypeToObject */
+          static CYTHON_INLINE PyObject *__pyx_memview_get_unsigned_long(const char *itemp) {
+    return (PyObject *) __Pyx_PyInt_From_unsigned_long(*(unsigned long *) itemp);
+}
+static CYTHON_INLINE int __pyx_memview_set_unsigned_long(const char *itemp, PyObject *obj) {
+    unsigned long value = __Pyx_PyInt_As_unsigned_long(obj);
+    if ((value == (unsigned long)-1) && PyErr_Occurred())
+        return 0;
+    *(unsigned long *) itemp = value;
+    return 1;
 }
 
 /* CIntToPy */
@@ -25664,6 +27430,64 @@ __pyx_fail:
         return _PyLong_FromByteArray(bytes, sizeof(unsigned int),
                                      little, !is_unsigned);
     }
+}
+
+/* CIntToPy */
+          static CYTHON_INLINE PyObject* __Pyx_PyInt_From_short(short value) {
+    const short neg_one = (short) -1, const_zero = (short) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(short) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(short) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(short) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+#endif
+        }
+    } else {
+        if (sizeof(short) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(short) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+#endif
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(short),
+                                     little, !is_unsigned);
+    }
+}
+
+/* None */
+          static CYTHON_INLINE long __Pyx_pow_long(long b, long e) {
+    long t = b;
+    switch (e) {
+        case 3:
+            t *= b;
+        CYTHON_FALLTHROUGH;
+        case 2:
+            t *= b;
+        CYTHON_FALLTHROUGH;
+        case 1:
+            return t;
+        case 0:
+            return 1;
+    }
+    #if 1
+    if (unlikely(e<0)) return 0;
+    #endif
+    t = 1;
+    while (likely(e)) {
+        t *= (b * (e&1)) | ((~e)&1);
+        b *= b;
+        e >>= 1;
+    }
+    return t;
 }
 
 /* MemviewDtypeToObject */
@@ -25987,37 +27811,6 @@ static CYTHON_INLINE int __pyx_memview_set_Py_ssize_t(const char *itemp, PyObjec
         }
     #endif
 #endif
-
-/* CIntToPy */
-          static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
-    const int neg_one = (int) -1, const_zero = (int) 0;
-    const int is_unsigned = neg_one > const_zero;
-    if (is_unsigned) {
-        if (sizeof(int) < sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(int) <= sizeof(unsigned long)) {
-            return PyLong_FromUnsignedLong((unsigned long) value);
-#ifdef HAVE_LONG_LONG
-        } else if (sizeof(int) <= sizeof(unsigned PY_LONG_LONG)) {
-            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
-#endif
-        }
-    } else {
-        if (sizeof(int) <= sizeof(long)) {
-            return PyInt_FromLong((long) value);
-#ifdef HAVE_LONG_LONG
-        } else if (sizeof(int) <= sizeof(PY_LONG_LONG)) {
-            return PyLong_FromLongLong((PY_LONG_LONG) value);
-#endif
-        }
-    }
-    {
-        int one = 1; int little = (int)*(unsigned char *)&one;
-        unsigned char *bytes = (unsigned char *)&value;
-        return _PyLong_FromByteArray(bytes, sizeof(int),
-                                     little, !is_unsigned);
-    }
-}
 
 /* CIntToPy */
           static CYTHON_INLINE PyObject* __Pyx_PyInt_From_enum__NPY_TYPES(enum NPY_TYPES value) {
@@ -26493,6 +28286,384 @@ raise_neg_overflow:
     PyErr_SetString(PyExc_OverflowError,
         "can't convert negative value to int");
     return (int) -1;
+}
+
+/* CIntFromPy */
+          static CYTHON_INLINE unsigned PY_LONG_LONG __Pyx_PyInt_As_unsigned_PY_LONG_LONG(PyObject *x) {
+    const unsigned PY_LONG_LONG neg_one = (unsigned PY_LONG_LONG) -1, const_zero = (unsigned PY_LONG_LONG) 0;
+    const int is_unsigned = neg_one > const_zero;
+#if PY_MAJOR_VERSION < 3
+    if (likely(PyInt_Check(x))) {
+        if (sizeof(unsigned PY_LONG_LONG) < sizeof(long)) {
+            __PYX_VERIFY_RETURN_INT(unsigned PY_LONG_LONG, long, PyInt_AS_LONG(x))
+        } else {
+            long val = PyInt_AS_LONG(x);
+            if (is_unsigned && unlikely(val < 0)) {
+                goto raise_neg_overflow;
+            }
+            return (unsigned PY_LONG_LONG) val;
+        }
+    } else
+#endif
+    if (likely(PyLong_Check(x))) {
+        if (is_unsigned) {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (unsigned PY_LONG_LONG) 0;
+                case  1: __PYX_VERIFY_RETURN_INT(unsigned PY_LONG_LONG, digit, digits[0])
+                case 2:
+                    if (8 * sizeof(unsigned PY_LONG_LONG) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned PY_LONG_LONG, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned PY_LONG_LONG) >= 2 * PyLong_SHIFT) {
+                            return (unsigned PY_LONG_LONG) (((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(unsigned PY_LONG_LONG) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned PY_LONG_LONG, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned PY_LONG_LONG) >= 3 * PyLong_SHIFT) {
+                            return (unsigned PY_LONG_LONG) (((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(unsigned PY_LONG_LONG) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned PY_LONG_LONG, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned PY_LONG_LONG) >= 4 * PyLong_SHIFT) {
+                            return (unsigned PY_LONG_LONG) (((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        }
+                    }
+                    break;
+            }
+#endif
+#if CYTHON_COMPILING_IN_CPYTHON
+            if (unlikely(Py_SIZE(x) < 0)) {
+                goto raise_neg_overflow;
+            }
+#else
+            {
+                int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
+                if (unlikely(result < 0))
+                    return (unsigned PY_LONG_LONG) -1;
+                if (unlikely(result == 1))
+                    goto raise_neg_overflow;
+            }
+#endif
+            if (sizeof(unsigned PY_LONG_LONG) <= sizeof(unsigned long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(unsigned PY_LONG_LONG, unsigned long, PyLong_AsUnsignedLong(x))
+#ifdef HAVE_LONG_LONG
+            } else if (sizeof(unsigned PY_LONG_LONG) <= sizeof(unsigned PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(unsigned PY_LONG_LONG, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
+#endif
+            }
+        } else {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (unsigned PY_LONG_LONG) 0;
+                case -1: __PYX_VERIFY_RETURN_INT(unsigned PY_LONG_LONG, sdigit, (sdigit) (-(sdigit)digits[0]))
+                case  1: __PYX_VERIFY_RETURN_INT(unsigned PY_LONG_LONG,  digit, +digits[0])
+                case -2:
+                    if (8 * sizeof(unsigned PY_LONG_LONG) - 1 > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned PY_LONG_LONG, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
+                            return (unsigned PY_LONG_LONG) (((unsigned PY_LONG_LONG)-1)*(((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0])));
+                        }
+                    }
+                    break;
+                case 2:
+                    if (8 * sizeof(unsigned PY_LONG_LONG) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned PY_LONG_LONG, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
+                            return (unsigned PY_LONG_LONG) ((((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0])));
+                        }
+                    }
+                    break;
+                case -3:
+                    if (8 * sizeof(unsigned PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned PY_LONG_LONG, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
+                            return (unsigned PY_LONG_LONG) (((unsigned PY_LONG_LONG)-1)*(((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0])));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(unsigned PY_LONG_LONG) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned PY_LONG_LONG, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
+                            return (unsigned PY_LONG_LONG) ((((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0])));
+                        }
+                    }
+                    break;
+                case -4:
+                    if (8 * sizeof(unsigned PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned PY_LONG_LONG, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned PY_LONG_LONG) - 1 > 4 * PyLong_SHIFT) {
+                            return (unsigned PY_LONG_LONG) (((unsigned PY_LONG_LONG)-1)*(((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0])));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(unsigned PY_LONG_LONG) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned PY_LONG_LONG, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned PY_LONG_LONG) - 1 > 4 * PyLong_SHIFT) {
+                            return (unsigned PY_LONG_LONG) ((((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0])));
+                        }
+                    }
+                    break;
+            }
+#endif
+            if (sizeof(unsigned PY_LONG_LONG) <= sizeof(long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(unsigned PY_LONG_LONG, long, PyLong_AsLong(x))
+#ifdef HAVE_LONG_LONG
+            } else if (sizeof(unsigned PY_LONG_LONG) <= sizeof(PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(unsigned PY_LONG_LONG, PY_LONG_LONG, PyLong_AsLongLong(x))
+#endif
+            }
+        }
+        {
+#if CYTHON_COMPILING_IN_PYPY && !defined(_PyLong_AsByteArray)
+            PyErr_SetString(PyExc_RuntimeError,
+                            "_PyLong_AsByteArray() not available in PyPy, cannot convert large numbers");
+#else
+            unsigned PY_LONG_LONG val;
+            PyObject *v = __Pyx_PyNumber_IntOrLong(x);
+ #if PY_MAJOR_VERSION < 3
+            if (likely(v) && !PyLong_Check(v)) {
+                PyObject *tmp = v;
+                v = PyNumber_Long(tmp);
+                Py_DECREF(tmp);
+            }
+ #endif
+            if (likely(v)) {
+                int one = 1; int is_little = (int)*(unsigned char *)&one;
+                unsigned char *bytes = (unsigned char *)&val;
+                int ret = _PyLong_AsByteArray((PyLongObject *)v,
+                                              bytes, sizeof(val),
+                                              is_little, !is_unsigned);
+                Py_DECREF(v);
+                if (likely(!ret))
+                    return val;
+            }
+#endif
+            return (unsigned PY_LONG_LONG) -1;
+        }
+    } else {
+        unsigned PY_LONG_LONG val;
+        PyObject *tmp = __Pyx_PyNumber_IntOrLong(x);
+        if (!tmp) return (unsigned PY_LONG_LONG) -1;
+        val = __Pyx_PyInt_As_unsigned_PY_LONG_LONG(tmp);
+        Py_DECREF(tmp);
+        return val;
+    }
+raise_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "value too large to convert to unsigned PY_LONG_LONG");
+    return (unsigned PY_LONG_LONG) -1;
+raise_neg_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "can't convert negative value to unsigned PY_LONG_LONG");
+    return (unsigned PY_LONG_LONG) -1;
+}
+
+/* CIntFromPy */
+          static CYTHON_INLINE unsigned long __Pyx_PyInt_As_unsigned_long(PyObject *x) {
+    const unsigned long neg_one = (unsigned long) -1, const_zero = (unsigned long) 0;
+    const int is_unsigned = neg_one > const_zero;
+#if PY_MAJOR_VERSION < 3
+    if (likely(PyInt_Check(x))) {
+        if (sizeof(unsigned long) < sizeof(long)) {
+            __PYX_VERIFY_RETURN_INT(unsigned long, long, PyInt_AS_LONG(x))
+        } else {
+            long val = PyInt_AS_LONG(x);
+            if (is_unsigned && unlikely(val < 0)) {
+                goto raise_neg_overflow;
+            }
+            return (unsigned long) val;
+        }
+    } else
+#endif
+    if (likely(PyLong_Check(x))) {
+        if (is_unsigned) {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (unsigned long) 0;
+                case  1: __PYX_VERIFY_RETURN_INT(unsigned long, digit, digits[0])
+                case 2:
+                    if (8 * sizeof(unsigned long) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) >= 2 * PyLong_SHIFT) {
+                            return (unsigned long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) >= 3 * PyLong_SHIFT) {
+                            return (unsigned long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) >= 4 * PyLong_SHIFT) {
+                            return (unsigned long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        }
+                    }
+                    break;
+            }
+#endif
+#if CYTHON_COMPILING_IN_CPYTHON
+            if (unlikely(Py_SIZE(x) < 0)) {
+                goto raise_neg_overflow;
+            }
+#else
+            {
+                int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
+                if (unlikely(result < 0))
+                    return (unsigned long) -1;
+                if (unlikely(result == 1))
+                    goto raise_neg_overflow;
+            }
+#endif
+            if (sizeof(unsigned long) <= sizeof(unsigned long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(unsigned long, unsigned long, PyLong_AsUnsignedLong(x))
+#ifdef HAVE_LONG_LONG
+            } else if (sizeof(unsigned long) <= sizeof(unsigned PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(unsigned long, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
+#endif
+            }
+        } else {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (unsigned long) 0;
+                case -1: __PYX_VERIFY_RETURN_INT(unsigned long, sdigit, (sdigit) (-(sdigit)digits[0]))
+                case  1: __PYX_VERIFY_RETURN_INT(unsigned long,  digit, +digits[0])
+                case -2:
+                    if (8 * sizeof(unsigned long) - 1 > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) - 1 > 2 * PyLong_SHIFT) {
+                            return (unsigned long) (((unsigned long)-1)*(((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])));
+                        }
+                    }
+                    break;
+                case 2:
+                    if (8 * sizeof(unsigned long) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) - 1 > 2 * PyLong_SHIFT) {
+                            return (unsigned long) ((((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])));
+                        }
+                    }
+                    break;
+                case -3:
+                    if (8 * sizeof(unsigned long) - 1 > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) - 1 > 3 * PyLong_SHIFT) {
+                            return (unsigned long) (((unsigned long)-1)*(((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) - 1 > 3 * PyLong_SHIFT) {
+                            return (unsigned long) ((((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])));
+                        }
+                    }
+                    break;
+                case -4:
+                    if (8 * sizeof(unsigned long) - 1 > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) - 1 > 4 * PyLong_SHIFT) {
+                            return (unsigned long) (((unsigned long)-1)*(((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) - 1 > 4 * PyLong_SHIFT) {
+                            return (unsigned long) ((((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])));
+                        }
+                    }
+                    break;
+            }
+#endif
+            if (sizeof(unsigned long) <= sizeof(long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(unsigned long, long, PyLong_AsLong(x))
+#ifdef HAVE_LONG_LONG
+            } else if (sizeof(unsigned long) <= sizeof(PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(unsigned long, PY_LONG_LONG, PyLong_AsLongLong(x))
+#endif
+            }
+        }
+        {
+#if CYTHON_COMPILING_IN_PYPY && !defined(_PyLong_AsByteArray)
+            PyErr_SetString(PyExc_RuntimeError,
+                            "_PyLong_AsByteArray() not available in PyPy, cannot convert large numbers");
+#else
+            unsigned long val;
+            PyObject *v = __Pyx_PyNumber_IntOrLong(x);
+ #if PY_MAJOR_VERSION < 3
+            if (likely(v) && !PyLong_Check(v)) {
+                PyObject *tmp = v;
+                v = PyNumber_Long(tmp);
+                Py_DECREF(tmp);
+            }
+ #endif
+            if (likely(v)) {
+                int one = 1; int is_little = (int)*(unsigned char *)&one;
+                unsigned char *bytes = (unsigned char *)&val;
+                int ret = _PyLong_AsByteArray((PyLongObject *)v,
+                                              bytes, sizeof(val),
+                                              is_little, !is_unsigned);
+                Py_DECREF(v);
+                if (likely(!ret))
+                    return val;
+            }
+#endif
+            return (unsigned long) -1;
+        }
+    } else {
+        unsigned long val;
+        PyObject *tmp = __Pyx_PyNumber_IntOrLong(x);
+        if (!tmp) return (unsigned long) -1;
+        val = __Pyx_PyInt_As_unsigned_long(tmp);
+        Py_DECREF(tmp);
+        return val;
+    }
+raise_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "value too large to convert to unsigned long");
+    return (unsigned long) -1;
+raise_neg_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "can't convert negative value to unsigned long");
+    return (unsigned long) -1;
 }
 
 /* CIntFromPy */

@@ -6,9 +6,8 @@ import argparse
 import logging
 
 import sudokugen
-import visual
-
-import numpy
+import debug
+import os
 
 
 logFormatter = logging.Formatter(
@@ -16,7 +15,8 @@ logFormatter = logging.Formatter(
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-fileHandler = logging.FileHandler('sudoku.log')
+fileHandler = logging.FileHandler(
+    '{}.log'.format(os.path.splitext(__file__)[0]))
 fileHandler.setFormatter(logFormatter)
 logger.addHandler(fileHandler)
 
@@ -28,17 +28,13 @@ logger.addHandler(consoleHandler)
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-m', '--method',
-        type=str, help='method, that is used for generation',
-        default='recursive')
-    parser.add_argument(
         '-s', '--size',
         type=int, help='size of the generated grid (size*size)', default=3)
     parser.add_argument(
         '-o', '--output',
-        type=str, help='path of the output', default='gen.txt')
+        type=str, help='path of the output', default='solution.txt')
     parser.add_argument(
-        '-d', '--display',
+        '-d', '--debug',
         type=str, help='possible display types '
                        'are "pygame" or "console", default None', default=None)
     parser.add_argument(
@@ -52,71 +48,72 @@ def main():
         '-w', '--wait', type=float,
         help='seconds of delay after finished generation', default=0)
     parser.add_argument(
-        '-f', '--full',
+        '-f', '--file',
         help='show the full screen with candidates (max(n) = 3)',
-        action='store_true')
+        type=str, default=None)
     parser.add_argument(
         '-r', '--refresh',
-        help='refresh rate for the visualization',
-        type=int, default=1)
+        help='refresh rate for the visualization', type=int, default=1)
     parser.add_argument(
-        '-n', '--new', type=int)
-    parser.add_argument('-b', '--benchmark',
-                        help='toggle benchmark mode', action='store_true')
+        '-m', '--max',  help='maximum solutions to find',  type=int, default=1)
     args = parser.parse_args(
-        ['-s', '3', '-t', '0', '-w', '3'])
+        ['-s', '3', '-t', '1', '-m', '1', '-d', 'pygame',
+         '-f', 'input.txt', '-w', '1'])
 
-    display_method = args.display
-    if display_method == 'pygame':
-        def display_method(size):
-            return visual.PyGame(n=size, k=args.refresh, delay=args.time)
-    elif display_method == 'console':
-        display_method = visual.Printer
+    if args.debug is not None:
+        if args.debug == 'pygame':
+            def debug_method(size, conv):
+                return debug.PyGame(
+                    n=size, conv=conv, delay=args.time, wait=args.wait)
 
-    non_candidate_checking_methods = ['swap', 'sort']
+        elif args.debug == 'printer':
+            def debug_method(size, _):
+                return debug.Printer(n=size, m=args.max, path='debug.txt')
 
-    full_layout = args.full
-    if args.method in non_candidate_checking_methods and full_layout:
-        logger.warning(
-            '{} is not candidate checking method, full layout '
-            'will not be used'.format(args.method))
+        else:
+            raise ValueError('Invalid value for (-d, --debug)')
 
-        full_layout = False
+        try:
 
-    if args.benchmark:
-        if args.display is not None or args.full:
-            logger.warning('In benchmark mode, the layout is disabled')
-            full_layout = False
-            display_method = None
+            gen = sudokugen.DebugBruteForceSearch(
+                args.size, args.max, debugger=debug_method)
 
-    if display_method is not None:
-        gen = sudokugen.DebugBestFitGenerator(
-            args.size, display=display_method)
+        except ValueError as error:
+            logger.error(error)
+            return
+
     else:
-        gen = sudokugen.BruteForceSearch(args.size)
+        gen = sudokugen.BruteForceSearch(args.size, args.max)
 
     field = None
-    if False:
-        field = numpy.array([
-            [0, 7, 0,   2, 5, 0,   4, 0, 0],
-            [8, 0, 0,   0, 0, 0,   9, 0, 3],
-            [0, 0, 0,   0, 0, 3,   0, 7, 0],
+    if args.file is not None:
+        field = sudokugen.Solver.load(args.file)
+        field = gen.encode(field)
 
-            [7, 0, 0,   0, 0, 4,   0, 2, 0],
-            [1, 0, 0,   0, 0, 0,   0, 0, 7],
-            [0, 4, 0,   5, 0, 0,   0, 0, 8],
+    delta_time, (solutions, raw_time) = gen.fill(field)
 
-            [0, 9, 0,   6, 0, 0,   0, 0, 0],
-            [4, 0, 1,   0, 0, 0,   0, 0, 5],
-            [0, 0, 7,   0, 8, 2,   0, 3, 0]
-        ])
+    # Using milliseconds for logging
+    ms = 1000
 
-        field = gen.encode(field, 3)
+    if solutions == 0:
+        logger.info('{}x{} no solutions in {:.6} ms ({:.6} ms) by {}'.format(
+            args.size ** 2, args.size ** 2, delta_time * ms,
+            raw_time * ms, gen))
 
-    delta_time, _ = gen.fill(field)
+    elif solutions > 1:
+        logger.info('{}x{} {} solutions found in {:.6} ms ({:.6} ms) by {}'
+                    .format(args.size ** 2, args.size ** 2,
+                            solutions, delta_time * ms, raw_time * ms, gen))
 
-    logger.info('{}x{} generated in {:.6}s'.format(
-        args.size**2, args.size**2, delta_time))
+    elif solutions == 1 and args.max == 1:
+        logger.info('{}x{} filled in {:.6} ms ({:.6} ms) by {}'.format(
+            args.size ** 2, args.size ** 2,
+            delta_time * ms, raw_time * ms, gen))
+
+    else:
+        logger.info('{}x{} 1 solution found in {:.6} ms ({:.6} ms) by {}'.
+                    format(args.size**2, args.size**2,
+                           delta_time * ms, raw_time * ms, gen))
 
     gen.save_txt(args.output)
 
