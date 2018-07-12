@@ -38,9 +38,6 @@ def main():
         type=str, help='possible display types '
                        'are "pygame" or "console", default None', default=None)
     parser.add_argument(
-        '-e', '--empty', type=int,
-        help='number of empty fields of the generated grid', default=10)
-    parser.add_argument(
         '-t', '--time', type=float,
         help='number of seconds between showed steps '
              '(only relevant with defined display)', default=0)
@@ -49,16 +46,11 @@ def main():
         help='seconds of delay after finished generation', default=0)
     parser.add_argument(
         '-f', '--file',
-        help='show the full screen with candidates (max(n) = 3)',
+        help='path of the input file',
         type=str, default=None)
     parser.add_argument(
-        '-r', '--refresh',
-        help='refresh rate for the visualization', type=int, default=1)
-    parser.add_argument(
         '-m', '--max',  help='maximum solutions to find',  type=int, default=1)
-    args = parser.parse_args(
-        ['-s', '3', '-t', '1', '-m', '1', '-d', 'pygame',
-         '-f', 'input.txt', '-w', '1'])
+    args = parser.parse_args()
 
     if args.debug is not None:
         if args.debug == 'pygame':
