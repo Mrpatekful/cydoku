@@ -79,15 +79,15 @@ Solution will be generated to the location given by -o, --output, which is solut
 Will read the content of the provided file, that is a 9 x 9 sudoku field.
 The format of the file must be the following.
 
-0 0 0 0 0 0 0 0 0<br/>
-0 0 0 0 0 0 0 8 5<br/>
-0 0 1 0 0 0 0 0 0<br/>
-0 0 0 5 0 7 0 0 0<br/>
-0 0 0 0 0 0 0 0 0<br/>
-0 9 0 0 0 0 0 0 0<br/>
-5 0 0 0 0 0 0 7 3<br/>
-0 0 2 0 0 0 0 0 0<br/>
-0 0 0 0 4 0 0 0 9
+    0 0 0 0 0 0 0 0 0
+    0 0 0 0 0 0 0 8 5
+    0 0 1 0 0 0 0 0 0
+    0 0 0 5 0 7 0 0 0
+    0 0 0 0 0 0 0 0 0
+    0 9 0 0 0 0 0 0 0
+    5 0 0 0 0 0 0 7 3
+    0 0 2 0 0 0 0 0 0
+    0 0 0 0 4 0 0 0 9
 
 
 ```python3 main.py -s 3 -f input.txt -d pygame -t 0.5```
@@ -102,7 +102,7 @@ Will generate a 16 x 16 sudoku grid from an empty state, and tries to find a max
 
 ### Requirements
 
-    __Python3.x__
-    __Cython__
-    __gmpy2__
-    __NumPy__
+- __Python3.x__
+- __Cython__
+- __gmpy2__
+- __NumPy__
