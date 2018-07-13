@@ -105,7 +105,7 @@ Will generate a 16 x 16 sudoku grid from an empty state, and tries to find a max
 
 ### Requirements
 
-- __Python3.x__
-- __Cython__
-- __gmpy2__
-- __NumPy__
+- Python3.5
+- [Cython](http://cython.org/)
+- [gmpy2](http://gmpy2.readthedocs.io/en/latest/intro.html)
+- [NumPy](https://www.scipy.org/scipylib/download.html)
