@@ -2,16 +2,12 @@
 
 This repository holds a baseline Python implementation of a backtracking brute force algorithm for solving sudoku.
 Integration of optimizations for reducing the branching factor of the search is in progress, as well as different techniques, like `constraint based modelling` or
-the famous `dancing-links` method. Currently only single threaded version exists, however I am experimenting with the
-efficiency and speed of multi-threaded implementations.
+the `dancing-links` method.
 
 ### Benchmarks
 
 CPU: Intel(R) Core(TM) i7-4710HQ CPU @ 2.50GHz
 RAM: 8GB
-
-As I have mentioned the code is written in Python, however to evade the overhead of the language, I have used Cython
-as the core of the project. This way, the algorithm runs at considerable speed and efficiency.
 
 According to Wikipedia, the following puzzle takes a long time for a basic brute force method.
 
@@ -40,7 +36,7 @@ the required time for the algorithm to solve this puzzle is ~ __0.24ms__ .
 
 
 After deleting some of the given clues (12) of this puzzle,
-and making it ambiguous it is possible to traverse a wide range of solutions.
+and making it ambiguous, it is possible to traverse a wide range of solutions.
 
         +-------+-------+-------+
         | . . . | . . . | . . . |
@@ -71,15 +67,20 @@ And a 'dump' mode, that logs every state of the algorithm to a file (debug.txt b
 
 ### Usage
 
+Build the .pyx file via Cython by ```python3 setup.py build_ext --inplace```
+
+--------------------------------------------------------------
+
 ```python3 main.py -s 3```
 
-Will generate a randomly filled sudoku from an empty state. Size 3 is the general 9 x 9 sudoku field.
+Generates a randomly filled sudoku from an empty state. Size 3 is the general 9 x 9 sudoku field.
 Solution will be generated to the location given by -o, --output, which is solution.txt by default.
 
+--------------------------------------------------------------
 
 ```python3 main.py -s 3 -f input.txt```
 
-Will read the content of the provided file, that is a 9 x 9 sudoku field.
+Reads the content of the provided file, that is a 9 x 9 sudoku field.
 The format of the file must be the following.
 
     0 0 0 0 0 0 0 0 0
@@ -92,15 +93,17 @@ The format of the file must be the following.
     0 0 2 0 0 0 0 0 0
     0 0 0 0 4 0 0 0 9
 
+--------------------------------------------------------------
 
 ```python3 main.py -s 3 -f input.txt -d pygame -t 0.5```
 
-Will use the PyGame visualization, with 0.5 second delay between each frame. The default delay is zero.
+Uses the PyGame visualization, with 0.5 second delay between each frame. The default delay is zero.
 
+--------------------------------------------------------------
 
 ```python3 main.py -s 4 --max 10000000```
 
-Will generate a 16 x 16 sudoku grid from an empty state, and tries to find a maximum of 10,000,000 solutions.
+Generates a 16 x 16 sudoku grid from an empty state, and tries to find a maximum of 10,000,000 solutions.
 
 
 ### Requirements
