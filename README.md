@@ -1,4 +1,4 @@
-# Sudokugen
+# Cydoku
 
 This repository holds a baseline Python implementation of a backtracking brute force algorithm for solving sudoku.
 The technique is accelerated by using bitwise operations
