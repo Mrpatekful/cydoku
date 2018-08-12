@@ -93,8 +93,8 @@ class Printer(Debugger):
 
 class PyGame(Debugger):
 
-    _WIDTH = 720
-    _HEIGHT = 720
+    _WIDTH = 260
+    _HEIGHT = 260
 
     def __init__(self, n, conv, delay=0, wait=0):
         self.n = n
